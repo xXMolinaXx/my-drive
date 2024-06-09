@@ -5,7 +5,8 @@ import { IhttpResponse } from 'src/common/interface/httpResponse/httpResponse.in
 import { RefreshToken } from './decorators/refreshToken.decorator';
 import { ApiKeyGuard } from './guards/api-key.guard';
 import { UserRefreshTokenDTO } from './DTOS/login.dto';
-
+import { ApiTags } from '@nestjs/swagger';
+@ApiTags('auth')
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) { }
@@ -15,7 +16,7 @@ export class AuthController {
   async signIn(@Body() signInDto: LoginDto): Promise<IhttpResponse> {
     try {
       return {
-        message: 'Usuario Creado',
+        message: 'Ingreso correctamente',
         statusCode: 200,
         success: true,
         data: await this.authService.signIn(signInDto.username, signInDto.password),
