@@ -4,4 +4,9 @@ export interface IProduct {
   price: number
   category: string
   __v?: number
+  amount?:number
+}
+export interface IProductState {
+  products: IProduct[],
+  amountProducts: number,
 }

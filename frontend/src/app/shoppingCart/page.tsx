@@ -1,5 +1,5 @@
 'use client'
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Box from '@mui/material/Box';
 import Stepper from '@mui/material/Stepper';
 import Step from '@mui/material/Step';
@@ -8,16 +8,27 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import MainLayout from "@/components/layout/MainLayout";
 import { useRouter } from "next/navigation";
-import { Card, Divider, Grid, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
+import { Divider, Grid, Table, TableBody, TableCell, TableContainer, TableRow } from "@mui/material";
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import DeleteIcon from '@mui/icons-material/Delete';
-import CelebrationIcon from '@mui/icons-material/Celebration';
+import { IProductState } from "@/common/interface/product.interface";
+import { getCart, setLocalStorageProduct } from "@/common/utils/cart";
 const steps = ['Carrito', 'Confirmación'];
 export default function ShoppingCart() {
   const router = useRouter()
   const [activeStep, setActiveStep] = useState(0);
   const [skipped, setSkipped] = useState(new Set<number>());
+  const [totalPayment, setTotalPayment] = useState(0)
+  const [shoppingCart, setShoppingCart] = useState<IProductState>({
+    products: [{
+      name: '',
+      price: 0,
+      category: '',
+      amount: 0,
+    }],
+    amountProducts: 0,
+  })
 
 
   const isStepSkipped = (step: number) => {
@@ -28,21 +39,67 @@ export default function ShoppingCart() {
     if (activeStep < 1) setActiveStep((prevActiveStep) => prevActiveStep + 1);
     else router.push('/')
   };
+  const addMoreProduct = (index:number) => {
+    const newCart = [...shoppingCart.products]
+    newCart[index].amount += 1
+    setShoppingCart({
+      ...shoppingCart,
+      products: newCart
+    })
+  }
+  const restMoreProduct = (index:number) => {
+    const newCart = [...shoppingCart.products]
+    if (newCart[index].amount > 1) newCart[index].amount -= 1
+    setShoppingCart({
+      ...shoppingCart,
+      products: newCart
+    })
 
+  }
+  const deleteProduct = (index:number)=>{
+    const newCart = [...shoppingCart.products]
+    const amount = newCart[index]?.amount || 1
+    newCart.splice(index, 1)
+    setShoppingCart({
+      amountProducts: shoppingCart.amountProducts - amount ,
+      products: [...newCart],
+    });
+    setLocalStorageProduct(newCart)
+  }
 
-
-
+  useEffect(() => {
+    const cart = getCart();
+    let productAmount = 0
+    cart.forEach(data => {
+      const dataAmount = data.amount || 0
+      productAmount = dataAmount + productAmount
+    })
+    setShoppingCart({ amountProducts: productAmount, products: cart })
+  }, [])
+  useEffect(() => {
+    let finalPayment = 0
+    shoppingCart.products.forEach(product => {
+      const productAmount = product.amount || 1
+      finalPayment += product.price * productAmount
+    })
+    setTotalPayment(finalPayment)
+  }, [shoppingCart])
 
   const step = [{
     key: 'primer-hijo',
     children: <div className="p-10"><Grid container spacing={2}>
       <Grid item xs={6}>
-        <MyCard price={12} productName="examen sangre" />
-        <MyCard price={12} productName="examen sangre" />
-        <MyCard price={12} productName="examen sangre" />
-        <MyCard price={12} productName="examen sangre" />
-        <MyCard price={12} productName="examen sangre" />
-        <MyCard price={12} productName="examen sangre" />
+        {shoppingCart.products.length !== 0 ? shoppingCart.products.map((product, i) => (
+          <MyCard 
+            key={`${product.name}-cart-${i}`} 
+            price={product.price} 
+            productName={product.name} 
+            productAmount={product.amount || 1} 
+            addMoreProduct={()=> {addMoreProduct(i)}} 
+            restMoreProduct={()=>{restMoreProduct(i)}} 
+            deleteProduct={()=>{deleteProduct(i)}} 
+          />
+      )) : <Typography align="center">No hay ningun producto agregado</Typography>}
       </Grid>
       <Grid item xs={1}>
 
@@ -62,7 +119,7 @@ export default function ShoppingCart() {
                   <TableCell component="th" scope="row">
                     TOTAL DE ARTÍCULOS
                   </TableCell>
-                  <TableCell align="right">1</TableCell>
+                  <TableCell align="right">{shoppingCart.amountProducts}</TableCell>
                 </TableRow>
                 <TableRow
                   sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
@@ -70,7 +127,7 @@ export default function ShoppingCart() {
                   <TableCell component="th" className="font-black" scope="row">
                     TOTAL
                   </TableCell>
-                  <TableCell align="right" className="font-black">L. 12 </TableCell>
+                  <TableCell align="right" className="font-black">L. {totalPayment} </TableCell>
                 </TableRow>
 
               </TableBody>
@@ -118,7 +175,7 @@ export default function ShoppingCart() {
         {step[activeStep].children}
         <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
           <Box sx={{ flex: '1 1 auto' }} />
-          <Button onClick={handleNext}>
+          <Button onClick={handleNext} disabled={shoppingCart.products.length === 0}>
             {activeStep === steps.length - 1 ? 'Terminar' : 'Siguiente'}
           </Button>
         </Box>
@@ -127,21 +184,21 @@ export default function ShoppingCart() {
   )
 }
 interface propCard {
-  productName: string, price: number
+  productName: string, price: number, productAmount: number, addMoreProduct: () => void, restMoreProduct: () => void, deleteProduct: () => void
 }
-function MyCard({ productName, price }: propCard) {
-  return (<div className="flex rounded-lg p-2 shadow-md">
+function MyCard({ productName, price, productAmount, addMoreProduct, restMoreProduct, deleteProduct }: propCard) {
+  return (<div className="flex rounded-lg p-2 mt-5 shadow-md">
     <div className="w-3/4">
       <Typography variant="body2">{productName}</Typography>
-      <Typography variant="body2" >L. {price}</Typography>
+      <Typography variant="body2" > L. {price}</Typography>
     </div>
     <div className="flex">
       <div className="flex">
-        <AddIcon className="text-blue-600" />
-        <Typography variant="subtitle1">1</Typography>
-        <RemoveIcon className="text-blue-600" />
+        <AddIcon className="text-blue-600 mx-4" onClick={addMoreProduct} />
+        <Typography variant="subtitle1">{productAmount}</Typography>
+        <RemoveIcon className="text-blue-600 mx-4" onClick={restMoreProduct} />
       </div>
-      <DeleteIcon className="text-red-600 m-1" />
+      <DeleteIcon className="text-red-600 m-1 mx-4" onClick={deleteProduct} />
     </div>
   </div>)
 }

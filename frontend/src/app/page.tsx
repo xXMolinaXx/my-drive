@@ -1,13 +1,14 @@
 'use client'
-import React, { useEffect, useState } from "react";
-import MainLayout from "@/components/layout/MainLayout";
-import { Button, Card, CardActions, CardContent, CardMedia, Grid, Pagination, TextField, Tooltip, Typography } from "@mui/material";
+import React, { useEffect, useState, useContext } from "react";
+import MainLayout, { StoreContext } from "@/components/layout/MainLayout";
+import { Button, Card, CardActions, CardContent, CardMedia, CircularProgress, Grid, Pagination, TextField, Tooltip, Typography } from "@mui/material";
 import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
 import { config } from "@/common/configs/config";
 import { IProduct } from "@/common/interface/product.interface";
-import { addToCart } from "@/common/utils/addToCart";
+import { addToCart } from "@/common/utils/cart";
 
 export default function Home() {
+  const { setShoppingCart, shoppingCart } = useContext(StoreContext);
   const [products, setProducts] = useState<IProduct[]>([
     {
       category: '',
@@ -21,21 +22,45 @@ export default function Home() {
   const [skip, setSkip] = useState(0);
   const [limit,] = useState(24);
   const [amount, setAmount] = useState(0);
-  const [page, setPage] = useState(0)
+  const [page, setPage] = useState(0);
+  const [loadingProducts, setLoadingProducts] = useState(false)
   const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
     setSkip(value * limit - limit)
     setPage(value)
   };
+  const handleAddToCart = ({ name = '', price = 0,_id = '' }) => {
+    const newShoppingCart = [...shoppingCart.products]
+    newShoppingCart.push(
+      {
+        name: name,
+        price: price,
+        category: "",
+        amount:1,
+      }
+    )
+    setShoppingCart({...shoppingCart,
+      amountProducts: shoppingCart.amountProducts + 1, products: newShoppingCart
+    })
+    addToCart({
+      name: name,
+      price: price,
+      category:'',
+      _id:''
+    })
+  }
   const handleSearchProducts = () => {
+    setLoadingProducts(true);
     setProducts([])
     fetch(`${config.backend}/products/${skip}/${limit}/${searchWord}`).then(data => data.json()).then(data => {
       setProducts(data.data?.products || [])
       setAmount(Math.round(data.data?.count || 0 / limit))
-    })
+      setLoadingProducts(false);
+    }).catch(e => setLoadingProducts(false))
   }
   useEffect(() => {
     handleSearchProducts()
   }, [skip])
+
 
 
   return (
@@ -50,7 +75,7 @@ export default function Home() {
               handleSearchProducts();
             }
           }} />
-          <Button className="w-3/12" variant="contained" onClick={() => {
+          <Button className="w-3/12 rounded-r-lg" variant="contained" onClick={() => {
             setSkip(0);
             handleSearchProducts();
           }}>Buscar</Button>
@@ -60,16 +85,10 @@ export default function Home() {
           }}>Reset</Button> */}
         </section>
         <section className="mt-4 ">
-          <Grid container spacing={2}>
-            {products?.map(data => (
+          <Grid container spacing={2} justifyContent="center">
+            {loadingProducts ? <CircularProgress /> : products?.map(data => (
               <Grid key={data._id} item xs={12} md={3} lg={3}>
-                <CardComponent name={data.name} price={data.price} addToCart={() => {
-                  addToCart({
-                    name: data.name,
-                    price: data.price,
-                    category: ""
-                  })
-                }} />
+                <CardComponent name={data.name} price={data.price} addToCart={() => handleAddToCart(data)} />
               </Grid>
             ))}
           </Grid>

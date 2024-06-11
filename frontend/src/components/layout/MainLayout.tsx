@@ -1,5 +1,5 @@
 'use client'
-import React, { FormEvent, useEffect, useState } from "react";
+import React, { FormEvent, useEffect, useState, createContext, useContext, Dispatch, SetStateAction } from "react";
 import { useRouter } from 'next/navigation'
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
@@ -11,16 +11,35 @@ import { Badge, Drawer, TextField } from "@mui/material";
 import Image from "next/image";
 import { config } from "@/common/configs/config";
 import { getCookieToken } from "@/common/utils/getCookieToken";
+import { IProduct, IProductState } from "@/common/interface/product.interface";
+import { getCart } from "@/common/utils/cart";
 
+interface IContext {
+  shoppingCart:IProductState,
+  setShoppingCart:Dispatch<SetStateAction<IProductState>>,
+}
+
+export const StoreContext = createContext<IContext>({
+  setShoppingCart: () => { },
+  shoppingCart: {
+    amountProducts: 0,
+    products: [{
+      name: '',
+      price: 0,
+      category: ''
+    }]
+  }
+});
 interface props {
   children: React.ReactNode,
 }
-export default function MainLayout({ children }: props) {
+function MainLayout({ children }: props) {
+  const {shoppingCart} = useContext(StoreContext)
   const router = useRouter()
   const [open, setOpen] = React.useState(false);
   const [formType, setFormType] = useState<'register' | 'login' | 'user'>('register')
   const [loadingButton, setLoadingButton] = useState(false)
-  const [user, setUser] = useState<any>()
+  const [user, setUser] = useState<any>();
 
   const toggleDrawer = (newOpen: boolean, PFormType: 'register' | 'login' | 'user') => () => {
     setOpen(newOpen);
@@ -38,7 +57,6 @@ export default function MainLayout({ children }: props) {
     const elementPassword: any = document.querySelector('#password-login')
     if (elementUserIdentification) userIdentification = elementUserIdentification.value
     if (elementPassword) password = elementPassword.value
-    console.log(password);
     fetch(`${config.backend}/auth/login`, {
       method: 'POST',
       body: JSON.stringify({
@@ -50,7 +68,6 @@ export default function MainLayout({ children }: props) {
         Accept: "application/json",
       },
     }).then(data => data.json()).then(data => {
-      console.log(data);
       if (data.statusCode === 200) {
         document.cookie = `access_token=${data.data.access_token}; expires=${followingDay}`;
         localStorage.setItem(
@@ -61,7 +78,7 @@ export default function MainLayout({ children }: props) {
         setOpen(false)
       }
       else alert(data.message)
-    }).catch(e=>alert('error en el sistema'))
+    }).catch(e => alert('error en el sistema'))
   }
   const registerUser = (e: FormEvent<HTMLFormElement>) => {
     var current = new Date(); //'Mar 11 2015' current.getTime() = 1426060964567
@@ -112,17 +129,17 @@ export default function MainLayout({ children }: props) {
             setOpen(false)
           }
           else alert(data.message)
-        }).catch(e=>alert('error en el sistema'))
+        }).catch(e => alert('error en el sistema'))
       } else {
         alert(data.message)
       }
 
-    }).catch(e=>alert('error en el sistema'))
+    }).catch(e => alert('error en el sistema'))
   }
-  useEffect(()=>{
+  useEffect(() => {
     const user = localStorage.getItem('user')
-    setUser(JSON.parse(user))
-  },[])
+    if (user) setUser(JSON.parse(user))
+  }, [])
   const DrawerList = (
     <Box sx={{ width: 300 }} role="presentation" >
       <div className="flex justify-center pl-5 pt-5 pr-5">
@@ -142,7 +159,7 @@ export default function MainLayout({ children }: props) {
         {formType === 'user' && (
           <div>
             <Button className="mb-2" variant="outlined" type="submit" fullWidth>Mis ordenes</Button>
-            <Button className="mb-2" variant="outlined" type="submit" fullWidth onClick={()=>{
+            <Button className="mb-2" variant="outlined" type="submit" fullWidth onClick={() => {
               localStorage.removeItem('user')
               setUser(null)
               document.cookie = "access_token=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
@@ -156,7 +173,7 @@ export default function MainLayout({ children }: props) {
     </Box>
   );
   return (
-    <>
+    < >
       <nav>
         <Box sx={{ flexGrow: 1 }}>
           <Drawer anchor="right" open={open} onClose={toggleDrawer(false, 'login')}>
@@ -178,7 +195,7 @@ export default function MainLayout({ children }: props) {
 
               </Typography>
               {user ? (<><Button color="inherit" onClick={toggleDrawer(true, 'user')}>{user.fullName}</Button>
-                <Badge badgeContent={4} color="warning">
+                <Badge badgeContent={shoppingCart.amountProducts} color="warning">
                   <ShoppingCartIcon onClick={() => router.push('/shoppingCart')} />
                 </Badge></>) : (<>
                   <Button color="inherit" onClick={toggleDrawer(true, 'register')}>Registrarse</Button>
@@ -189,8 +206,42 @@ export default function MainLayout({ children }: props) {
         </Box>
       </nav>
       <main>
+
         {children}
       </main>
     </>
   );
+}
+
+export default function MyApp({children}:any) {
+  const [shoppingCart, setShoppingCart] = useState<IProductState>({
+    products: [{
+      name: '',
+      price: 0,
+      category: '',
+      amount: 0,
+    }],
+    amountProducts: 0,
+  })
+  useEffect(() => {
+    const cart = getCart();
+    let productAmount = 0
+    cart.forEach(data => {
+      const dataAmount = data.amount || 0
+      productAmount = dataAmount + productAmount
+    })
+    console.log('hola', cart, productAmount);
+    setShoppingCart({ amountProducts: productAmount, products:cart })
+
+    
+
+
+  }, [])
+  return (
+    <StoreContext.Provider value={{
+      shoppingCart, setShoppingCart
+    }}>
+      <MainLayout >{children}</MainLayout>
+    </StoreContext.Provider>
+  )
 }
