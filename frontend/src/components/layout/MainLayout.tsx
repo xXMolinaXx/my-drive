@@ -230,12 +230,7 @@ export default function MyApp({children}:any) {
       const dataAmount = data.amount || 0
       productAmount = dataAmount + productAmount
     })
-    console.log('hola', cart, productAmount);
     setShoppingCart({ amountProducts: productAmount, products:cart })
-
-    
-
-
   }, [])
   return (
     <StoreContext.Provider value={{

@@ -1,21 +1,23 @@
 'use client'
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Box from '@mui/material/Box';
 import Stepper from '@mui/material/Stepper';
 import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-import MainLayout from "@/components/layout/MainLayout";
+import MainLayout, { StoreContext } from "@/components/layout/MainLayout";
 import { useRouter } from "next/navigation";
-import { Divider, Grid, Table, TableBody, TableCell, TableContainer, TableRow } from "@mui/material";
+import { Alert, Divider, Grid, Snackbar, Table, TableBody, TableCell, TableContainer, TableRow } from "@mui/material";
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { IProductState } from "@/common/interface/product.interface";
 import { getCart, setLocalStorageProduct } from "@/common/utils/cart";
+import { config } from "@/common/configs/config";
 const steps = ['Carrito', 'Confirmación'];
-export default function ShoppingCart() {
+function ShoppingCart2() {
+  const { setShoppingCart: setShoppingCartContext, shoppingCart: shoppingCartContext } = useContext(StoreContext);
   const router = useRouter()
   const [activeStep, setActiveStep] = useState(0);
   const [skipped, setSkipped] = useState(new Set<number>());
@@ -29,39 +31,107 @@ export default function ShoppingCart() {
     }],
     amountProducts: 0,
   })
+  const [openSnackBar, setOpenSnackBar] = useState(false);
+  const [snackBarMessage, setsnackBarMessage] = useState('');
+  const [type, settype] = useState<'success' | 'error'>('success')
 
+
+  const handleClose = (event: React.SyntheticEvent | Event, reason?: string) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpenSnackBar(false);
+  };
 
   const isStepSkipped = (step: number) => {
     return skipped.has(step);
   };
 
   const handleNext = () => {
+    if (shoppingCart.products.length === 0) {
+      return;
+    }
+    
+      let finalPayment = 0
+      shoppingCart.products.forEach(product => {
+        const productAmount = product.amount || 1
+        finalPayment += product.price * productAmount
+      })
+      fetch(`${config.backend}/orders`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          "Accept": 'application/json',
+        },
+        body: JSON.stringify({
+          "totalAmount": finalPayment,
+          "cart": shoppingCart.products
+        })
+      }).then(data => data.json()).then(data => {
+        if (data.statusCode === 200) {
+          setShoppingCartContext(
+            {
+              amountProducts: 0,
+              products: []
+            }
+          );
+          setLocalStorageProduct([])
+        } else {
+          setsnackBarMessage(data.message);
+          settype('error');
+          setOpenSnackBar(true)
+        }
+
+      }).catch(e => {
+        setsnackBarMessage(e.toString());
+        settype('error');
+        setOpenSnackBar(true)
+      })
+    
     if (activeStep < 1) setActiveStep((prevActiveStep) => prevActiveStep + 1);
     else router.push('/')
   };
-  const addMoreProduct = (index:number) => {
+  const addMoreProduct = (index: number) => {
     const newCart = [...shoppingCart.products]
     newCart[index].amount += 1
     setShoppingCart({
       ...shoppingCart,
-      products: newCart
+      products: newCart,
+      amountProducts: shoppingCartContext.amountProducts + 1,
     })
+    setShoppingCartContext(
+      {
+        ...shoppingCart,
+        amountProducts: shoppingCartContext.amountProducts + 1,
+        products: newCart
+      }
+    )
   }
-  const restMoreProduct = (index:number) => {
+  const restMoreProduct = (index: number) => {
     const newCart = [...shoppingCart.products]
-    if (newCart[index].amount > 1) newCart[index].amount -= 1
-    setShoppingCart({
-      ...shoppingCart,
-      products: newCart
-    })
-
+    if (newCart[index].amount > 1) {
+      newCart[index].amount -= 1
+      setShoppingCart({
+        ...shoppingCart,
+        products: newCart,
+        amountProducts: shoppingCartContext.amountProducts - 1,
+      })
+      setShoppingCartContext(
+        {
+          ...shoppingCart,
+          amountProducts: shoppingCartContext.amountProducts - 1,
+          products: newCart
+        }
+      )
+    }
   }
-  const deleteProduct = (index:number)=>{
+  const deleteProduct = (index: number) => {
     const newCart = [...shoppingCart.products]
     const amount = newCart[index]?.amount || 1
     newCart.splice(index, 1)
     setShoppingCart({
-      amountProducts: shoppingCart.amountProducts - amount ,
+      amountProducts: shoppingCart.amountProducts - amount,
       products: [...newCart],
     });
     setLocalStorageProduct(newCart)
@@ -87,25 +157,23 @@ export default function ShoppingCart() {
 
   const step = [{
     key: 'primer-hijo',
-    children: <div className="p-10"><Grid container spacing={2}>
-      <Grid item xs={6}>
+    children: <div className="p-10"><Grid container spacing={2} justifyContent={"center"}>
+      <Grid item md={4} lg={4} sm={12} xl={3}>
         {shoppingCart.products.length !== 0 ? shoppingCart.products.map((product, i) => (
-          <MyCard 
-            key={`${product.name}-cart-${i}`} 
-            price={product.price} 
-            productName={product.name} 
-            productAmount={product.amount || 1} 
-            addMoreProduct={()=> {addMoreProduct(i)}} 
-            restMoreProduct={()=>{restMoreProduct(i)}} 
-            deleteProduct={()=>{deleteProduct(i)}} 
+          <MyCard
+            key={`${product.name}-cart-${i}`}
+            price={product.price}
+            productName={product.name}
+            productAmount={product.amount || 1}
+            addMoreProduct={() => { addMoreProduct(i) }}
+            restMoreProduct={() => { restMoreProduct(i) }}
+            deleteProduct={() => { deleteProduct(i) }}
           />
-      )) : <Typography align="center">No hay ningun producto agregado</Typography>}
+        )) : <Typography align="center">No hay ningun producto agregado</Typography>}
       </Grid>
-      <Grid item xs={1}>
 
-      </Grid>
-      <Grid item xs={5}>
-        <div className="border-2 rounded h-48 p-2 border-transparent shadow-md">
+      <Grid item md={4} lg={4} sm={12} xl={3}>
+        <div className="border-2 rounded h-48 sm:h-64  p-2 border-transparent shadow-md w-full">
           <Typography variant="h4" align="center" className="text-blue-500 bolder font-black" >Resumen de orden</Typography>
           <Divider />
           <TableContainer >
@@ -154,33 +222,45 @@ export default function ShoppingCart() {
   }]
 
   return (
-    <MainLayout>
-      <Box sx={{ width: '100%' }} className="px-[10%] py-10">
-        <Stepper activeStep={activeStep}>
-          {steps.map((label, index) => {
-            const stepProps: { completed?: boolean } = {};
-            const labelProps: {
-              optional?: React.ReactNode;
-            } = {};
-            if (isStepSkipped(index)) {
-              stepProps.completed = false;
-            }
-            return (
-              <Step key={label} {...stepProps}>
-                <StepLabel {...labelProps}>{label}</StepLabel>
-              </Step>
-            );
-          })}
-        </Stepper>
-        {step[activeStep].children}
-        <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
-          <Box sx={{ flex: '1 1 auto' }} />
-          <Button onClick={handleNext} disabled={shoppingCart.products.length === 0}>
-            {activeStep === steps.length - 1 ? 'Terminar' : 'Siguiente'}
-          </Button>
-        </Box>
+    <Box sx={{ width: '100%' }} className="px-[10%] py-10">
+      <Stepper activeStep={activeStep}>
+        {steps.map((label, index) => {
+          const stepProps: { completed?: boolean } = {};
+          const labelProps: {
+            optional?: React.ReactNode;
+          } = {};
+          if (isStepSkipped(index)) {
+            stepProps.completed = false;
+          }
+          return (
+            <Step key={label} {...stepProps}>
+              <StepLabel {...labelProps}>{label}</StepLabel>
+            </Step>
+          );
+        })}
+      </Stepper>
+      {step[activeStep].children}
+      <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
+        <Box sx={{ flex: '1 1 auto' }} />
+        <Button onClick={handleNext} disabled={shoppingCart.products.length === 0}>
+          {activeStep === steps.length - 1 ? 'Terminar' : 'Siguiente'}
+        </Button>
       </Box>
-    </MainLayout >
+      <Snackbar
+        open={openSnackBar}
+        autoHideDuration={6000}
+        onClose={handleClose}
+      >
+        <Alert
+          onClose={handleClose}
+          severity={type}
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
+          {snackBarMessage}
+        </Alert>
+      </Snackbar>
+    </Box>
   )
 }
 interface propCard {
@@ -201,4 +281,12 @@ function MyCard({ productName, price, productAmount, addMoreProduct, restMorePro
       <DeleteIcon className="text-red-600 m-1 mx-4" onClick={deleteProduct} />
     </div>
   </div>)
+}
+
+export default function ShoppingCart() {
+  return (
+    <MainLayout>
+      <ShoppingCart2 />
+    </MainLayout>
+  )
 }

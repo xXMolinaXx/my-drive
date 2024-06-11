@@ -9,6 +9,7 @@ import { AuthModule } from './auth/auth.module';
 import { JwtModule } from '@nestjs/jwt';
 import { LoggerMiddleware } from './logger.middleware';
 import { ProductsModule } from './products/products.module';
+import { OrdersModule } from './orders/orders.module';
 @Module({
   imports: [
     MongooseModule.forRootAsync({
@@ -40,6 +41,7 @@ import { ProductsModule } from './products/products.module';
       global: true,
     }),
     ProductsModule,
+    OrdersModule,
   ],
   controllers: [AppController],
   providers: [AppService],

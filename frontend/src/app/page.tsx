@@ -7,7 +7,7 @@ import { config } from "@/common/configs/config";
 import { IProduct } from "@/common/interface/product.interface";
 import { addToCart } from "@/common/utils/cart";
 
-export default function Home() {
+function Home2() {
   const { setShoppingCart, shoppingCart } = useContext(StoreContext);
   const [products, setProducts] = useState<IProduct[]>([
     {
@@ -29,13 +29,19 @@ export default function Home() {
     setPage(value)
   };
   const handleAddToCart = ({ name = '', price = 0,_id = '' }) => {
-    const newShoppingCart = [...shoppingCart.products]
+    const newShoppingCart = [...shoppingCart.products];
+    const exists = newShoppingCart.findIndex(products => products._id === _id )
+    console.log(exists);
+    if( exists !== -1) {
+      return
+    }
     newShoppingCart.push(
       {
         name: name,
         price: price,
         category: "",
         amount:1,
+        _id
       }
     )
     setShoppingCart({...shoppingCart,
@@ -45,7 +51,7 @@ export default function Home() {
       name: name,
       price: price,
       category:'',
-      _id:''
+      _id:_id
     })
   }
   const handleSearchProducts = () => {
@@ -53,7 +59,7 @@ export default function Home() {
     setProducts([])
     fetch(`${config.backend}/products/${skip}/${limit}/${searchWord}`).then(data => data.json()).then(data => {
       setProducts(data.data?.products || [])
-      setAmount(Math.round(data.data?.count || 0 / limit))
+      setAmount(Math.round(data.data?.count / limit))
       setLoadingProducts(false);
     }).catch(e => setLoadingProducts(false))
   }
@@ -64,7 +70,7 @@ export default function Home() {
 
 
   return (
-    <MainLayout>
+    
       <div className="px-[20%] mb-14">
         <section className="mt-4 flex">
           <TextField id="search-product" label="Buscar por nombre del producto" variant="outlined" fullWidth onChange={(e) => {
@@ -96,8 +102,15 @@ export default function Home() {
         </section>
       </div>
 
-    </MainLayout>
+    
   );
+}
+export default function Home(){
+  return (
+    <MainLayout>
+      <Home2 />
+    </MainLayout>
+  )
 }
 interface PropCard {
   price: number,
