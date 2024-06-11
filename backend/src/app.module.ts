@@ -8,6 +8,7 @@ import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { JwtModule } from '@nestjs/jwt';
 import { LoggerMiddleware } from './logger.middleware';
+import { ProductsModule } from './products/products.module';
 @Module({
   imports: [
     MongooseModule.forRootAsync({
@@ -38,6 +39,7 @@ import { LoggerMiddleware } from './logger.middleware';
       },
       global: true,
     }),
+    ProductsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
