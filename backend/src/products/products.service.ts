@@ -67,8 +67,8 @@ export class ProductsService {
     return this.productModel.find().countDocuments();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} product`;
+  async findOne(id: string) {
+    return await this.productModel.findById(id);
   }
 
   update(id: number, updateProductDto: UpdateProductDto) {

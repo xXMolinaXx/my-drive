@@ -6,6 +6,7 @@ import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
 import { config } from "@/common/configs/config";
 import { IProduct } from "@/common/interface/product.interface";
 import { addToCart } from "@/common/utils/cart";
+import MainAlert from "@/components/alerts/MainAlert";
 
 function Catalog2() {
   const { setShoppingCart, shoppingCart } = useContext(StoreContext);
@@ -23,7 +24,9 @@ function Catalog2() {
   const [limit,] = useState(24);
   const [amount, setAmount] = useState(0);
   const [page, setPage] = useState(0);
-  const [loadingProducts, setLoadingProducts] = useState(false)
+  const [loadingProducts, setLoadingProducts] = useState(false);
+  const [openAlert, setOpenAlert] = useState(false);
+  const [messageAlert, setmessageAlert] = useState('');
   const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
     setSkip(value * limit - limit)
     setPage(value)
@@ -31,7 +34,6 @@ function Catalog2() {
   const handleAddToCart = ({ name = '', price = 0, _id = '' }) => {
     const newShoppingCart = [...shoppingCart.products];
     const exists = newShoppingCart.findIndex(products => products._id === _id)
-    console.log(exists);
     if (exists !== -1) {
       return
     }
@@ -59,10 +61,19 @@ function Catalog2() {
     setLoadingProducts(true);
     setProducts([])
     fetch(`${config.backend}/products/${skip}/${limit}/${searchWord}`).then(data => data.json()).then(data => {
-      setProducts(data.data?.products || [])
-      setAmount(Math.round(data.data?.count / limit))
-      setLoadingProducts(false);
-    }).catch(e => setLoadingProducts(false))
+      if (data.statusCode === 200) {
+        setProducts(data.data?.products || [])
+        setAmount(Math.round(data.data?.count / limit))
+        setLoadingProducts(false);
+      } else {
+        setOpenAlert(true);
+        setmessageAlert(data.message)
+      }
+    }).catch(e => {
+      setLoadingProducts(false)
+      setOpenAlert(true);
+      setmessageAlert(e.toString())
+    })
   }
   useEffect(() => {
     handleSearchProducts()
@@ -100,6 +111,7 @@ function Catalog2() {
         </Grid>
         <Pagination className="mt-4" count={amount} page={page} color="primary" onChange={handleChange} />
       </section>
+      <MainAlert handleClose={() => setOpenAlert(false)} message="" open={openAlert} type="error" />
     </div>
   );
 }

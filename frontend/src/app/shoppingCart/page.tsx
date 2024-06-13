@@ -1,5 +1,9 @@
 'use client'
 import { useContext, useEffect, useState } from "react";
+import RemoveShoppingCartIcon from '@mui/icons-material/RemoveShoppingCart';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import Box from '@mui/material/Box';
 import Stepper from '@mui/material/Stepper';
 import Step from '@mui/material/Step';
@@ -8,7 +12,7 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import MainLayout, { StoreContext } from "@/components/layout/MainLayout";
 import { useRouter } from "next/navigation";
-import { Alert, Divider, Grid, MenuItem, Paper, Snackbar, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField } from "@mui/material";
+import { Alert, CircularProgress, Divider, Grid, MenuItem, Paper, Snackbar, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField } from "@mui/material";
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -16,6 +20,9 @@ import { IProductState } from "@/common/interface/product.interface";
 import { getCart, setLocalStorageProduct } from "@/common/utils/cart";
 import { config } from "@/common/configs/config";
 import MainAlert from "@/components/alerts/MainAlert";
+import { getCookieToken } from "@/common/utils/getCookieToken";
+import { createTime } from "@/common/utils/time/formatTime";
+import dayjs, { Dayjs } from "dayjs";
 const steps = ['Carrito', 'Selecionar sucursal', 'Confirmación'];
 function ShoppingCart2() {
   const { setShoppingCart: setShoppingCartContext, shoppingCart: shoppingCartContext } = useContext(StoreContext);
@@ -35,8 +42,13 @@ function ShoppingCart2() {
   const [openSnackBar, setOpenSnackBar] = useState(false);
   const [snackBarMessage, setsnackBarMessage] = useState('');
   const [type, settype] = useState<'success' | 'error'>('success')
-  const [availableSchedules, setavailableSchedules] = useState<string[]>([])
-
+  const [availableSchedules, setavailableSchedules] = useState<any[]>([])
+  const [selectBranch, setSelectBranch] = useState('La granja');
+  const [selectDate, setSelectDate] = useState<Dayjs | null>(dayjs());
+  const [selectedSchedule, setSelectedSchedule] = useState<any>({
+    hour: -1,
+    minute: -1,
+  })
   const handleClose = (event: React.SyntheticEvent | Event, reason?: string) => {
     if (reason === 'clickaway') {
       return;
@@ -54,6 +66,17 @@ function ShoppingCart2() {
       return;
     }
     if (activeStep === 1) {
+      let errorMessage = ''
+      if (!selectBranch) errorMessage += 'Selecione una sucursal \n'
+      if (selectedSchedule.hour === -1) errorMessage += 'Selecione una horario \n'
+      if (errorMessage) {
+        setOpenSnackBar(true);
+        setsnackBarMessage(errorMessage);
+        return;
+      }
+      const existUser = localStorage.getItem('user')
+      let user: any;
+      if (existUser) user = JSON.parse(existUser)
       let finalPayment = 0
       shoppingCart.products.forEach(product => {
         const productAmount = product.amount || 1
@@ -64,10 +87,14 @@ function ShoppingCart2() {
         headers: {
           'Content-Type': 'application/json',
           "Accept": 'application/json',
+          Authorization: `Bearer ${getCookieToken()}`,
         },
         body: JSON.stringify({
-          "totalAmount": finalPayment,
-          "cart": shoppingCart.products
+          cart: shoppingCart.products,
+          userId: user ? user._id : '',
+          branch: selectBranch,
+          date: selectDate ? selectDate.toString() : dayjs().toString(),
+          schedule: selectedSchedule
         })
       }).then(data => data.json()).then(data => {
         if (data.statusCode === 200) {
@@ -137,8 +164,31 @@ function ShoppingCart2() {
     });
     setLocalStorageProduct(newCart)
   }
-
+  const getAvalableSchedules = () => {
+    setavailableSchedules([]);
+    if (shoppingCart.products.length > 0) {
+      fetch(`${config.backend}/orders/readAvailableSchedules`, {
+        method: 'POST',
+        body: JSON.stringify({
+          "date": selectDate ? selectDate.toString() : dayjs().toString(),
+          "branch": selectBranch,
+        }),
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          Authorization: `Bearer ${getCookieToken()}`,
+        },
+      })
+        .then(data => data.json())
+        .then(data => {
+          if (data.statusCode === 200) {
+            setavailableSchedules(data.data)
+          }
+        })
+    }
+  }
   useEffect(() => {
+    getAvalableSchedules();
     const cart = getCart();
     let productAmount = 0
     cart.forEach(data => {
@@ -147,6 +197,9 @@ function ShoppingCart2() {
     })
     setShoppingCart({ amountProducts: productAmount, products: cart })
   }, [])
+  useEffect(() => {
+    getAvalableSchedules()
+  }, [selectBranch, selectDate])
   useEffect(() => {
     let finalPayment = 0
     shoppingCart.products.forEach(product => {
@@ -158,7 +211,7 @@ function ShoppingCart2() {
 
   const step = [{
     key: 'primer-hijo',
-    children: <div className="p-10"><Grid container spacing={2} justifyContent={"center"}>
+    children: <div className="p-0 sm:p-10"><Grid container spacing={2} justifyContent={"center"}>
       <Grid item md={4} lg={4} sm={12} xl={3}>
         {shoppingCart.products.length !== 0 ? shoppingCart.products.map((product, i) => (
           <MyCard
@@ -170,29 +223,32 @@ function ShoppingCart2() {
             restMoreProduct={() => { restMoreProduct(i) }}
             deleteProduct={() => { deleteProduct(i) }}
           />
-        )) : <Typography align="center">No hay ningun producto agregado</Typography>}
+        )) : <Paper elevation={3} className="p-5 mt-5 sm:mt-0 w-full flex justify-center">
+          <Typography align="center">No hay ningun producto agregado</Typography>
+          <RemoveShoppingCartIcon />
+        </Paper>}
       </Grid>
 
       <Grid item md={4} lg={4} sm={12} xl={3}>
-        <div className="border-2 rounded h-48 sm:h-64  p-2 border-transparent shadow-md w-full">
+        <Paper elevation={4} className="w-full p-3">
           <Typography variant="h4" align="center" className="text-blue-500 bolder font-black" >Resumen de orden</Typography>
           <Divider />
           <TableContainer >
-            <Table aria-label="simple table">
-
+            <Table >
               <TableBody>
-
-                <TableRow
-                  sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                >
+                <TableRow>
                   <TableCell component="th" scope="row">
                     TOTAL DE ARTÍCULOS
                   </TableCell>
                   <TableCell align="right">{shoppingCart.amountProducts}</TableCell>
                 </TableRow>
-                <TableRow
-                  sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                >
+                <TableRow>
+                  <TableCell component="th" scope="row">
+                    DESCUENTO(3RA Y 4TA EDAD)
+                  </TableCell>
+                  <TableCell align="right">{shoppingCart.amountProducts}</TableCell>
+                </TableRow>
+                <TableRow>
                   <TableCell component="th" className="font-black" scope="row">
                     TOTAL
                   </TableCell>
@@ -202,7 +258,7 @@ function ShoppingCart2() {
               </TableBody>
             </Table>
           </TableContainer>
-        </div>
+        </Paper>
       </Grid>
     </Grid></div>
   },
@@ -210,12 +266,23 @@ function ShoppingCart2() {
     key: 'segundo-hijo',
     children: <Grid container spacing={2} justifyContent={"center"} className="p-10">
       <Grid item>
-        <TextField className='my-2 w-3/6' type='date' variant="outlined" helperText={'Selecione Fecha de cita'} />
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
+          <DatePicker
+            minDate={dayjs()}
+            maxDate={dayjs().add(3, 'month')}
+            referenceDate={dayjs()}
+            className='my-2 w-3/6'
+            value={selectDate}
+            onChange={(newValue) => setSelectDate(newValue)}
+          />
+        </LocalizationProvider>
         <TextField
+          id="select-branch"
           className='m-2 w-36 '
           select
           label="Selecione sucursal"
           defaultValue="La granja"
+          onChange={e => setSelectBranch(e.target.value)}
         >
           {['Tepeyac', 'La granja', 'aeroplaza'].map((option, i) => (
             <MenuItem key={`key-select-${option}-${i}`} value={option}>
@@ -231,16 +298,26 @@ function ShoppingCart2() {
                 <TableCell align="right">Selecionar</TableCell>
               </TableRow>
             </TableHead>
-            {availableSchedules.map((row) => (
-              <TableRow
-                key={row}
-              >
+            <TableBody>
+              {availableSchedules.length > 0 ? availableSchedules.map((row, i) => (
+                <TableRow
+                  key={`table-${row.hour}${row.minute}-${i}`}
+                >
+                  <TableCell component="th" scope="row">
+                    {createTime(row.hour, row.minute)}
+                  </TableCell>
+                  <TableCell className={`${selectedSchedule.hour === row.hour && selectedSchedule.minute === row.minute && 'bg-green-700 text-white'} cursor-default`} align="right" onClick={() => setSelectedSchedule(row)}>
+                    {selectedSchedule.hour === row.hour && selectedSchedule.minute === row.minute ? 'Selecionado' : 'Selecionar'}
+
+                  </TableCell>
+                </TableRow>
+              )) : <TableRow className="flex align-middle justify-center pt-5">
                 <TableCell component="th" scope="row">
-                  {row}
+                  Buscando horarios disponibles <CircularProgress />
                 </TableCell>
-                <TableCell align="right">{row}</TableCell>
-              </TableRow>
-            ))}
+              </TableRow>}
+            </TableBody>
+
           </Table>
         </TableContainer>
       </Grid>
@@ -266,7 +343,7 @@ function ShoppingCart2() {
 
   return (
     <Box sx={{ width: '100%' }} className="px-[10%] py-10">
-      <Stepper activeStep={activeStep}>
+      <Stepper activeStep={activeStep} alternativeLabel>
         {steps.map((label, index) => {
           const stepProps: { completed?: boolean } = {};
           const labelProps: {
@@ -276,15 +353,15 @@ function ShoppingCart2() {
             stepProps.completed = false;
           }
           return (
-            <Step key={label} {...stepProps}>
-              <StepLabel {...labelProps}>{label}</StepLabel>
+            <Step key={label} {...stepProps} >
+              <StepLabel {...labelProps} >{label}</StepLabel>
             </Step>
           );
         })}
       </Stepper>
       {step[activeStep].children}
       <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
-        <Button onClick={() => setActiveStep(activeStep - 1)} disabled={[0,2].includes(activeStep)}>
+        <Button onClick={() => setActiveStep(activeStep - 1)} disabled={[0, 2].includes(activeStep)}>
           Regresar
         </Button>
         <Box sx={{ flex: '1 1 auto' }} />

@@ -2,18 +2,18 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument, Schema as SchemaMongoose } from 'mongoose';
 
 export type OrderDocument = HydratedDocument<Order>;
-@Schema({ timestamps: true })
-export class Order {
+class ReservationDate {
   @Prop()
-  cart: Product[];
+  date: number;
   @Prop()
-  finalPayment: number;
-  @Prop({ required: true, type: String })
-  userId: SchemaMongoose.Types.ObjectId;
-  @Prop({ required: true, type: String })
-  branch: string;
+  year: number;
+  @Prop()
+  month: number;
+  @Prop()
+  hour: number;
+  @Prop()
+  minute: number;
 }
-
 class Product {
   @Prop()
   name: string;
@@ -23,6 +23,23 @@ class Product {
   amount: number;
   @Prop()
   _id: string;
+}
+@Schema({ timestamps: true })
+export class Order {
+  @Prop()
+  cart: Product[];
+  @Prop()
+  finalPayment: number;
+  @Prop({ required: true, type: String })
+  userId: SchemaMongoose.Types.ObjectId;
+  @Prop({ required: true, type: String, enum: ['tepeyac', 'la granja', 'aeroplaza'] })
+  branch: string;
+  @Prop({ default: 'en espera', enum: ['en espera', 'pagada', 'terminada', 'cancelada'] })
+  status: string;
+  @Prop()
+  reservationDate: ReservationDate;
+  @Prop()
+  reservation: Date;
 }
 
 export const OrderSchema = SchemaFactory.createForClass(Order);

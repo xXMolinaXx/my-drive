@@ -4,10 +4,11 @@ import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { IhttpResponse } from 'src/common/interface/httpResponse/httpResponse.interface';
+import { SearchAvailableSchedulesDto } from './dto/search-available-schedules.dto';
 @ApiTags('orders')
 @Controller('orders')
 export class OrdersController {
-  constructor(private readonly ordersService: OrdersService) {}
+  constructor(private readonly ordersService: OrdersService) { }
 
   @Post()
   async create(@Body() createOrderDto: CreateOrderDto): Promise<IhttpResponse> {
@@ -20,14 +21,31 @@ export class OrdersController {
       };
     } catch (error) {
       return {
-        message: 'Error al guardr orden',
+        message: 'Error al guardar orden',
         success: false,
         error: error.toString(),
         statusCode: 500,
       };
     }
   }
-
+  @Post('/readAvailableSchedules')
+  async readAvailableSchedules(@Body() scheduleSelected: SearchAvailableSchedulesDto): Promise<IhttpResponse> {
+    try {
+      return {
+        statusCode: 200,
+        message: '',
+        success: true,
+        data: await this.ordersService.findAvailablesSchedules(scheduleSelected),
+      };
+    } catch (error) {
+      return {
+        message: 'Error al leer datos',
+        success: false,
+        error: error.toString(),
+        statusCode: 500,
+      };
+    }
+  }
   @Get()
   findAll() {
     return this.ordersService.findAll();

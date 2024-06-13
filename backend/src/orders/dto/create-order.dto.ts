@@ -4,9 +4,19 @@ export class CreateOrderDto {
     required: true,
     type: Number,
   })
-  totalAmount: number;
+  cart: any[];
   @ApiProperty({
     required: true,
+    type: Number,
   })
-  cart: any[];
+  userId: string;
+  @ApiProperty({
+    required: true,
+    type: Number,
+  })
+  branch: string;
+  @ApiProperty()
+  date: string;
+  @ApiProperty()
+  schedule: any;
 }

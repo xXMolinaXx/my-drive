@@ -66,6 +66,7 @@ function MainLayout({ children }: props) {
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
+        Authorization: `Bearer ${getCookieToken()}`,
       },
     }).then(data => data.json()).then(data => {
       if (data.statusCode === 200) {
@@ -105,6 +106,7 @@ function MainLayout({ children }: props) {
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
+        Authorization: `Bearer ${getCookieToken()}`,
       },
     }).then(data => data.json()).then(data => {
       if (data.statusCode === 200) {
@@ -117,6 +119,7 @@ function MainLayout({ children }: props) {
           headers: {
             "Content-Type": "application/json",
             Accept: "application/json",
+            Authorization: `Bearer ${getCookieToken()}`,
           },
         }).then(data => data.json()).then(data => {
           if (data.statusCode === 200) {
@@ -142,27 +145,13 @@ function MainLayout({ children }: props) {
   }, [])
   useEffect(() => {
     const token = getCookieToken();
-    if (token) {
-      router.push('/catalog');
+    if (!token) {
+      router.push('/');
     }
   }, [])
   const DrawerList = (
     <Box sx={{ width: 300 }} role="presentation" >
       <div className="flex justify-center pl-5 pt-5 pr-5">
-        {formType === 'login' && (<form onSubmit={logIn}>
-          <Typography align="center" variant="h6">INGRESO</Typography>
-          <TextField className="mb-2" id="username" type="text" label="usuario" variant="outlined" fullWidth />
-          <TextField className="mb-2" id="password-login" type="password" label="contraseña" variant="outlined" fullWidth />
-          <Button variant="outlined" type="submit" fullWidth>Ingresar</Button>
-        </form>)}
-        {formType === 'register' && (<form action="" onSubmit={registerUser}>
-          <Typography align="center" variant="h6">REGRISTO</Typography>
-          <TextField className="mb-2" id="user-identification" type="text" label="nombre de usuario" variant="outlined" fullWidth />
-          <TextField className="mb-2" id="user-name" type="text" label="nombre completo" variant="outlined" fullWidth />
-          <TextField className="mb-2" id="password" type="password" label="contraseña" variant="outlined" fullWidth />
-          <Button variant="outlined" type="submit" fullWidth disabled={loadingButton}>{loadingButton ? 'REGISTRANDO' : 'REGISTRAR'}</Button>
-        </form>)}
-        {formType === 'user' && (
           <div>
             <Button className="mb-2" variant="outlined" type="submit" fullWidth>Mis ordenes</Button>
             <Button className="mb-2" variant="outlined" type="submit" fullWidth onClick={() => {
@@ -170,10 +159,9 @@ function MainLayout({ children }: props) {
               setUser(null)
               document.cookie = "access_token=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
               setOpen(false);
+              router.push('/')
             }}>Cerrar sesion</Button>
           </div>
-        )}
-
       </div>
       <Button variant="contained" className="mx-5 mt-5" onClick={toggleDrawer(false, 'login')}>Cerrar</Button>
     </Box>
@@ -196,7 +184,7 @@ function MainLayout({ children }: props) {
             >
               <MenuIcon />
             </IconButton> */}
-              <Image src="/LCM.png" alt="logo" width={100} height={100} onClick={() => router.push('/')} />
+              <Image src="/LCM.png" alt="logo" width={100} height={100} onClick={() => router.push('/catalog')} />
               <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
 
               </Typography>

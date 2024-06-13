@@ -11,7 +11,7 @@ import { getCookieToken } from '@/common/utils/getCookieToken';
 
 export default function LoginRegister() {
   const router = useRouter()
-
+  const [validationUser, setvalidationUser] = useState(false);
   const [openMainALert, setOpenMainAlert] = useState(false)
   const [mainAlertMessage, setMainAlertMessage] = useState('')
   const [form, setForm] = useState<'registro' | 'ingreso'>('ingreso')
@@ -73,6 +73,7 @@ export default function LoginRegister() {
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
+        Authorization: `Bearer ${getCookieToken()}`,
       },
     }).then(data => data.json()).then(data => {
       if (data.statusCode === 200) {
@@ -147,6 +148,7 @@ export default function LoginRegister() {
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
+        Authorization: `Bearer ${getCookieToken()}`,
       },
     }).then(data => data.json()).then(data => {
       if (data.statusCode === 200) {
@@ -159,6 +161,7 @@ export default function LoginRegister() {
           headers: {
             "Content-Type": "application/json",
             Accept: "application/json",
+            Authorization: `Bearer ${getCookieToken()}`,
           },
         }).then(data => data.json()).then(data => {
           if (data.statusCode === 200) {
@@ -190,7 +193,9 @@ export default function LoginRegister() {
     if (token) {
       router.push('/catalog');
     }
+    setvalidationUser(true);
   }, [])
+  if (!validationUser) return;
   return (<main>
     <section className="min-h-screen">
       <div className="oval" />
