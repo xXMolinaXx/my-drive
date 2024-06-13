@@ -111,7 +111,7 @@ function Catalog2() {
         </Grid>
         <Pagination className="mt-4" count={amount} page={page} color="primary" onChange={handleChange} />
       </section>
-      <MainAlert handleClose={() => setOpenAlert(false)} message="" open={openAlert} type="error" />
+      <MainAlert handleClose={() => setOpenAlert(false)} message={messageAlert} open={openAlert} type="error" />
     </div>
   );
 }
