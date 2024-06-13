@@ -8,6 +8,10 @@ export class Order {
   cart: Product[];
   @Prop()
   finalPayment: number;
+  @Prop({ required: true, type: String })
+  userId: SchemaMongoose.Types.ObjectId;
+  @Prop({ required: true, type: String })
+  branch: string;
 }
 
 class Product {

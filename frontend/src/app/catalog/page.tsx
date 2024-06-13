@@ -7,7 +7,7 @@ import { config } from "@/common/configs/config";
 import { IProduct } from "@/common/interface/product.interface";
 import { addToCart } from "@/common/utils/cart";
 
-function Home2() {
+function Catalog2() {
   const { setShoppingCart, shoppingCart } = useContext(StoreContext);
   const [products, setProducts] = useState<IProduct[]>([
     {
@@ -28,11 +28,11 @@ function Home2() {
     setSkip(value * limit - limit)
     setPage(value)
   };
-  const handleAddToCart = ({ name = '', price = 0,_id = '' }) => {
+  const handleAddToCart = ({ name = '', price = 0, _id = '' }) => {
     const newShoppingCart = [...shoppingCart.products];
-    const exists = newShoppingCart.findIndex(products => products._id === _id )
+    const exists = newShoppingCart.findIndex(products => products._id === _id)
     console.log(exists);
-    if( exists !== -1) {
+    if (exists !== -1) {
       return
     }
     newShoppingCart.push(
@@ -40,18 +40,19 @@ function Home2() {
         name: name,
         price: price,
         category: "",
-        amount:1,
+        amount: 1,
         _id
       }
     )
-    setShoppingCart({...shoppingCart,
+    setShoppingCart({
+      ...shoppingCart,
       amountProducts: shoppingCart.amountProducts + 1, products: newShoppingCart
     })
     addToCart({
       name: name,
       price: price,
-      category:'',
-      _id:_id
+      category: '',
+      _id: _id
     })
   }
   const handleSearchProducts = () => {
@@ -70,45 +71,42 @@ function Home2() {
 
 
   return (
-    
-      <div className="px-[20%] mb-14">
-        <section className="mt-4 flex">
-          <TextField id="search-product" label="Buscar por nombre del producto" variant="outlined" fullWidth onChange={(e) => {
-            setSearchWord(e.target.value)
-          }} onKeyDown={e => {
-            if (e.key === 'Enter') {
-              setSkip(0);
-              handleSearchProducts();
-            }
-          }} />
-          <Button className="w-3/12 rounded-r-lg" variant="contained" onClick={() => {
+    <div className="px-4  md:px-[20%] lg:px-[20%] mb-14">
+      <section className="mt-4 flex">
+        <TextField id="search-product" label="Buscar por nombre del producto" variant="outlined" fullWidth onChange={(e) => {
+          setSearchWord(e.target.value)
+        }} onKeyDown={e => {
+          if (e.key === 'Enter') {
             setSkip(0);
             handleSearchProducts();
-          }}>Buscar</Button>
-          {/* <Button  variant="text" onClick={() => {
+          }
+        }} />
+        <Button className="sm:w-full md:w-1/3 lg:w-1/3 ml-2 rounded-r-lg" variant="contained" onClick={() => {
+          setSkip(0);
+          handleSearchProducts();
+        }}>Buscar</Button>
+        {/* <Button  variant="text" onClick={() => {
 
             setSearchWord('ninguno')
           }}>Reset</Button> */}
-        </section>
-        <section className="mt-4 ">
-          <Grid container spacing={2} justifyContent="center">
-            {loadingProducts ? <CircularProgress /> : products?.map(data => (
-              <Grid key={data._id} item xs={12} md={3} lg={3}>
-                <CardComponent name={data.name} price={data.price} addToCart={() => handleAddToCart(data)} />
-              </Grid>
-            ))}
-          </Grid>
-          <Pagination className="mt-4" count={amount} page={page} color="primary" onChange={handleChange} />
-        </section>
-      </div>
-
-    
+      </section>
+      <section className="mt-4 ">
+        <Grid container spacing={2} justifyContent="center">
+          {loadingProducts ? <CircularProgress /> : products?.map(data => (
+            <Grid key={data._id} item xs={12} md={3} lg={3}>
+              <CardComponent name={data.name} price={data.price} addToCart={() => handleAddToCart(data)} />
+            </Grid>
+          ))}
+        </Grid>
+        <Pagination className="mt-4" count={amount} page={page} color="primary" onChange={handleChange} />
+      </section>
+    </div>
   );
 }
-export default function Home(){
+export default function Catalog() {
   return (
     <MainLayout>
-      <Home2 />
+      <Catalog2 />
     </MainLayout>
   )
 }
@@ -119,12 +117,13 @@ interface PropCard {
 }
 function CardComponent({ price = 100, name = 'Productos', addToCart }: PropCard) {
   return (
-    <Card className="h-36">
-      {/* <CardMedia
-        sx={{ height: 140 }}
-        image="https://thumbs.dreamstime.com/b/lacertilia-nature-chameleon-soft-focus-phu-soi-dao-national-park-uttaradit-northern-thailand-lacertilia-nature-99048757.jpg"
+    <Card >
+      <CardMedia
+        sx={{ height: 100 }}
+        style={{ objectFit: 'cover' }}
+        image="/blood-tube.webp"
         title="green iguana"
-      /> */}
+      />
       <CardContent>
         <Tooltip title={name}>
           <Typography variant="body1" component="div" noWrap={true}>

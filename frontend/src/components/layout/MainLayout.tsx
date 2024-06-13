@@ -15,8 +15,8 @@ import { IProduct, IProductState } from "@/common/interface/product.interface";
 import { getCart } from "@/common/utils/cart";
 
 interface IContext {
-  shoppingCart:IProductState,
-  setShoppingCart:Dispatch<SetStateAction<IProductState>>,
+  shoppingCart: IProductState,
+  setShoppingCart: Dispatch<SetStateAction<IProductState>>,
 }
 
 export const StoreContext = createContext<IContext>({
@@ -34,13 +34,13 @@ interface props {
   children: React.ReactNode,
 }
 function MainLayout({ children }: props) {
-  const {shoppingCart} = useContext(StoreContext)
+  const { shoppingCart } = useContext(StoreContext)
   const router = useRouter()
+
   const [open, setOpen] = React.useState(false);
   const [formType, setFormType] = useState<'register' | 'login' | 'user'>('register')
   const [loadingButton, setLoadingButton] = useState(false)
   const [user, setUser] = useState<any>();
-
   const toggleDrawer = (newOpen: boolean, PFormType: 'register' | 'login' | 'user') => () => {
     setOpen(newOpen);
     setFormType(PFormType);
@@ -140,6 +140,12 @@ function MainLayout({ children }: props) {
     const user = localStorage.getItem('user')
     if (user) setUser(JSON.parse(user))
   }, [])
+  useEffect(() => {
+    const token = getCookieToken();
+    if (token) {
+      router.push('/catalog');
+    }
+  }, [])
   const DrawerList = (
     <Box sx={{ width: 300 }} role="presentation" >
       <div className="flex justify-center pl-5 pt-5 pr-5">
@@ -213,7 +219,7 @@ function MainLayout({ children }: props) {
   );
 }
 
-export default function MyApp({children}:any) {
+export default function MyApp({ children }: any) {
   const [shoppingCart, setShoppingCart] = useState<IProductState>({
     products: [{
       name: '',
@@ -230,7 +236,7 @@ export default function MyApp({children}:any) {
       const dataAmount = data.amount || 0
       productAmount = dataAmount + productAmount
     })
-    setShoppingCart({ amountProducts: productAmount, products:cart })
+    setShoppingCart({ amountProducts: productAmount, products: cart })
   }, [])
   return (
     <StoreContext.Provider value={{

@@ -15,18 +15,26 @@ export class UsersService {
     return hash;
   }
   async create(createUserDto: CreateUserDto) {
-    const user = await this.userModel.findOne({ userIdentification: createUserDto.userIdentification });
+    const user = await this.userModel.findOne({ email: createUserDto.email });
     if (user) throw 'Ya existe un usuario con este nombre';
     const password = await this.hashPassword(createUserDto.password);
-    await new this.userModel({ ...createUserDto, password }).save();
+    await new this.userModel({
+      bornAt: createUserDto.bornAt,
+      DNI: createUserDto.DNI.trim(),
+      email: createUserDto.email.trim(),
+      fullName: createUserDto.fullName.trim(),
+      gender: createUserDto.gender,
+      telphone: '+504' + createUserDto.telphone.trim(),
+      password,
+    }).save();
   }
 
   findAll() {
     return `This action returns all users`;
   }
 
-  async findOneByUsername(username: string) {
-    const user = await this.userModel.findOne({ userIdentification: username });
+  async findOneByEmail(email: string) {
+    const user = await this.userModel.findOne({ email });
     if (!user) throw 'No existe este usuario';
     return user;
   }

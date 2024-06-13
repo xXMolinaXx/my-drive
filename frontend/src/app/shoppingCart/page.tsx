@@ -8,14 +8,15 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import MainLayout, { StoreContext } from "@/components/layout/MainLayout";
 import { useRouter } from "next/navigation";
-import { Alert, Divider, Grid, Snackbar, Table, TableBody, TableCell, TableContainer, TableRow } from "@mui/material";
+import { Alert, Divider, Grid, MenuItem, Paper, Snackbar, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField } from "@mui/material";
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { IProductState } from "@/common/interface/product.interface";
 import { getCart, setLocalStorageProduct } from "@/common/utils/cart";
 import { config } from "@/common/configs/config";
-const steps = ['Carrito', 'Confirmación'];
+import MainAlert from "@/components/alerts/MainAlert";
+const steps = ['Carrito', 'Selecionar sucursal', 'Confirmación'];
 function ShoppingCart2() {
   const { setShoppingCart: setShoppingCartContext, shoppingCart: shoppingCartContext } = useContext(StoreContext);
   const router = useRouter()
@@ -34,7 +35,7 @@ function ShoppingCart2() {
   const [openSnackBar, setOpenSnackBar] = useState(false);
   const [snackBarMessage, setsnackBarMessage] = useState('');
   const [type, settype] = useState<'success' | 'error'>('success')
-
+  const [availableSchedules, setavailableSchedules] = useState<string[]>([])
 
   const handleClose = (event: React.SyntheticEvent | Event, reason?: string) => {
     if (reason === 'clickaway') {
@@ -52,7 +53,7 @@ function ShoppingCart2() {
     if (shoppingCart.products.length === 0) {
       return;
     }
-    
+    if (activeStep === 1) {
       let finalPayment = 0
       shoppingCart.products.forEach(product => {
         const productAmount = product.amount || 1
@@ -88,8 +89,8 @@ function ShoppingCart2() {
         settype('error');
         setOpenSnackBar(true)
       })
-    
-    if (activeStep < 1) setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    }
+    if (activeStep < 2) setActiveStep((prevActiveStep) => prevActiveStep + 1);
     else router.push('/')
   };
   const addMoreProduct = (index: number) => {
@@ -206,7 +207,49 @@ function ShoppingCart2() {
     </Grid></div>
   },
   {
-    key: 'primer-hijo',
+    key: 'segundo-hijo',
+    children: <Grid container spacing={2} justifyContent={"center"} className="p-10">
+      <Grid item>
+        <TextField className='my-2 w-3/6' type='date' variant="outlined" helperText={'Selecione Fecha de cita'} />
+        <TextField
+          className='m-2 w-36 '
+          select
+          label="Selecione sucursal"
+          defaultValue="La granja"
+        >
+          {['Tepeyac', 'La granja', 'aeroplaza'].map((option, i) => (
+            <MenuItem key={`key-select-${option}-${i}`} value={option}>
+              {option}
+            </MenuItem>
+          ))}
+        </TextField>
+        <TableContainer className="h-40" component={Paper}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>Horarios Disponibles</TableCell>
+                <TableCell align="right">Selecionar</TableCell>
+              </TableRow>
+            </TableHead>
+            {availableSchedules.map((row) => (
+              <TableRow
+                key={row}
+              >
+                <TableCell component="th" scope="row">
+                  {row}
+                </TableCell>
+                <TableCell align="right">{row}</TableCell>
+              </TableRow>
+            ))}
+          </Table>
+        </TableContainer>
+      </Grid>
+
+    </Grid>
+
+  },
+  {
+    key: 'tercer-hijo',
     children: <Grid container spacing={2} justifyContent={"center"} className="p-10">
       <Grid item>
         <Typography align="center">Tu orden ha sido procesada con exito</Typography>
@@ -241,25 +284,15 @@ function ShoppingCart2() {
       </Stepper>
       {step[activeStep].children}
       <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
+        <Button onClick={() => setActiveStep(activeStep - 1)} disabled={[0,2].includes(activeStep)}>
+          Regresar
+        </Button>
         <Box sx={{ flex: '1 1 auto' }} />
         <Button onClick={handleNext} disabled={shoppingCart.products.length === 0}>
           {activeStep === steps.length - 1 ? 'Terminar' : 'Siguiente'}
         </Button>
       </Box>
-      <Snackbar
-        open={openSnackBar}
-        autoHideDuration={6000}
-        onClose={handleClose}
-      >
-        <Alert
-          onClose={handleClose}
-          severity={type}
-          variant="filled"
-          sx={{ width: '100%' }}
-        >
-          {snackBarMessage}
-        </Alert>
-      </Snackbar>
+      <MainAlert handleClose={handleClose} open={openSnackBar} message={snackBarMessage} type={type} />
     </Box>
   )
 }
