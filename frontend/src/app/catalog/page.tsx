@@ -84,18 +84,26 @@ function Catalog2() {
   return (
     <div className="px-4  md:px-[20%] lg:px-[20%] mb-14">
       <section className="mt-4 flex">
-        <TextField id="search-product" label="Buscar por nombre del producto" variant="outlined" fullWidth onChange={(e) => {
-          setSearchWord(e.target.value)
-        }} onKeyDown={e => {
-          if (e.key === 'Enter') {
-            setSkip(0);
-            handleSearchProducts();
-          }
-        }} />
-        <Button className="sm:w-full md:w-1/3 lg:w-1/3 ml-2 rounded-r-lg" variant="contained" onClick={() => {
-          setSkip(0);
-          handleSearchProducts();
-        }}>Buscar</Button>
+        <TextField
+          id="search-product"
+          label="Buscar por nombre del producto"
+          variant="outlined"
+          fullWidth
+          InputProps={{
+            endAdornment: <Button className="sm:w-full md:w-1/3 lg:w-1/3 ml-2 rounded-r-lg" variant="contained" onClick={() => {
+              setSkip(0);
+              handleSearchProducts();
+            }}>Buscar</Button>
+          }}
+          onChange={(e) => {
+            setSearchWord(e.target.value)
+          }} onKeyDown={e => {
+            if (e.key === 'Enter') {
+              setSkip(0);
+              handleSearchProducts();
+            }
+          }} />
+
         {/* <Button  variant="text" onClick={() => {
 
             setSearchWord('ninguno')
