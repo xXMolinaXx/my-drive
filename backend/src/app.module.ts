@@ -24,6 +24,8 @@ import { OrdersModule } from './orders/orders.module';
         PORT: Joi.number().port().default(3001),
         MONGO_DB: Joi.string().required(),
         JWT_KEY: Joi.string().required().default('password'),
+        EMAIL_SENDER: Joi.string(),
+        EMAIL_SENDER_PASSWORD: Joi.string(),
       }),
     }),
     UsersModule,
