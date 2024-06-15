@@ -27,6 +27,7 @@ export class AuthService {
       _id: user._id,
       userIdentification: user.DNI,
       fullName: user.fullName,
+      store: user.store,
     };
   }
   async generateNewJWT(user: UserRefreshTokenDTO) {

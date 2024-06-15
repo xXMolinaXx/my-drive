@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { CreateOrderDto } from './dto/create-order.dto';
+import { CreateOrderDto, SearchOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Order } from './schemas/order.schema';
@@ -7,6 +7,8 @@ import { Model } from 'mongoose';
 import { SearchAvailableSchedulesDto } from './dto/search-available-schedules.dto';
 import { Product } from 'src/products/schemas/products.schema';
 import { ProductsService } from 'src/products/products.service';
+import { IFindAllOrder } from 'src/common/interface/orders/findAllorder.interface';
+import { skip } from 'node:test';
 
 @Injectable()
 export class OrdersService {
@@ -37,8 +39,39 @@ export class OrdersService {
     }).save();
   }
 
-  findAll() {
-    return `This action returns all orders`;
+  async findAllCount({ startAt, endAt, branchName, serachWord, status }: SearchOrderDto) {
+    const query: any = { createdAt: { $gte: new Date(startAt), $lte: new Date(endAt) }, branch: branchName };
+    if (serachWord) query['user.fullName'] = { $regex: serachWord, $options: 'i' };
+    if (status) query.status = status;
+    return await this.orderModel.find(query).countDocuments();
+  }
+  async findAll({ startAt, endAt, branchName, serachWord, status, limit, skip }: SearchOrderDto) {
+    const query: any = { createdAt: { $gte: new Date(startAt), $lte: new Date(endAt) }, branch: branchName };
+    if (serachWord) query['user.fullName'] = { $regex: serachWord, $options: 'i' };
+    if (status) query.status = status;
+    return await this.orderModel
+      .aggregate([
+        {
+          $match: query,
+        },
+        { $sort: { createdAt: -1 } },
+        {
+          $lookup: {
+            from: 'users',
+            pipeline: [
+              {
+                $project: { identification: 1, fullName: 1, telphone: 1, DNI: 1 },
+              },
+            ],
+            localField: 'userId',
+            foreignField: '_id',
+            as: 'user',
+          },
+        },
+      ])
+      .limit(limit)
+      .skip(skip)
+      .exec();
   }
   async findAvailablesSchedules(scheduleSelected: SearchAvailableSchedulesDto) {
     const selectDate = new Date(scheduleSelected.date);

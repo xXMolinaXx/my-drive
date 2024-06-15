@@ -82,7 +82,11 @@ export default function LoginRegister() {
           "user",
           JSON.stringify({ ...data.data, access_token: null })
         );
-        router.push('/catalog')
+        if (data.data.role === 'client') {
+          router.push('/catalog')
+        } else if (data.data.role === 'admin') {
+          router.push('/lcmadminlcm')
+        }
         // setUser({ ...data.data, access_token: null })
       }
       else {
@@ -170,7 +174,12 @@ export default function LoginRegister() {
               "user",
               JSON.stringify({ ...data.data, access_token: null })
             );
-            router.push('/catalog')
+            if (data.data.role === 'client') {
+              router.push('/catalog')
+            } else if (data.data.role === 'admin') {
+              router.push('/lcmadminlcm')
+            }
+
             // setUser({ ...data.data, access_token: null })
           }
           else alert(data.message)

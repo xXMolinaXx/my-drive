@@ -20,3 +20,19 @@ export class CreateOrderDto {
   @ApiProperty()
   schedule: any;
 }
+export class SearchOrderDto {
+  @ApiProperty()
+  startAt: string;
+  @ApiProperty()
+  endAt: string;
+  @ApiProperty()
+  branchName: string;
+  @ApiProperty()
+  serachWord: string;
+  @ApiProperty()
+  status: string;
+  @ApiProperty()
+  limit: number;
+  @ApiProperty()
+  skip: number;
+}

@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument, Schema as SchemaMongoose } from 'mongoose';
+import { EBRANCH } from 'src/common/enums/branch';
 
 export type OrderDocument = HydratedDocument<Order>;
 class ReservationDate {
@@ -32,7 +33,7 @@ export class Order {
   finalPayment: number;
   @Prop({ required: true, type: String })
   userId: SchemaMongoose.Types.ObjectId;
-  @Prop({ required: true, type: String, enum: ['tepeyac', 'la granja', 'aeroplaza'] })
+  @Prop({ required: true, type: String, enum: EBRANCH })
   branch: string;
   @Prop({ default: 'en espera', enum: ['en espera', 'pagada', 'terminada', 'cancelada'] })
   status: string;

@@ -1,10 +1,11 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
 import { OrdersService } from './orders.service';
-import { CreateOrderDto } from './dto/create-order.dto';
+import { CreateOrderDto, SearchOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { IhttpResponse } from 'src/common/interface/httpResponse/httpResponse.interface';
 import { SearchAvailableSchedulesDto } from './dto/search-available-schedules.dto';
+import { IFindAllOrder } from 'src/common/interface/orders/findAllorder.interface';
 @ApiTags('orders')
 @Controller('orders')
 export class OrdersController {
@@ -46,9 +47,24 @@ export class OrdersController {
       };
     }
   }
-  @Get()
-  findAll() {
-    return this.ordersService.findAll();
+  @Post('/readBranchOrder')
+  async findAll(@Body() body: SearchOrderDto): Promise<IhttpResponse> {
+    try {
+      return {
+        message: '',
+        success: true,
+        data: { orders: await this.ordersService.findAll(body), amount: this.ordersService.findAllCount(body) },
+        statusCode: 200,
+      };
+    } catch (error) {
+      console.log(error);
+      return {
+        message: 'Error en el sistema',
+        success: true,
+        statusCode: 500,
+        error: 'ocurio un error',
+      };
+    }
   }
 
   @Get(':id')
