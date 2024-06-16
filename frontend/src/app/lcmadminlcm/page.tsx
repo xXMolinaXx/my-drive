@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Button, Card, CardActions, CardContent, Drawer, Grid, List, ListItem, ListItemButton, ListItemIcon, ListItemText, MenuItem, Pagination, Paper, TextField, Typography } from "@mui/material";
+import { Box, Button, Card, CardActions, CardContent, Drawer, FormControl, FormControlLabel, FormLabel, Grid, LinearProgress, List, ListItem, ListItemButton, ListItemIcon, ListItemText, MenuItem, Pagination, Paper, Radio, RadioGroup, TextField, Typography } from "@mui/material";
 import LogoutIcon from '@mui/icons-material/Logout';
 import dayjs, { Dayjs } from 'dayjs';
 import { DemoContainer, DemoItem } from '@mui/x-date-pickers/internals/demo';
@@ -18,7 +18,7 @@ import { getCookieToken } from "@/common/utils/getCookieToken";
 
 export default function AdminLogin() {
   const router = useRouter()
-
+  const [loadingOrders, setLoadingOrders] = useState(false);
   const [user, setUser] = useState({ "access_token": null, "role": null, "_id": null, "fullName": null, store: 'store' })
   const [searchWord, setSearchWord] = useState('')
   const [skip, setSkip] = useState(0);
@@ -44,16 +44,19 @@ export default function AdminLogin() {
     status: '',
     updatedAt: '',
     userId: '',
-    user: [{ _id: '', DNI: '', fullName: '', identification: '', telphone: '' }]
+    user: [{ _id: '', DNI: '', fullName: '', identification: '', telphone: '' }],
+    isPayed: false
   }])
   const [openSnackBar, setOpenSnackBar] = useState(false)
   const [snackBarMessage, setSnackBarMessage] = useState('')
+  const [snackbarType, setSnackbarType] = useState<'success' | 'error'>('error')
   const [selectValue, setselectValue] = useState('');
   const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
     setSkip(value * limit - limit)
     setPage(value)
   };
   const getOrder = () => {
+    setLoadingOrders(true);
     setorders([])
     fetch(`${config.backend}/orders/readBranchOrder`, {
       method: 'POST',
@@ -73,6 +76,7 @@ export default function AdminLogin() {
       },
     }).then(data => data.json())
       .then(data => {
+        setLoadingOrders(false);
         if (data.statusCode === 200) {
           setorders(data.data.orders)
           setAmount(Math.round(data.data.amount / limit))
@@ -83,9 +87,34 @@ export default function AdminLogin() {
         }
       })
       .catch(e => {
+        setLoadingOrders(false);
         setOpenSnackBar(true);
         setSnackBarMessage(e.toString())
       })
+  }
+  const handleUpdateOrder = (id: string, status: string, isPayed: boolean) => {
+    fetch(`${config.backend}/orders/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify({ status, isPayed }),
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        Authorization: `Bearer ${getCookieToken()}`,
+      },
+    }).then(data => data.json()).then(data => {
+      if (data.statusCode === 200) {
+        setOpenSnackBar(true);
+        setSnackBarMessage('orden actualizada');
+        setSnackbarType('success');
+        // getOrder();
+      } else {
+        setOpenSnackBar(true);
+        setSnackBarMessage(data.error);
+      }
+    }).catch(e => {
+      setOpenSnackBar(true);
+      setSnackBarMessage(e.toStroing());
+    })
   }
   useEffect(() => {
     getOrder()
@@ -158,26 +187,54 @@ export default function AdminLogin() {
           </div>
 
           <Grid container spacing={2} >
-            {orders?.map(order => (
+
+            {loadingOrders && <Box sx={{ width: '100%' }}>
+              <LinearProgress />
+            </Box>} {orders.length === 0 ? <Typography className="mt-5 ml-5" variant="h5" textAlign='center'>No se encontro ninguna orden</Typography> : orders?.map(order => (
               <Grid item sm={12} md={6} lg={4} key={order._id}>
                 <Card >
                   <CardContent>
                     <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
                       {order.user[0].fullName} {order.user[0].DNI} {order.user[0].telphone}
                     </Typography>
-                    <Typography variant="h5" component="div">
-                      {order.status}
-                    </Typography>
+                    <TextField select className="" defaultValue={order.status} fullWidth label="Estado de orden" variant="outlined" onChange={(e) => {
+                      handleUpdateOrder(order._id, e.target.value, order.isPayed)
+                    }}
+                    >
+                      {['en espera', 'terminada', 'cancelada'].map((option, i) => (
+                        <MenuItem key={`key-status-${option}-${i}`} value={option}>
+                          {option}
+                        </MenuItem>
+                      ))}
+                    </TextField>
                     <Typography sx={{ mb: 1.5 }} color="text.secondary">
                       Total a pagar: L. {order.finalPayment}
                     </Typography>
                     <Typography variant="body2">
                       Sucursal {order.branch}
                     </Typography>
+
+                    <FormControl>
+                      <FormLabel id="demo-radio-buttons-group-label">Esta Pagado</FormLabel>
+                      <RadioGroup
+                        row
+                        defaultValue={order.isPayed}
+                        name="radio-buttons-group"
+                        className="flex"
+                        onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                          handleUpdateOrder(order._id, order.status, Boolean((event.target as HTMLInputElement).value))
+                        }}
+                      >
+                        <FormControlLabel value={true} control={<Radio />} label="Si" />
+                        <FormControlLabel value={false} control={<Radio />} label="No" />
+
+                      </RadioGroup>
+                    </FormControl>
+
                   </CardContent>
-                  <CardActions>
+                  {/* <CardActions>
                     <Button size="small" variant="contained">Editar</Button>
-                  </CardActions>
+                  </CardActions> */}
                 </Card>
               </Grid>
             ))}
@@ -188,7 +245,7 @@ export default function AdminLogin() {
         </Paper>
 
       </div>
-      <MainAlert handleClose={() => { setOpenSnackBar(false); setSnackBarMessage('') }} open={openSnackBar} message={snackBarMessage} type='error' />
+      <MainAlert handleClose={() => { setOpenSnackBar(false); setSnackBarMessage(''); setSnackbarType('error') }} open={openSnackBar} message={snackBarMessage} type={snackbarType} />
     </div>
   )
 }

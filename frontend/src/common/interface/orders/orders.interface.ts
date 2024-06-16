@@ -9,7 +9,8 @@ export interface IOrder {
   createdAt: string
   updatedAt: string
   __v: number
-  user: user[ ]
+  user: user[]
+  isPayed: boolean
 }
 interface user {
 

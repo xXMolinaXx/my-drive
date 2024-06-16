@@ -95,8 +95,8 @@ export class OrdersService {
     return `This action returns a #${id} order`;
   }
 
-  update(id: number, updateOrderDto: UpdateOrderDto) {
-    return `This action updates a #${id} order`;
+  async update(id: string, updateOrderDto: UpdateOrderDto) {
+    await this.orderModel.updateOne({ _id: id }, { $set: { status: updateOrderDto.status, payed: updateOrderDto.isPayed } });
   }
 
   remove(id: number) {

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Put } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { CreateOrderDto, SearchOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
@@ -72,9 +72,24 @@ export class OrdersController {
     return this.ordersService.findOne(+id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateOrderDto: UpdateOrderDto) {
-    return this.ordersService.update(+id, updateOrderDto);
+  @Put(':id')
+  async update(@Param('id') id: string, @Body() updateOrderDto: UpdateOrderDto): Promise<IhttpResponse> {
+    try {
+      await this.ordersService.update(id, updateOrderDto);
+      return {
+        message: 'Actualizado con exito',
+        success: true,
+        statusCode: 200,
+      };
+    } catch (error) {
+      console.log(error);
+      return {
+        message: 'error al actualizar',
+        statusCode: 500,
+        error: typeof error === 'string' ? error : 'error en el sistema',
+        success: false,
+      };
+    }
   }
 
   @Delete(':id')

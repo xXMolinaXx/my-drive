@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, Put } from '@nestjs/common';
 import { Request } from 'express';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -11,7 +11,7 @@ import { type } from 'os';
 @ApiTags('users')
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) { }
+  constructor(private readonly usersService: UsersService) {}
 
   @Post()
   async create(@Body() createUserDto: CreateUserDto): Promise<IhttpResponse> {
@@ -60,9 +60,24 @@ export class UsersController {
   //   return this.usersService.findOne(id);
   // }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(+id, updateUserDto);
+  @Put(':id')
+  async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto): Promise<IhttpResponse> {
+    try {
+      await this.usersService.update(id, updateUserDto);
+      return {
+        message: 'Contrasena actualizada',
+        success: true,
+        statusCode: 200,
+      };
+    } catch (error) {
+      console.log(error);
+      return {
+        message: 'error al actualizar contraseña',
+        success: false,
+        statusCode: 500,
+        error: typeof error === 'string' ? error : 'Ocurrio un error al cambiar la contraseña',
+      };
+    }
   }
 
   @Delete(':id')

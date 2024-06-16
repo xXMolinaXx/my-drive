@@ -41,6 +41,8 @@ export class Order {
   reservationDate: ReservationDate;
   @Prop()
   reservation: Date;
+  @Prop({ type: Boolean, default: false })
+  payed: boolean;
 }
 
 export const OrderSchema = SchemaFactory.createForClass(Order);

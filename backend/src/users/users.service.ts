@@ -13,7 +13,7 @@ export class UsersService {
   constructor(
     @InjectModel(User.name) private userModel: Model<User>,
     private configService: ConfigService,
-  ) {}
+  ) { }
   async hashPassword(password) {
     const saltOrRounds = 10;
     const hash = await bcrypt.hash(password, saltOrRounds);
@@ -47,13 +47,12 @@ export class UsersService {
       return result;
     }
     const randomString = generateRandomString(10);
-    const password = await this.hashPassword(randomString);
     await this.userModel.updateOne(
       { _id: user._id },
       {
         $set: {
           resetPassword: {
-            password: password,
+            password: randomString,
             expire: new Date().setMinutes(new Date().getMinutes() + 10),
           },
         },
@@ -64,7 +63,7 @@ export class UsersService {
               <h1>Cambio de contraseña LCM</h1>
               <p>Hola ${user.fullName}</p>
               <p>Haz click en el siguiente link</p>
-              <a href="${this.configService.get<string>('URL_RESET_PASSWORD')}/${user._id}/${password}">cambiar contraseña</a>
+              <a href="${this.configService.get<string>('URL_RESET_PASSWORD')}/${user._id}/${randomString}">cambiar contraseña</a>
               <p>LCM</p>
             </div>
     `;
@@ -95,8 +94,27 @@ export class UsersService {
     return user;
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async update(id: string, updateUserDto: UpdateUserDto) {
+    const user = await this.userModel.findById(id);
+    if (!user) throw 'Este usuario no existe';
+    const isMatch = updateUserDto.hashPassword === user.resetPassword.password;
+    if (!isMatch) {
+      throw 'No podemos actualizar tu contraseña';
+    }
+    const newPassword = await this.hashPassword(updateUserDto.password);
+    console.log(newPassword);
+    await this.userModel.updateOne(
+      { _id: id },
+      {
+        $set: {
+          password: newPassword,
+          resetPassword: {
+            password: '',
+            expired: null,
+          },
+        },
+      },
+    );
   }
 
   remove(id: number) {
