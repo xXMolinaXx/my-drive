@@ -26,7 +26,7 @@ export class UsersService {
     await new this.userModel({
       bornAt: createUserDto.bornAt,
       DNI: createUserDto.DNI.trim(),
-      email: createUserDto.email.trim(),
+      email: createUserDto.email.trim().toLowerCase(),
       fullName: createUserDto.fullName.trim(),
       gender: createUserDto.gender,
       telphone: '+504' + createUserDto.telphone.trim(),
@@ -102,7 +102,6 @@ export class UsersService {
       throw 'No podemos actualizar tu contraseña';
     }
     const newPassword = await this.hashPassword(updateUserDto.password);
-    console.log(newPassword);
     await this.userModel.updateOne(
       { _id: id },
       {

@@ -12,7 +12,7 @@ export class AuthService {
   ) { }
 
   async signIn(username: string, pass: string) {
-    const user = await this.usersService.findOneByEmail(username);
+    const user = await this.usersService.findOneByEmail(username.toLowerCase());
     if (!user) throw 'Este usuario no existe';
     const isMatch = await bcrypt.compare(pass, user.password);
     if (!isMatch) {
