@@ -231,8 +231,8 @@ export default function LoginRegister() {
   if (!validationUser) return;
   return (<main>
     <section className="min-h-screen">
-      <div className="oval" />
-      <div className="oval2" />
+      {/* <div className="oval" />
+      <div className="oval2" /> */}
       <Grid className='p-5 ' height={"100%"} container justifyContent={'center'} alignItems={'center'} >
         <Grid item xs={12} md={6} lg={6} className='w-94'>
           <Paper elevation={3} className="p-5 w-94" >

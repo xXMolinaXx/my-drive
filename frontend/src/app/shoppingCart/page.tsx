@@ -122,7 +122,9 @@ function ShoppingCart2() {
   };
   const addMoreProduct = (index: number) => {
     const newCart = [...shoppingCart.products]
+    // @ts-ignore
     newCart[index].amount += 1
+    
     setShoppingCart({
       ...shoppingCart,
       products: newCart,
@@ -138,7 +140,9 @@ function ShoppingCart2() {
   }
   const restMoreProduct = (index: number) => {
     const newCart = [...shoppingCart.products]
+    // @ts-ignore
     if (newCart[index].amount > 1) {
+      // @ts-ignore
       newCart[index].amount -= 1
       setShoppingCart({
         ...shoppingCart,
