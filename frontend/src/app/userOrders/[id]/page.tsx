@@ -181,7 +181,7 @@ function OrderUser({ userOrder }: props2) {
                 </Typography>
 
                 <Typography className="font-bold">
-                  {`Esta pagada?       ${order.isPayed ? 'SI' : 'NO'} `}
+                  {`Pago realizado:        ${order.isPayed ? 'SI' : 'NO'} `}
                 </Typography>
 
               </CardContent>
