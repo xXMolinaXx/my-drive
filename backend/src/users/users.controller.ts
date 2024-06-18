@@ -8,12 +8,16 @@ import { IhttpResponse } from 'src/common/interface/httpResponse/httpResponse.in
 import { ApiKeyGuard } from 'src/auth/guards/api-key.guard';
 import { SendMailDto } from './dto/send-mail.dto';
 import { type } from 'os';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { Public } from 'src/auth/decorators/public.decorator';
+import { Roles } from 'src/auth/decorators/roles.decorator';
+import { ERoles } from 'src/common/enums/roles.enum';
 @ApiTags('users')
 @Controller('users')
-@UseGuards(ApiKeyGuard)
+@UseGuards(ApiKeyGuard, RolesGuard)
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
-
+  constructor(private readonly usersService: UsersService) { }
+  @Public()
   @Post()
   async create(@Body() createUserDto: CreateUserDto): Promise<IhttpResponse> {
     try {
@@ -32,6 +36,7 @@ export class UsersController {
       };
     }
   }
+  @Public()
   @Post('/sendNotRemeberPassword')
   async sendMail(@Body() body: SendMailDto): Promise<IhttpResponse> {
     try {
@@ -50,6 +55,7 @@ export class UsersController {
       };
     }
   }
+  @Roles(ERoles.ADMIN)
   @Get()
   findAll() {
     return this.usersService.findAll();
@@ -59,7 +65,7 @@ export class UsersController {
   // findOne(@Param('id') id: string) {
   //   return this.usersService.findOne(id);
   // }
-
+  @Public()
   @Put(':id')
   async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto): Promise<IhttpResponse> {
     try {

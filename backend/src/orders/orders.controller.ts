@@ -7,12 +7,15 @@ import { IhttpResponse } from 'src/common/interface/httpResponse/httpResponse.in
 import { SearchAvailableSchedulesDto } from './dto/search-available-schedules.dto';
 import { IFindAllOrder } from 'src/common/interface/orders/findAllorder.interface';
 import { ApiKeyGuard } from 'src/auth/guards/api-key.guard';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { Roles } from 'src/auth/decorators/roles.decorator';
+import { ERoles } from 'src/common/enums/roles.enum';
 @ApiTags('orders')
 @Controller('orders')
-@UseGuards(ApiKeyGuard)
+@UseGuards(ApiKeyGuard, RolesGuard)
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) { }
-
+  @Roles(ERoles.USER)
   @Post()
   async create(@Body() createOrderDto: CreateOrderDto): Promise<IhttpResponse> {
     try {
@@ -31,6 +34,7 @@ export class OrdersController {
       };
     }
   }
+  @Roles(ERoles.USER)
   @Post('/readAvailableSchedules')
   async readAvailableSchedules(@Body() scheduleSelected: SearchAvailableSchedulesDto): Promise<IhttpResponse> {
     try {
@@ -49,6 +53,7 @@ export class OrdersController {
       };
     }
   }
+  @Roles(ERoles.ADMIN)
   @Post('/readBranchOrder')
   async findAll(@Body() body: SearchOrderDto): Promise<IhttpResponse> {
     try {
@@ -68,6 +73,7 @@ export class OrdersController {
       };
     }
   }
+  @Roles(ERoles.USER)
   @Post('/readUserOrder')
   async readUserOrder(@Body() body: SearchUserOrderDto): Promise<IhttpResponse> {
     try {

@@ -5,9 +5,12 @@ import { UpdateProductDto } from './dto/update-product.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { IhttpResponse } from 'src/common/interface/httpResponse/httpResponse.interface';
 import { ApiKeyGuard } from 'src/auth/guards/api-key.guard';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { Roles } from 'src/auth/decorators/roles.decorator';
+import { ERoles } from 'src/common/enums/roles.enum';
 @ApiTags('products')
 @Controller('products')
-@UseGuards(ApiKeyGuard)
+@UseGuards(ApiKeyGuard, RolesGuard)
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) { }
 
@@ -15,7 +18,7 @@ export class ProductsController {
   // create(@Body() createProductDto: CreateProductDto) {
   //   return this.productsService.create(createProductDto);
   // }
-
+  @Roles(ERoles.USER)
   @Get('/:skip/:limit/:searchWord')
   async findAll(@Param('skip', ParseIntPipe) skip: number, @Param('limit', ParseIntPipe) limit: number,@Param('searchWord') searchWord: string): Promise<IhttpResponse> {
     try {

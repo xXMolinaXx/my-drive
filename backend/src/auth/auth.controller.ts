@@ -1,4 +1,5 @@
 import { Body, Controller, HttpCode, HttpStatus, Post, UseGuards } from '@nestjs/common';
+import { ERoles } from "./../common/enums/roles.enum";
 import { AuthService } from './auth.service';
 import { LoginDto } from 'src/users/dto/login.dto';
 import { IhttpResponse } from 'src/common/interface/httpResponse/httpResponse.interface';
@@ -6,6 +7,8 @@ import { RefreshToken } from './decorators/refreshToken.decorator';
 import { ApiKeyGuard } from './guards/api-key.guard';
 import { UserRefreshTokenDTO } from './DTOS/login.dto';
 import { ApiTags } from '@nestjs/swagger';
+import { RolesGuard } from './guards/roles.guard';
+import { Roles } from './decorators/roles.decorator';
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
@@ -30,9 +33,10 @@ export class AuthController {
       };
     }
   }
+  @Roles(ERoles.USER, ERoles.ADMIN)
   @HttpCode(HttpStatus.OK)
   @RefreshToken()
-  @UseGuards(ApiKeyGuard)
+  @UseGuards(ApiKeyGuard, RolesGuard)
   @Post('/updateToken')
   async updateUserToken(@Body() params: UserRefreshTokenDTO): Promise<IhttpResponse> {
     try {
