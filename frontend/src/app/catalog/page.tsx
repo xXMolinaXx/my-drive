@@ -60,7 +60,13 @@ function Catalog2() {
   const handleSearchProducts = () => {
     setLoadingProducts(true);
     setProducts([])
-    fetch(`${config.backend}/products/${skip}/${limit}/${searchWord}`).then(data => data.json()).then(data => {
+    fetch(`${config.backend}/products/${skip}/${limit}/${searchWord}`, {
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        Authorization: `Bearer ${getCookieToken()}`,
+      },
+    }).then(data => data.json()).then(data => {
       if (data.statusCode === 200) {
         setProducts(data.data?.products || [])
         setAmount(Math.round(data.data?.count / limit))
