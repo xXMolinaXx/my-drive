@@ -164,7 +164,7 @@ function OrderUser({ userOrder }: props2) {
       <Grid container spacing={2} width={'100%'} justifyContent="center">
 
         {orders.length === 0 ? <Typography className="mt-5 ml-5" variant="h5" textAlign='center'>No se encontro ninguna orden</Typography> : orders?.map(order => (
-          <Grid item sm={12} md={6} lg={4} key={order._id}>
+          <Grid item sm={12} md={6} lg={3} key={order._id}>
             <Card >
               <CardContent>
                 <Typography variant="h4" className="text-blue-700" color="text.secondary" gutterBottom>
@@ -181,7 +181,7 @@ function OrderUser({ userOrder }: props2) {
                 </Typography>
 
                 <Typography className="font-bold">
-                  {`Esta paga?       ${order.isPayed ? 'SI' : 'NO'} `}
+                  {`Esta pagada?       ${order.isPayed ? 'SI' : 'NO'} `}
                 </Typography>
 
               </CardContent>
