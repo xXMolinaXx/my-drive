@@ -35,6 +35,8 @@ export class SearchOrderDto {
   limit: number;
   @ApiProperty()
   skip: number;
+  @ApiProperty()
+  advanceSearch: boolean;
 }
 export class SearchUserOrderDto {
   @ApiProperty()

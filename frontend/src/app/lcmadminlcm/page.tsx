@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Box, Button, Card, CardActions, CardContent, Drawer, FormControl, FormControlLabel, FormLabel, Grid, LinearProgress, List, ListItem, ListItemButton, ListItemIcon, ListItemText, MenuItem, Pagination, Paper, Radio, RadioGroup, TextField, Typography } from "@mui/material";
+import { Box, Button, Card, CardActions, CardContent, Drawer, FormControl, FormControlLabel, FormGroup, FormLabel, Grid, LinearProgress, List, ListItem, ListItemButton, ListItemIcon, ListItemText, MenuItem, Pagination, Paper, Radio, RadioGroup, Switch, TextField, Typography } from "@mui/material";
 import LogoutIcon from '@mui/icons-material/Logout';
 import dayjs, { Dayjs } from 'dayjs';
 import { DemoContainer, DemoItem } from '@mui/x-date-pickers/internals/demo';
@@ -51,6 +51,7 @@ export default function AdminLogin() {
   const [snackBarMessage, setSnackBarMessage] = useState('')
   const [snackbarType, setSnackbarType] = useState<'success' | 'error'>('error')
   const [selectValue, setselectValue] = useState('');
+  const [advanceSearch, setAdvanceSearch] = useState(false)
   const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
     setSkip(value * limit - limit)
     setPage(value)
@@ -61,11 +62,12 @@ export default function AdminLogin() {
     fetch(`${config.backend}/orders/readBranchOrder`, {
       method: 'POST',
       body: JSON.stringify({
-        "startAt": startAt?.toString(),
-        "endAt": endAt?.toString(),
+        "startAt": startAt?.subtract(1, 'day').toString(),
+        "endAt": endAt?.add(1, 'day').toString(),
         "branchName": user.store,
         "serachWord": "",
         "status": selectValue,
+        "advanceSearch": advanceSearch,
         limit,
         skip,
       }),
@@ -118,10 +120,13 @@ export default function AdminLogin() {
   }
   useEffect(() => {
     getOrder()
-  }, [startAt, endAt, selectValue])
+  }, [startAt, endAt, selectValue,user])
   useEffect(() => {
     const userLocalStorage = localStorage.getItem('user')
-    if (userLocalStorage) setUser(JSON.parse(userLocalStorage))
+    if (userLocalStorage) {
+      setUser(JSON.parse(userLocalStorage))
+      if(JSON.parse(userLocalStorage).role !== 'admin') router.push('/catalog')
+    }
     else router.push('/')
   }, [])
   return (
@@ -154,6 +159,9 @@ export default function AdminLogin() {
         <Paper elevation={3} className="min-h-screen p-5">
 
           <div className="mb-5 mt-3">
+            <FormGroup>
+              <FormControlLabel control={<Switch  />} label="Búsqueda avanzada" onChange={() => { setAdvanceSearch(!advanceSearch) }} />
+            </FormGroup>
             {/* <TextField className="w-72" helperText="Buscar por nombre o identidad" variant="outlined" onChange={(e) => {
               setSearchWord(e.target.value)
             }} onKeyDown={e => {
@@ -166,24 +174,31 @@ export default function AdminLogin() {
               }}>Buscar</Button>,
 
             }} /> */}
-            <TextField select className="mx-1 w-1/6" label="Estado de orden" variant="outlined" onChange={(e) => {
-              setselectValue(e.target.value)
-            }}
-            >
-              {['en espera', 'pagada', 'terminada', 'cancelada'].map((option, i) => (
-                <MenuItem key={`key-status-${option}-${i}`} value={option}>
-                  {option}
-                </MenuItem>
-              ))}
-            </TextField>
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DatePicker label="Fecha de inicio" className="mx-1" referenceDate={dayjs()}
-                value={startAt}
-                onChange={(newValue) => setstartAt(newValue)}
-              />
-              <DatePicker label="Fecha de Final" className="mx-1" referenceDate={dayjs().add(1, 'day')} value={endAt}
-                onChange={(newValue) => setendAt(newValue)} />
-            </LocalizationProvider>
+            {
+              advanceSearch && (
+                <>
+                  <TextField select className="mx-1 w-1/6" label="Estado de orden" variant="outlined" onChange={(e) => {
+                    setselectValue(e.target.value)
+                  }}
+                  >
+                    {['en espera', 'pagada', 'terminada', 'cancelada'].map((option, i) => (
+                      <MenuItem key={`key-status-${option}-${i}`} value={option}>
+                        {option}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DatePicker label="Fecha de inicio" className="mx-1" referenceDate={dayjs()}
+                      value={startAt}
+                      onChange={(newValue) => setstartAt(newValue)}
+                    />
+                    <DatePicker label="Fecha de Final" className="mx-1" referenceDate={dayjs().add(1, 'day')} value={endAt}
+                      onChange={(newValue) => setendAt(newValue)} />
+                  </LocalizationProvider>
+                </>
+              )
+            }
+
           </div>
 
           <Grid container spacing={2} >

@@ -15,7 +15,7 @@ export class OrdersService {
   constructor(
     @InjectModel(Order.name) private orderModel: Model<Order>,
     private readonly productsService: ProductsService,
-  ) {}
+  ) { }
   async create(createOrderDto: CreateOrderDto) {
     const resevationDate = new Date(createOrderDto.date);
     let totalToPay = 0;
@@ -45,8 +45,15 @@ export class OrdersService {
     if (status) query.status = status;
     return await this.orderModel.find(query).countDocuments();
   }
-  async findAll({ startAt, endAt, branchName, serachWord, status, limit, skip }: SearchOrderDto) {
-    const query: any = { createdAt: { $gte: new Date(startAt), $lte: new Date(endAt) }, branch: branchName };
+  async findAll({ startAt, endAt, branchName, serachWord, status, limit, skip, advanceSearch }: SearchOrderDto) {
+    let query: any;
+    if (advanceSearch) {
+      query = { createdAt: { $gte: new Date(startAt), $lte: new Date(endAt) }, branch: branchName };
+    } else {
+      query = {
+        branch: branchName,
+      };
+    }
     if (serachWord) query['user.fullName'] = { $regex: serachWord, $options: 'i' };
     if (status) query.status = status;
     return await this.orderModel
@@ -79,7 +86,7 @@ export class OrdersService {
     return await this.orderModel.find(query).countDocuments();
   }
   async findAllUser({ startAt, endAt, status, limit, skip, userId }: SearchUserOrderDto) {
-    const query: any = { createdAt: { $gte: new Date(startAt), $lte: new Date(endAt) }, userId: new mongoose.Types.ObjectId(userId) };
+    const query: any = { createdAt: { $gte: new Date(startAt), $lte: new Date(endAt) }, userId: userId };
     if (status) query.status = status;
     return await this.orderModel.find(query).limit(limit).skip(skip).exec();
   }

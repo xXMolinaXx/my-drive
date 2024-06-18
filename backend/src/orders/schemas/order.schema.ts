@@ -31,7 +31,7 @@ export class Order {
   cart: Product[];
   @Prop()
   finalPayment: number;
-  @Prop({ required: true, type: String })
+  @Prop({ required: true })
   userId: SchemaMongoose.Types.ObjectId;
   @Prop({ required: true, type: String, enum: EBRANCH })
   branch: string;
