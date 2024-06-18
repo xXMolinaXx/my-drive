@@ -7,6 +7,7 @@ import { config } from "@/common/configs/config";
 import { IProduct } from "@/common/interface/product.interface";
 import { addToCart } from "@/common/utils/cart";
 import MainAlert from "@/components/alerts/MainAlert";
+import { getCookieToken } from "@/common/utils/getCookieToken";
 
 function Catalog2() {
   const { setShoppingCart, shoppingCart } = useContext(StoreContext);
