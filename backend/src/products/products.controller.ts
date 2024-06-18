@@ -1,11 +1,13 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, UseGuards } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { IhttpResponse } from 'src/common/interface/httpResponse/httpResponse.interface';
+import { ApiKeyGuard } from 'src/auth/guards/api-key.guard';
 @ApiTags('products')
 @Controller('products')
+@UseGuards(ApiKeyGuard)
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) { }
 

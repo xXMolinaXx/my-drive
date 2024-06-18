@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Put, UseGuards } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { CreateOrderDto, SearchOrderDto, SearchUserOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
@@ -6,8 +6,10 @@ import { ApiTags } from '@nestjs/swagger';
 import { IhttpResponse } from 'src/common/interface/httpResponse/httpResponse.interface';
 import { SearchAvailableSchedulesDto } from './dto/search-available-schedules.dto';
 import { IFindAllOrder } from 'src/common/interface/orders/findAllorder.interface';
+import { ApiKeyGuard } from 'src/auth/guards/api-key.guard';
 @ApiTags('orders')
 @Controller('orders')
+@UseGuards(ApiKeyGuard)
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) { }
 

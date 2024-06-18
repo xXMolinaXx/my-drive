@@ -10,6 +10,7 @@ import { SendMailDto } from './dto/send-mail.dto';
 import { type } from 'os';
 @ApiTags('users')
 @Controller('users')
+@UseGuards(ApiKeyGuard)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
@@ -49,7 +50,6 @@ export class UsersController {
       };
     }
   }
-  @UseGuards(ApiKeyGuard)
   @Get()
   findAll() {
     return this.usersService.findAll();
