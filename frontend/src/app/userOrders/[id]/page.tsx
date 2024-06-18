@@ -70,7 +70,7 @@ function OrderUser({ userOrder }: props2) {
         "userId": userOrder,
         "serachWord": "",
         "status": selectValue,
-        "advanceSearch":false,
+        "advanceSearch": false,
         limit,
         skip,
       }),
@@ -126,9 +126,8 @@ function OrderUser({ userOrder }: props2) {
   }, [startAt, endAt, selectValue])
   return (
     <div>
-      <div className="pl-60 pt-5 pr-5 pb-5 ">
-        <div className="mb-5 mt-3">
-          {/* <TextField className="w-72" helperText="Buscar por nombre o identidad" variant="outlined" onChange={(e) => {
+      <div className="mb-5 mt-3">
+        {/* <TextField className="w-72" helperText="Buscar por nombre o identidad" variant="outlined" onChange={(e) => {
               setSearchWord(e.target.value)
             }} onKeyDown={e => {
               if (e.key === 'Enter') {
@@ -140,7 +139,7 @@ function OrderUser({ userOrder }: props2) {
               }}>Buscar</Button>,
 
             }} /> */}
-          {/* <TextField select className="mx-1 w-1/6" label="Estado de orden" variant="outlined" onChange={(e) => {
+        {/* <TextField select className="mx-1 w-1/6" label="Estado de orden" variant="outlined" onChange={(e) => {
             setselectValue(e.target.value)
           }}
           >
@@ -158,47 +157,48 @@ function OrderUser({ userOrder }: props2) {
             <DatePicker label="Fecha de Final" className="mx-1" referenceDate={dayjs().add(1, 'day')} value={endAt}
               onChange={(newValue) => setendAt(newValue)} />
           </LocalizationProvider> */}
-        </div>
-        <Grid container spacing={2} >
-
-          {loadingOrders && <Box sx={{ width: '100%' }}>
-            <LinearProgress />
-          </Box>} {orders.length === 0 ? <Typography className="mt-5 ml-5" variant="h5" textAlign='center'>No se encontro ninguna orden</Typography> : orders?.map(order => (
-            <Grid item sm={12} md={6} lg={4} key={order._id}>
-              <Card >
-                <CardContent>
-                  <Typography variant="h4" className="text-blue-700" color="text.secondary" gutterBottom>
-                    {order.status}
-                  </Typography>
-                  <Typography  className="font-bold">
-                    Fecha: {`${dayjs(order.createdAt).format("YYYY MMMM DD")} ${order.reservationDate.hour > 9 ? order.reservationDate.hour : `0${order.reservationDate.hour}`}:${order.reservationDate.minute > 9 ? order.reservationDate.minute : `0${order.reservationDate.minute}`} `}
-                  </Typography>
-                  <Typography color="text.secondary">
-                    Total a pagar: L. {order.finalPayment}
-                  </Typography>
-                  <Typography variant="body2">
-                    Sucursal {order.branch}
-                  </Typography>
-
-                  <Typography className="font-bold">
-                    {`Esta paga?       ${order.isPayed ? 'SI' : 'NO'} `}
-                  </Typography>
-
-                </CardContent>
-                <CardActions>
-                  <Button size="small" variant="contained" onClick={() => {
-                    setOpen(true);
-                    setCart(order.cart)
-                  }}>Ver Carrito</Button>
-                </CardActions>
-              </Card>
-            </Grid>
-          ))}
-
-
-        </Grid>
-        <Pagination className="mt-4" count={amount} page={page} color="primary" onChange={handleChange} />
       </div>
+      {loadingOrders && <Box sx={{ width: '100%' }}>
+        <LinearProgress />
+      </Box>}
+      <Grid container spacing={2} width={'100%'} justifyContent="center">
+
+        {orders.length === 0 ? <Typography className="mt-5 ml-5" variant="h5" textAlign='center'>No se encontro ninguna orden</Typography> : orders?.map(order => (
+          <Grid item sm={12} md={6} lg={4} key={order._id}>
+            <Card >
+              <CardContent>
+                <Typography variant="h4" className="text-blue-700" color="text.secondary" gutterBottom>
+                  {order.status}
+                </Typography>
+                <Typography className="font-bold">
+                  Fecha: {`${dayjs(order.createdAt).format("YYYY MMMM DD")} ${order.reservationDate.hour > 9 ? order.reservationDate.hour : `0${order.reservationDate.hour}`}:${order.reservationDate.minute > 9 ? order.reservationDate.minute : `0${order.reservationDate.minute}`} `}
+                </Typography>
+                <Typography color="text.secondary">
+                  Total a pagar: L. {order.finalPayment}
+                </Typography>
+                <Typography variant="body2">
+                  Sucursal {order.branch}
+                </Typography>
+
+                <Typography className="font-bold">
+                  {`Esta paga?       ${order.isPayed ? 'SI' : 'NO'} `}
+                </Typography>
+
+              </CardContent>
+              <CardActions>
+                <Button size="small" variant="contained" onClick={() => {
+                  setOpen(true);
+                  setCart(order.cart)
+                }}>Ver Carrito</Button>
+              </CardActions>
+            </Card>
+          </Grid>
+        ))}
+
+
+      </Grid>
+      <Pagination className="mt-4" count={amount} page={page} color="primary" onChange={handleChange} />
+
       <MainAlert handleClose={() => { setOpenSnackBar(false); setSnackBarMessage(''); setSnackbarType('error') }} open={openSnackBar} message={snackBarMessage} type={snackbarType} />
       <Dialog open={open} onClose={() => { setOpen(false) }} >
         <div className="p-5 max-h-52">
