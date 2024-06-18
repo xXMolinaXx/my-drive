@@ -70,6 +70,7 @@ function OrderUser({ userOrder }: props2) {
         "userId": userOrder,
         "serachWord": "",
         "status": selectValue,
+        "advanceSearch":false,
         limit,
         skip,
       }),
@@ -139,7 +140,7 @@ function OrderUser({ userOrder }: props2) {
               }}>Buscar</Button>,
 
             }} /> */}
-          <TextField select className="mx-1 w-1/6" label="Estado de orden" variant="outlined" onChange={(e) => {
+          {/* <TextField select className="mx-1 w-1/6" label="Estado de orden" variant="outlined" onChange={(e) => {
             setselectValue(e.target.value)
           }}
           >
@@ -156,7 +157,7 @@ function OrderUser({ userOrder }: props2) {
             />
             <DatePicker label="Fecha de Final" className="mx-1" referenceDate={dayjs().add(1, 'day')} value={endAt}
               onChange={(newValue) => setendAt(newValue)} />
-          </LocalizationProvider>
+          </LocalizationProvider> */}
         </div>
         <Grid container spacing={2} >
 

@@ -81,14 +81,19 @@ export class OrdersService {
       .exec();
   }
   async findAllUserCount({ startAt, endAt, status, userId }: SearchUserOrderDto) {
-    const query: any = { createdAt: { $gte: new Date(startAt), $lte: new Date(endAt) }, _id: userId };
+    const query: any = { /*createdAt: { $gte: new Date(startAt), $lte: new Date(endAt) },*/ _id: userId };
     if (status) query.status = status;
-    return await this.orderModel.find(query).countDocuments();
+    return await this.orderModel.find({ userId: userId }).countDocuments();
   }
   async findAllUser({ startAt, endAt, status, limit, skip, userId }: SearchUserOrderDto) {
-    const query: any = { createdAt: { $gte: new Date(startAt), $lte: new Date(endAt) }, userId: userId };
-    if (status) query.status = status;
-    return await this.orderModel.find(query).limit(limit).skip(skip).exec();
+    const query: any = { /*createdAt: { $gte: new Date(startAt), $lte: new Date(endAt) },*/ userId: userId };
+    // if (status) query.status = status;
+    return await this.orderModel
+      .find({ userId: new mongoose.Types.ObjectId(userId) })
+      .sort({ createdAt: -1 })
+      .limit(limit)
+      .skip(skip)
+      .exec();
   }
   async findAvailablesSchedules(scheduleSelected: SearchAvailableSchedulesDto) {
     const selectDate = new Date(scheduleSelected.date);

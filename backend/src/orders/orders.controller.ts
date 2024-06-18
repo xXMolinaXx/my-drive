@@ -80,7 +80,7 @@ export class OrdersController {
       return {
         message: '',
         success: true,
-        data: { orders: await this.ordersService.findAllUser(body), amount: this.ordersService.findAllUserCount(body) },
+        data: { orders: await this.ordersService.findAllUser(body), amount: await this.ordersService.findAllUserCount(body) },
         statusCode: 200,
       };
     } catch (error) {
