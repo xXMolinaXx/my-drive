@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { CreateOrderDto, SearchOrderDto } from './dto/create-order.dto';
+import { CreateOrderDto, SearchOrderDto, SearchUserOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Order } from './schemas/order.schema';
-import { Model } from 'mongoose';
+import mongoose, { Model } from 'mongoose';
 import { SearchAvailableSchedulesDto } from './dto/search-available-schedules.dto';
 import { Product } from 'src/products/schemas/products.schema';
 import { ProductsService } from 'src/products/products.service';
@@ -15,7 +15,7 @@ export class OrdersService {
   constructor(
     @InjectModel(Order.name) private orderModel: Model<Order>,
     private readonly productsService: ProductsService,
-  ) { }
+  ) {}
   async create(createOrderDto: CreateOrderDto) {
     const resevationDate = new Date(createOrderDto.date);
     let totalToPay = 0;
@@ -72,6 +72,16 @@ export class OrdersService {
       .limit(limit)
       .skip(skip)
       .exec();
+  }
+  async findAllUserCount({ startAt, endAt, status, userId }: SearchUserOrderDto) {
+    const query: any = { createdAt: { $gte: new Date(startAt), $lte: new Date(endAt) }, _id: userId };
+    if (status) query.status = status;
+    return await this.orderModel.find(query).countDocuments();
+  }
+  async findAllUser({ startAt, endAt, status, limit, skip, userId }: SearchUserOrderDto) {
+    const query: any = { createdAt: { $gte: new Date(startAt), $lte: new Date(endAt) }, userId: new mongoose.Types.ObjectId(userId) };
+    if (status) query.status = status;
+    return await this.orderModel.find(query).limit(limit).skip(skip).exec();
   }
   async findAvailablesSchedules(scheduleSelected: SearchAvailableSchedulesDto) {
     const selectDate = new Date(scheduleSelected.date);

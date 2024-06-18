@@ -153,7 +153,9 @@ function MainLayout({ children }: props) {
     <Box sx={{ width: 300 }} role="presentation" >
       <div className="flex justify-center pl-5 pt-5 pr-5">
           <div>
-            <Button className="mb-2" variant="outlined" type="submit" fullWidth>Mis ordenes</Button>
+            <Button className="mb-2" variant="outlined" type="submit" fullWidth onClick={()=>{
+              router.push(`/userOrders/${user._id}`)
+            }}>Mis ordenes</Button>
             <Button className="mb-2" variant="outlined" type="submit" fullWidth onClick={() => {
               localStorage.removeItem('user')
               setUser(null)

@@ -36,3 +36,17 @@ export class SearchOrderDto {
   @ApiProperty()
   skip: number;
 }
+export class SearchUserOrderDto {
+  @ApiProperty()
+  startAt: string;
+  @ApiProperty()
+  endAt: string;
+  @ApiProperty()
+  userId: string;
+  @ApiProperty()
+  status: string;
+  @ApiProperty()
+  limit: number;
+  @ApiProperty()
+  skip: number;
+}

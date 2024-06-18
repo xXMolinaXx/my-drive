@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Put } from '@nestjs/common';
 import { OrdersService } from './orders.service';
-import { CreateOrderDto, SearchOrderDto } from './dto/create-order.dto';
+import { CreateOrderDto, SearchOrderDto, SearchUserOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { IhttpResponse } from 'src/common/interface/httpResponse/httpResponse.interface';
@@ -66,34 +66,23 @@ export class OrdersController {
       };
     }
   }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.ordersService.findOne(+id);
-  }
-
-  @Put(':id')
-  async update(@Param('id') id: string, @Body() updateOrderDto: UpdateOrderDto): Promise<IhttpResponse> {
+  @Post('/readUserOrder')
+  async readUserOrder(@Body() body: SearchUserOrderDto): Promise<IhttpResponse> {
     try {
-      await this.ordersService.update(id, updateOrderDto);
       return {
-        message: 'Actualizado con exito',
+        message: '',
         success: true,
+        data: { orders: await this.ordersService.findAllUser(body), amount: this.ordersService.findAllUserCount(body) },
         statusCode: 200,
       };
     } catch (error) {
       console.log(error);
       return {
-        message: 'error al actualizar',
+        message: 'Error en el sistema',
+        success: true,
         statusCode: 500,
-        error: typeof error === 'string' ? error : 'error en el sistema',
-        success: false,
+        error: 'ocurio un error',
       };
     }
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.ordersService.remove(+id);
   }
 }
