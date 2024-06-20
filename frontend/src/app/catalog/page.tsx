@@ -146,9 +146,8 @@ function CardComponent({ price = 100, name = 'Productos', addToCart }: PropCard)
   return (
     <Card >
       <CardMedia
-        sx={{ height: 100 }}
-        style={{ objectFit: 'cover' }}
-        image="/blood-tube.webp"
+        sx={{ height:180 }}
+        image="/card.webp"
         title="green iguana"
       />
       <CardContent>
