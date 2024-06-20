@@ -193,7 +193,7 @@ function OrderUser({ userOrder }: props2) {
                 <Button size="small" variant="contained" onClick={() => {
                   setOpen(true);
                   setCart(order.cart)
-                }}>Ver Carrito</Button>
+                }}>Ver exámenes</Button>
               </CardActions>
             </Card>
           </Grid>
