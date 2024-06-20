@@ -123,7 +123,8 @@ export class OrdersService {
   }
 
   async update(id: string, updateOrderDto: UpdateOrderDto) {
-    await this.orderModel.updateOne({ _id: id }, { $set: { status: updateOrderDto.status, payed: updateOrderDto.isPayed } });
+    console.log(id,updateOrderDto);
+    await this.orderModel.updateOne({ _id: id }, { $set: { status: updateOrderDto.status, payed: updateOrderDto.isPayed, urlPayment: updateOrderDto.urlPayment } });
   }
 
   remove(id: number) {

@@ -93,4 +93,23 @@ export class OrdersController {
       };
     }
   }
+  @Roles(ERoles.ADMIN)
+  @Put('/:id')
+  async updateOrder(@Body() body: UpdateOrderDto, @Param('id') id: string): Promise<IhttpResponse> {
+    try {
+      await this.ordersService.update(id, body);
+      return {
+        success: true,
+        message: 'Actualizado con exito',
+        statusCode: 200,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: 'Error al actualizar orden',
+        statusCode: 500,
+        error: typeof error === 'string' ? error : 'Error en el sistema'
+      };
+    }
+  }
 }

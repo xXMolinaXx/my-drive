@@ -43,6 +43,8 @@ export class Order {
   reservation: Date;
   @Prop({ type: Boolean, default: false })
   payed: boolean;
+  @Prop({ type: String, default: '' })
+  urlPayment: string;
 }
 
 export const OrderSchema = SchemaFactory.createForClass(Order);

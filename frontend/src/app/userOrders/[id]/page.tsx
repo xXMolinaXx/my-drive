@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
-import { Box, Button, Card, CardActions, CardContent, Dialog, Divider, Drawer, FormControl, FormControlLabel, FormLabel, Grid, LinearProgress, List, ListItem, ListItemButton, ListItemIcon, ListItemText, MenuItem, Pagination, Paper, Radio, RadioGroup, TextField, Typography } from "@mui/material";
+import { Box, Button, Card, CardActions, CardContent, Chip, Dialog, Divider, Drawer, FormControl, FormControlLabel, FormLabel, Grid, LinearProgress, List, ListItem, ListItemButton, ListItemIcon, ListItemText, MenuItem, Pagination, Paper, Radio, RadioGroup, TextField, Typography } from "@mui/material";
 import LogoutIcon from '@mui/icons-material/Logout';
 import dayjs, { Dayjs } from 'dayjs';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -47,7 +47,8 @@ function OrderUser({ userOrder }: props2) {
     updatedAt: '',
     userId: '',
     user: [{ _id: '', DNI: '', fullName: '', identification: '', telphone: '', email: '' }],
-    isPayed: false
+    isPayed: false,
+    urlPayment: ''
   }])
   const [open, setOpen] = useState(false);
   const [openSnackBar, setOpenSnackBar] = useState(false)
@@ -161,7 +162,7 @@ function OrderUser({ userOrder }: props2) {
       {loadingOrders && <Box sx={{ width: '100%' }}>
         <LinearProgress />
       </Box>}
-      <Grid container spacing={2} width={'100%'} justifyContent="center">
+      <Grid container spacing={2} width={'100%'} className="px-32" justifyContent="center">
 
         {orders.length === 0 ? <Typography className="mt-5 ml-5" variant="h5" textAlign='center'>No se encontro ninguna orden</Typography> : orders?.map(order => (
           <Grid item sm={12} md={6} lg={3} key={order._id}>
@@ -183,6 +184,9 @@ function OrderUser({ userOrder }: props2) {
                 <Typography className="font-bold">
                   {`Pago realizado:        ${order.isPayed ? 'SI' : 'NO'} `}
                 </Typography>
+                {!order.urlPayment ? <Chip label="Aun sin método de pago" color="error" /> : <Button variant="contained" size="small"  onClick={() => {
+                  window.location.replace(order.urlPayment);
+                }}>Pagar</Button>}
 
               </CardContent>
               <CardActions>

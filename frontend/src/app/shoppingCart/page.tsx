@@ -99,6 +99,7 @@ function ShoppingCart2() {
         })
       }).then(data => data.json()).then(data => {
         if (data.statusCode === 200) {
+          setActiveStep((prevActiveStep) => prevActiveStep + 1)
           setShoppingCartContext(
             {
               amountProducts: 0,
@@ -118,6 +119,7 @@ function ShoppingCart2() {
         settype('error');
         setOpenSnackBar(true)
       })
+      return;
     }
     if (activeStep < 2) setActiveStep((prevActiveStep) => prevActiveStep + 1);
     else router.push('/')

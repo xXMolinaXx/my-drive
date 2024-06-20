@@ -1,6 +1,7 @@
 'use client'
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import SaveIcon from '@mui/icons-material/Save';
 import { Box, Button, Card, CardActions, CardContent, Dialog, Divider, Drawer, FormControl, FormControlLabel, FormGroup, FormLabel, Grid, LinearProgress, List, ListItem, ListItemButton, ListItemIcon, ListItemText, MenuItem, Pagination, Paper, Radio, RadioGroup, Switch, TextField, Typography } from "@mui/material";
 import LogoutIcon from '@mui/icons-material/Logout';
 import dayjs, { Dayjs } from 'dayjs';
@@ -46,7 +47,8 @@ export default function AdminLogin() {
     updatedAt: '',
     userId: '',
     user: [{ _id: '', DNI: '', fullName: '', identification: '', telphone: '', email: '' }],
-    isPayed: false
+    isPayed: false,
+    urlPayment: ''
   }])
   const [openSnackBar, setOpenSnackBar] = useState(false)
   const [snackBarMessage, setSnackBarMessage] = useState('')
@@ -97,10 +99,10 @@ export default function AdminLogin() {
         setSnackBarMessage(e.toString())
       })
   }
-  const handleUpdateOrder = (id: string, status: string, isPayed: boolean) => {
+  const handleUpdateOrder = (id: string, status: string, isPayed: boolean, urlPayment: string) => {
     fetch(`${config.backend}/orders/${id}`, {
       method: 'PUT',
-      body: JSON.stringify({ status, isPayed }),
+      body: JSON.stringify({ status, isPayed, urlPayment }),
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
@@ -179,7 +181,7 @@ export default function AdminLogin() {
                     }
                   }} InputProps={{
                     endAdornment: <Button className="mx-1" variant="contained" onClick={() => {
-                     getOrder()
+                      getOrder()
                     }}>Buscar</Button>,
 
                   }} />
@@ -238,7 +240,7 @@ export default function AdminLogin() {
                       Sucursal {order.branch}
                     </Typography>
                     <TextField select className="" defaultValue={order.status} fullWidth label="Estado de orden" variant="outlined" onChange={(e) => {
-                      handleUpdateOrder(order._id, e.target.value, order.isPayed)
+                      handleUpdateOrder(order._id, e.target.value, order.isPayed, order.urlPayment)
                     }}
                     >
                       {['en espera', 'terminada', 'cancelada'].map((option, i) => (
@@ -255,7 +257,7 @@ export default function AdminLogin() {
                         name="radio-buttons-group"
                         className="flex"
                         onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                          handleUpdateOrder(order._id, order.status, Boolean((event.target as HTMLInputElement).value))
+                          handleUpdateOrder(order._id, order.status, Boolean((event.target as HTMLInputElement).value), order.urlPayment)
                         }}
                       >
                         <FormControlLabel value={true} control={<Radio />} label="Si" />
@@ -263,13 +265,33 @@ export default function AdminLogin() {
 
                       </RadioGroup>
                     </FormControl>
+                    <TextField
+                      defaultValue={order.urlPayment}
+                      id={`search-product-${order._id}`}
+                      label="url pago"
+                      variant="outlined"
+                      fullWidth
+                      InputProps={{
+                        endAdornment: <Button className="sm:w-full md:w-1/3 lg:w-1/3 ml-2 rounded-r-lg" variant="contained" onClick={() => {
+                          const input = document.querySelector(`#search-product-${order._id}`);
+                          //@ts-ignore
+                          if (input.value) {
+                            //@ts-ignore
+                            handleUpdateOrder(order._id, order.status, order.isPayed, input?.value)
+                          } else {
+                            alert('2')
+                            handleUpdateOrder(order._id, order.status, order.isPayed, '')
+                          }
 
+                        }}><SaveIcon /></Button>
+                      }}
+                    />
                   </CardContent>
                   <CardActions>
                     <Button size="small" variant="contained" onClick={() => {
                       setSelectedCart(order.cart)
                       setOpenProductDetail(true)
-                    }}>Ver carrito</Button>
+                    }}>Ver examenes</Button>
                   </CardActions>
                 </Card>
               </Grid>

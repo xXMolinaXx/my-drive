@@ -11,6 +11,7 @@ export interface IOrder {
   __v: number
   user: user[]
   isPayed: boolean
+  urlPayment: string
 }
 interface user {
 
