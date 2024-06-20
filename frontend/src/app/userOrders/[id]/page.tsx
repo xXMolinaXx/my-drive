@@ -184,7 +184,7 @@ function OrderUser({ userOrder }: props2) {
                 <Typography className="font-bold">
                   {`Pago realizado:        ${order.isPayed ? 'SI' : 'NO'} `}
                 </Typography>
-                {!order.urlPayment ? <Chip label="Aun sin método de pago" color="error" /> : <Button variant="contained" size="small"  onClick={() => {
+                {!order.urlPayment ? <Chip label="Aun sin método de pago" color="error" className="my-2" /> : <Button variant="contained" size="small" className="my-2"  onClick={() => {
                   window.location.replace(order.urlPayment);
                 }}>Pagar</Button>}
 
