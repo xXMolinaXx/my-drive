@@ -46,7 +46,7 @@ function OrderUser({ userOrder }: props2) {
     status: '',
     updatedAt: '',
     userId: '',
-    user: [{ _id: '', DNI: '', fullName: '', identification: '', telphone: '' }],
+    user: [{ _id: '', DNI: '', fullName: '', identification: '', telphone: '', email: '' }],
     isPayed: false
   }])
   const [open, setOpen] = useState(false);
