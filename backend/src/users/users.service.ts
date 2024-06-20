@@ -93,7 +93,14 @@ export class UsersService {
     if (!user) throw 'No existe este usuario';
     return user;
   }
-
+  async findUser(search: string) {
+    return await this.userModel
+      .find({
+        $or: [{ fullName: { $regex: search, $options: 'i' } }, { DNI: { $regex: search, $options: 'i' } }, { telphone: { $regex: search, $options: 'i' } }, { email: { $regex: search, $options: 'i' } }],
+      })
+      .exec()
+      .then((users) => users.map((user) => user._id));
+  }
   async update(id: string, updateUserDto: UpdateUserDto) {
     const user = await this.userModel.findById(id);
     if (!user) throw 'Este usuario no existe';

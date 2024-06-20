@@ -9,12 +9,14 @@ import { Product } from 'src/products/schemas/products.schema';
 import { ProductsService } from 'src/products/products.service';
 import { IFindAllOrder } from 'src/common/interface/orders/findAllorder.interface';
 import { skip } from 'node:test';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class OrdersService {
   constructor(
     @InjectModel(Order.name) private orderModel: Model<Order>,
     private readonly productsService: ProductsService,
+    private readonly usersService: UsersService
   ) { }
   async create(createOrderDto: CreateOrderDto) {
     const resevationDate = new Date(createOrderDto.date);
@@ -46,16 +48,18 @@ export class OrdersService {
     return await this.orderModel.find(query).countDocuments();
   }
   async findAll({ startAt, endAt, branchName, serachWord, status, limit, skip, advanceSearch }: SearchOrderDto) {
-    let query: any;
+    let query: any = {
+      branch: branchName,
+    };
     if (advanceSearch) {
       query = { createdAt: { $gte: new Date(startAt), $lte: new Date(endAt) }, branch: branchName };
-    } else {
-      query = {
-        branch: branchName,
-      };
+      if (serachWord) {
+        const ids = await this.usersService.findUser(serachWord);
+        query = { createdAt: { $gte: new Date(startAt), $lte: new Date(endAt) }, branch: branchName, userId: { $in: ids } };
+      }
+      if (status) query.status = status;
     }
-    if (serachWord) query['user.fullName'] = { $regex: serachWord, $options: 'i' };
-    if (status) query.status = status;
+
     return await this.orderModel
       .aggregate([
         {
@@ -67,7 +71,7 @@ export class OrdersService {
             from: 'users',
             pipeline: [
               {
-                $project: { identification: 1, fullName: 1, telphone: 1, DNI: 1, email:1 },
+                $project: { identification: 1, fullName: 1, telphone: 1, DNI: 1, email: 1 },
               },
             ],
             localField: 'userId',
@@ -78,6 +82,7 @@ export class OrdersService {
       ])
       .limit(limit)
       .skip(skip)
+      .sort({ reservation: -1 })
       .exec();
   }
   async findAllUserCount({ startAt, endAt, status, userId }: SearchUserOrderDto) {

@@ -68,7 +68,7 @@ export default function AdminLogin() {
         "startAt": startAt?.subtract(1, 'day').toString(),
         "endAt": endAt?.add(1, 'day').toString(),
         "branchName": user.store,
-        "serachWord": "",
+        "serachWord": searchWord,
         "status": selectValue,
         "advanceSearch": advanceSearch,
         limit,
@@ -132,7 +132,7 @@ export default function AdminLogin() {
     else router.push('/')
   }, [])
   useEffect(() => {
-   if(user.store !== 'store') getOrder()
+    if (user.store !== 'store') getOrder()
   }, [startAt, endAt, selectValue, user, advanceSearch])
   return (
     <div>
@@ -167,21 +167,22 @@ export default function AdminLogin() {
             <FormGroup>
               <FormControlLabel control={<Switch />} label="Búsqueda avanzada" onChange={() => { setAdvanceSearch(!advanceSearch) }} />
             </FormGroup>
-            {/* <TextField className="w-72" helperText="Buscar por nombre o identidad" variant="outlined" onChange={(e) => {
-              setSearchWord(e.target.value)
-            }} onKeyDown={e => {
-              if (e.key === 'Enter') {
-                alert('buscando')
-              }
-            }} InputProps={{
-              endAdornment: <Button className="mx-1" variant="contained" onClick={() => {
-                alert('buscando')
-              }}>Buscar</Button>,
 
-            }} /> */}
             {
               advanceSearch && (
                 <>
+                  <TextField className="w-72" helperText="Buscar por nombre o identidad" variant="outlined" onChange={(e) => {
+                    setSearchWord(e.target.value)
+                  }} onKeyDown={e => {
+                    if (e.key === 'Enter') {
+                      getOrder()
+                    }
+                  }} InputProps={{
+                    endAdornment: <Button className="mx-1" variant="contained" onClick={() => {
+                     getOrder()
+                    }}>Buscar</Button>,
+
+                  }} />
                   <TextField select className="mx-1 w-1/6" label="Estado de orden" variant="outlined" onChange={(e) => {
                     setselectValue(e.target.value)
                   }}
@@ -192,14 +193,18 @@ export default function AdminLogin() {
                       </MenuItem>
                     ))}
                   </TextField>
-                  <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <DatePicker label="Fecha de inicio" className="mx-1" referenceDate={dayjs()}
-                      value={startAt}
-                      onChange={(newValue) => setstartAt(newValue)}
-                    />
-                    <DatePicker label="Fecha de Final" className="mx-1" referenceDate={dayjs().add(1, 'day')} value={endAt}
-                      onChange={(newValue) => setendAt(newValue)} />
-                  </LocalizationProvider>
+                  <br />
+                  <>
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      <DatePicker label="Fecha de inicio" className="mx-1" referenceDate={dayjs()}
+                        value={startAt}
+                        onChange={(newValue) => setstartAt(newValue)}
+                      />
+                      <DatePicker label="Fecha de Final" className="mx-1" referenceDate={dayjs().add(1, 'day')} value={endAt}
+                        onChange={(newValue) => setendAt(newValue)} />
+                    </LocalizationProvider>
+                  </>
+
                 </>
               )
             }
