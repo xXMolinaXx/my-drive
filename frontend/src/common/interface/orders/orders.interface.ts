@@ -18,7 +18,8 @@ interface user {
   fullName: string,
   identification: string,
   telphone: string,
-  DNI: string
+  DNI: string,
+  email: string
 
 }
 export interface Cart {

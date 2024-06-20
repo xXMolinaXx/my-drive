@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Box, Button, Card, CardActions, CardContent, Drawer, FormControl, FormControlLabel, FormGroup, FormLabel, Grid, LinearProgress, List, ListItem, ListItemButton, ListItemIcon, ListItemText, MenuItem, Pagination, Paper, Radio, RadioGroup, Switch, TextField, Typography } from "@mui/material";
+import { Box, Button, Card, CardActions, CardContent, Dialog, Divider, Drawer, FormControl, FormControlLabel, FormGroup, FormLabel, Grid, LinearProgress, List, ListItem, ListItemButton, ListItemIcon, ListItemText, MenuItem, Pagination, Paper, Radio, RadioGroup, Switch, TextField, Typography } from "@mui/material";
 import LogoutIcon from '@mui/icons-material/Logout';
 import dayjs, { Dayjs } from 'dayjs';
 import { DemoContainer, DemoItem } from '@mui/x-date-pickers/internals/demo';
@@ -12,6 +12,7 @@ import { config } from "@/common/configs/config";
 import { IOrder } from "@/common/interface/orders/orders.interface";
 import MainAlert from "@/components/alerts/MainAlert";
 import { getCookieToken } from "@/common/utils/getCookieToken";
+import { createTimeAmPm } from "@/common/utils/time/formatTime";
 
 
 
@@ -44,14 +45,16 @@ export default function AdminLogin() {
     status: '',
     updatedAt: '',
     userId: '',
-    user: [{ _id: '', DNI: '', fullName: '', identification: '', telphone: '' }],
+    user: [{ _id: '', DNI: '', fullName: '', identification: '', telphone: '', email: '' }],
     isPayed: false
   }])
   const [openSnackBar, setOpenSnackBar] = useState(false)
   const [snackBarMessage, setSnackBarMessage] = useState('')
   const [snackbarType, setSnackbarType] = useState<'success' | 'error'>('error')
   const [selectValue, setselectValue] = useState('');
-  const [advanceSearch, setAdvanceSearch] = useState(false)
+  const [advanceSearch, setAdvanceSearch] = useState(false);
+  const [openProductDetail, setOpenProductDetail] = useState(false);
+  const [selectedCart, setSelectedCart] = useState<any>([]);
   const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
     setSkip(value * limit - limit)
     setPage(value)
@@ -118,17 +121,19 @@ export default function AdminLogin() {
       setSnackBarMessage(e.toStroing());
     })
   }
+
   useEffect(() => {
-    getOrder()
-  }, [startAt, endAt, selectValue,user])
-  useEffect(() => {
+    console.log('1');
     const userLocalStorage = localStorage.getItem('user')
     if (userLocalStorage) {
       setUser(JSON.parse(userLocalStorage))
-      if(JSON.parse(userLocalStorage).role !== 'admin') router.push('/catalog')
+      if (JSON.parse(userLocalStorage).role !== 'admin') router.push('/catalog')
     }
     else router.push('/')
   }, [])
+  useEffect(() => {
+   if(user.store !== 'store') getOrder()
+  }, [startAt, endAt, selectValue, user, advanceSearch])
   return (
     <div>
       <Drawer
@@ -160,7 +165,7 @@ export default function AdminLogin() {
 
           <div className="mb-5 mt-3">
             <FormGroup>
-              <FormControlLabel control={<Switch  />} label="Búsqueda avanzada" onChange={() => { setAdvanceSearch(!advanceSearch) }} />
+              <FormControlLabel control={<Switch />} label="Búsqueda avanzada" onChange={() => { setAdvanceSearch(!advanceSearch) }} />
             </FormGroup>
             {/* <TextField className="w-72" helperText="Buscar por nombre o identidad" variant="outlined" onChange={(e) => {
               setSearchWord(e.target.value)
@@ -209,8 +214,23 @@ export default function AdminLogin() {
               <Grid item sm={12} md={6} lg={4} key={order._id}>
                 <Card >
                   <CardContent>
-                    <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-                      {order.user[0].fullName} {order.user[0].DNI} {order.user[0].telphone}
+                    <Typography variant="h5" noWrap>
+                      {order.reservationDate.date?.toString()?.padStart(2, '0')}/{order.reservationDate.month?.toString()?.padStart(2, '0')}/{order.reservationDate.year} {createTimeAmPm(order.reservationDate.hour, order.reservationDate.minute)}
+                    </Typography>
+                    <Typography>
+                      Cliente: <b>{order.user[0].fullName}</b>
+                    </Typography>
+                    <Typography>
+                      DNI: <b> {order.user[0].DNI}</b>
+                    </Typography>
+                    <Typography noWrap={true} gutterBottom>
+                      {order.user[0].telphone} {order.user[0].email}
+                    </Typography>
+                    <Typography variant="body1" mt={1} gutterBottom>
+                      Total a pagar:<b> L. {order.finalPayment}</b>
+                    </Typography>
+                    <Typography variant="h6" color="text.secondary" gutterBottom>
+                      Sucursal {order.branch}
                     </Typography>
                     <TextField select className="" defaultValue={order.status} fullWidth label="Estado de orden" variant="outlined" onChange={(e) => {
                       handleUpdateOrder(order._id, e.target.value, order.isPayed)
@@ -222,15 +242,8 @@ export default function AdminLogin() {
                         </MenuItem>
                       ))}
                     </TextField>
-                    <Typography sx={{ mb: 1.5 }} color="text.secondary">
-                      Total a pagar: L. {order.finalPayment}
-                    </Typography>
-                    <Typography variant="body2">
-                      Sucursal {order.branch}
-                    </Typography>
-
                     <FormControl>
-                      <FormLabel id="demo-radio-buttons-group-label">Esta Pagado</FormLabel>
+                      <FormLabel >Esta Pagado</FormLabel>
                       <RadioGroup
                         row
                         defaultValue={order.isPayed}
@@ -247,9 +260,12 @@ export default function AdminLogin() {
                     </FormControl>
 
                   </CardContent>
-                  {/* <CardActions>
-                    <Button size="small" variant="contained">Editar</Button>
-                  </CardActions> */}
+                  <CardActions>
+                    <Button size="small" variant="contained" onClick={() => {
+                      setSelectedCart(order.cart)
+                      setOpenProductDetail(true)
+                    }}>Ver carrito</Button>
+                  </CardActions>
                 </Card>
               </Grid>
             ))}
@@ -261,6 +277,18 @@ export default function AdminLogin() {
 
       </div>
       <MainAlert handleClose={() => { setOpenSnackBar(false); setSnackBarMessage(''); setSnackbarType('error') }} open={openSnackBar} message={snackBarMessage} type={snackbarType} />
+      <Dialog open={openProductDetail} onClose={() => { setOpenProductDetail(false) }} >
+        <div className="p-5 max-h-52">
+          <Typography textAlign="center" variant="h6">PRODUCTOS</Typography>
+          {selectedCart?.map((product: any) => (
+            <>
+              <p key={product._id}>{product.name}{'--->'} <b>L.{product.price}</b></p>
+              <Divider />
+            </>
+          ))}
+
+        </div>
+      </Dialog>
     </div>
   )
 }

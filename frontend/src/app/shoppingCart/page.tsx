@@ -12,7 +12,7 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import MainLayout, { StoreContext } from "@/components/layout/MainLayout";
 import { useRouter } from "next/navigation";
-import { Alert, CircularProgress, Divider, Grid, MenuItem, Paper, Snackbar, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField } from "@mui/material";
+import { Alert, Chip, CircularProgress, Divider, Grid, MenuItem, Paper, Snackbar, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField } from "@mui/material";
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -21,8 +21,9 @@ import { getCart, setLocalStorageProduct } from "@/common/utils/cart";
 import { config } from "@/common/configs/config";
 import MainAlert from "@/components/alerts/MainAlert";
 import { getCookieToken } from "@/common/utils/getCookieToken";
-import { createTime } from "@/common/utils/time/formatTime";
+import { createTime, createTimeAmPm } from "@/common/utils/time/formatTime";
 import dayjs, { Dayjs } from "dayjs";
+import { STORES } from "@/common/const/store";
 const steps = ['Carrito', 'Selecionar sucursal', 'Confirmación'];
 function ShoppingCart2() {
   const { setShoppingCart: setShoppingCartContext, shoppingCart: shoppingCartContext } = useContext(StoreContext);
@@ -43,7 +44,7 @@ function ShoppingCart2() {
   const [snackBarMessage, setsnackBarMessage] = useState('');
   const [type, settype] = useState<'success' | 'error'>('success')
   const [availableSchedules, setavailableSchedules] = useState<any[]>([])
-  const [selectBranch, setSelectBranch] = useState('La granja');
+  const [selectBranch, setSelectBranch] = useState('la granja');
   const [selectDate, setSelectDate] = useState<Dayjs | null>(dayjs());
   const [selectedSchedule, setSelectedSchedule] = useState<any>({
     hour: -1,
@@ -98,6 +99,7 @@ function ShoppingCart2() {
         })
       }).then(data => data.json()).then(data => {
         if (data.statusCode === 200) {
+          setActiveStep((prevActiveStep) => prevActiveStep + 1)
           setShoppingCartContext(
             {
               amountProducts: 0,
@@ -106,6 +108,7 @@ function ShoppingCart2() {
           );
           setLocalStorageProduct([])
         } else {
+          setActiveStep(0)
           setsnackBarMessage(data.message);
           settype('error');
           setOpenSnackBar(true)
@@ -117,14 +120,14 @@ function ShoppingCart2() {
         setOpenSnackBar(true)
       })
     }
-    if (activeStep < 2) setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    // if (activeStep < 2) setActiveStep((prevActiveStep) => prevActiveStep + 1);
     else router.push('/')
   };
   const addMoreProduct = (index: number) => {
     const newCart = [...shoppingCart.products]
     // @ts-ignore
     newCart[index].amount += 1
-    
+
     setShoppingCart({
       ...shoppingCart,
       products: newCart,
@@ -216,7 +219,7 @@ function ShoppingCart2() {
   const step = [{
     key: 'primer-hijo',
     children: <div className="p-0 sm:p-10"><Grid container spacing={2} justifyContent={"center"}>
-      <Grid item md={4} lg={4} sm={12} xl={3}>
+      <Grid item md={5} lg={6} sm={12} xl={3}>
         {shoppingCart.products.length !== 0 ? shoppingCart.products.map((product, i) => (
           <MyCard
             key={`${product.name}-cart-${i}`}
@@ -233,7 +236,7 @@ function ShoppingCart2() {
         </Paper>}
       </Grid>
 
-      <Grid item md={4} lg={4} sm={12} xl={3}>
+      <Grid item md={5} lg={6} sm={12} xl={3}>
         <Paper elevation={4} className="w-full p-3">
           <Typography variant="h4" align="center" className="text-blue-500 bolder font-black" >Resumen de orden</Typography>
           <Divider />
@@ -285,21 +288,22 @@ function ShoppingCart2() {
           className='m-2 w-36 '
           select
           label="Selecione sucursal"
-          defaultValue="La granja"
+          defaultValue="la granja"
           onChange={e => setSelectBranch(e.target.value)}
+          value={selectBranch}
         >
-          {['Tepeyac', 'La granja', 'aeroplaza'].map((option, i) => (
-            <MenuItem key={`key-select-${option}-${i}`} value={option}>
-              {option}
+          {STORES.map((option, i) => (
+            <MenuItem key={`key-select-${option.value}-${i}`} value={option.value}>
+              {option.label}
             </MenuItem>
           ))}
         </TextField>
-        <TableContainer className="h-40" component={Paper}>
+        <TableContainer className="max-h-64" component={Paper}>
           <Table>
             <TableHead>
               <TableRow>
                 <TableCell>Horarios Disponibles</TableCell>
-                <TableCell align="right">Selecionar</TableCell>
+                <TableCell align="right">Reservacion</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -308,11 +312,10 @@ function ShoppingCart2() {
                   key={`table-${row.hour}${row.minute}-${i}`}
                 >
                   <TableCell component="th" scope="row">
-                    {createTime(row.hour, row.minute)}
+                    {createTimeAmPm(row.hour, row.minute)}
                   </TableCell>
-                  <TableCell className={`${selectedSchedule.hour === row.hour && selectedSchedule.minute === row.minute && 'bg-green-700 text-white'} cursor-default`} align="right" onClick={() => setSelectedSchedule(row)}>
-                    {selectedSchedule.hour === row.hour && selectedSchedule.minute === row.minute ? 'Selecionado' : 'Selecionar'}
-
+                  <TableCell align="right" onClick={() => setSelectedSchedule(row)}>
+                    <Button className={`${selectedSchedule.hour === row.hour && selectedSchedule.minute === row.minute && 'bg-green-700 text-white'} `} variant="contained">{selectedSchedule.hour === row.hour && selectedSchedule.minute === row.minute ? 'Reservado' : 'Reservar'}</Button>
                   </TableCell>
                 </TableRow>
               )) : <TableRow className="flex align-middle justify-center pt-5">
@@ -332,12 +335,10 @@ function ShoppingCart2() {
   {
     key: 'tercer-hijo',
     children: <Grid container spacing={2} justifyContent={"center"} className="p-10">
-      <Grid item>
-        <Typography align="center">Tu orden ha sido procesada con exito</Typography>
-        <Typography align="center">Como ultimo paso ingresa al siguiente link y haz el pago</Typography>
-        <div className="flex justify-center p-5">
-          <Button variant="contained" onClick={() => { location.assign("http://www.mozilla.org"); }}>Pagar</Button>
-        </div>
+      <Grid item container justifyContent={"center"} xs={12}>
+
+        <Chip label="Tu orden ha sido procesada con éxito" color="success" />
+        <Typography align="center">Como último paso, mantente atento a tu teléfono o correo electrónico. Nos pondremos en contacto contigo lo más pronto posible. Además, te recomiendo revisar tus órdenes. ¡Estamos aquí para ayudarte!</Typography>
 
       </Grid>
 
