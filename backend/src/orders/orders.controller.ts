@@ -53,7 +53,7 @@ export class OrdersController {
       };
     }
   }
-  @Roles(ERoles.ADMIN)
+  @Roles(ERoles.ADMIN, ERoles.FLEBOTOMISTA)
   @Post('/readBranchOrder')
   async findAll(@Body() body: SearchOrderDto): Promise<IhttpResponse> {
     try {
@@ -64,12 +64,11 @@ export class OrdersController {
         statusCode: 200,
       };
     } catch (error) {
-      console.log(error);
       return {
         message: 'Error en el sistema',
         success: true,
         statusCode: 500,
-        error: 'ocurio un error',
+        error: typeof error === 'string' ? error : 'ocurio un error',
       };
     }
   }
@@ -84,7 +83,6 @@ export class OrdersController {
         statusCode: 200,
       };
     } catch (error) {
-      console.log(error);
       return {
         message: 'Error en el sistema',
         success: true,
@@ -93,7 +91,7 @@ export class OrdersController {
       };
     }
   }
-  @Roles(ERoles.ADMIN)
+  @Roles(ERoles.ADMIN, ERoles.FLEBOTOMISTA)
   @Put('/:id')
   async updateOrder(@Body() body: UpdateOrderDto, @Param('id') id: string): Promise<IhttpResponse> {
     try {

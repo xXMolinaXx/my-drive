@@ -168,6 +168,7 @@ function OrderUser({ userOrder }: props2) {
           <Grid item sm={12} md={6} lg={3} key={order._id}>
             <Card >
               <CardContent>
+                # orden: {order._id.substring(order._id.length - 6, order._id.length)}
                 <Typography variant="h4" className="text-blue-700" color="text.secondary" gutterBottom>
                   {order.status}
                 </Typography>
@@ -184,9 +185,9 @@ function OrderUser({ userOrder }: props2) {
                 <Typography className="font-bold">
                   {`Pago realizado:        ${order.isPayed ? 'SI' : 'NO'} `}
                 </Typography>
-                {!order.urlPayment ? <Chip label="Aun sin método de pago" color="error" className="my-2" /> : <Button variant="contained" size="small" className="my-2"  onClick={() => {
+                {!order.urlPayment ? <Chip label="Aun sin método de pago" color="error" className="my-2" /> : <Button variant="contained" size="small" className="my-2" onClick={() => {
                   window.location.replace(order.urlPayment);
-                }}>Pagar</Button>}
+                }}>Realizar Pago</Button>}
 
               </CardContent>
               <CardActions>

@@ -5,7 +5,9 @@ export class UpdateOrderDto {
   @ApiProperty()
   status: string;
   @ApiProperty()
-  isPayed: boolean
+  isPayed: boolean;
   @ApiProperty()
-  urlPayment: string
+  urlPayment: string;
+  @ApiProperty()
+  type: number;
 }

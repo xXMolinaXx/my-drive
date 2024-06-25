@@ -76,7 +76,6 @@ export class UsersController {
         statusCode: 200,
       };
     } catch (error) {
-      console.log(error);
       return {
         message: 'error al actualizar contraseña',
         success: false,

@@ -63,7 +63,6 @@ export default function UpdatePassword({ params }: params) {
       setAuxiliarTextRegistrerForm(status)
       return;
     }
-    console.log(params.password);
     fetch(`${config.backend}/users/${params.id}`, {
       method: 'PUT',
       body: JSON.stringify({ password: registrerForm.password, hashPassword: params.password.replaceAll('_', '/').replaceAll('%','$') }),
@@ -86,7 +85,6 @@ export default function UpdatePassword({ params }: params) {
       }
 
     }).catch(e => {
-      console.log(e);
       setMainAlertMessage(e.toString());
       setOpenMainAlert(true);
     })

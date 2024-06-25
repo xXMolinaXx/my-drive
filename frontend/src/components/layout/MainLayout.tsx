@@ -1,5 +1,6 @@
 'use client'
 import React, { FormEvent, useEffect, useState, createContext, useContext, Dispatch, SetStateAction } from "react";
+import CloseIcon from '@mui/icons-material/Close';
 import { useRouter } from 'next/navigation'
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
@@ -7,7 +8,7 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-import { Badge, Drawer, TextField } from "@mui/material";
+import { Badge, Drawer, TextField, Tooltip } from "@mui/material";
 import Image from "next/image";
 import { config } from "@/common/configs/config";
 import { getCookieToken } from "@/common/utils/getCookieToken";
@@ -143,7 +144,7 @@ function MainLayout({ children }: props) {
     const user = localStorage.getItem('user')
     if (user) {
       setUser(JSON.parse(user))
-      if(JSON.parse(user).role === 'admin') router.push('/lcmadminlcm')
+      if (JSON.parse(user).role === 'admin') router.push('/lcmadminlcm')
     } else router.push('/')
   }, [])
   useEffect(() => {
@@ -154,21 +155,24 @@ function MainLayout({ children }: props) {
   }, [])
   const DrawerList = (
     <Box sx={{ width: 300 }} role="presentation" >
+      <Tooltip title="Cerrar menu lateral">
+        <Button variant="contained" className="mx-5 mt-5" onClick={toggleDrawer(false, 'login')}><CloseIcon /></Button>
+      </Tooltip>
       <div className="flex justify-center pl-5 pt-5 pr-5">
-          <div>
-            <Button className="mb-2" variant="outlined" type="submit" fullWidth onClick={()=>{
-              router.push(`/userOrders/${user._id}`)
-            }}>Mis ordenes</Button>
-            <Button className="mb-2" variant="outlined" type="submit" fullWidth onClick={() => {
-              localStorage.removeItem('user')
-              setUser(null)
-              document.cookie = "access_token=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
-              setOpen(false);
-              router.push('/')
-            }}>Cerrar sesion</Button>
-          </div>
+        <div>
+          <Button className="mb-2" variant="outlined" type="submit" fullWidth onClick={() => {
+            router.push(`/userOrders/${user._id}`)
+          }}>Mis ordenes</Button>
+          <Button className="mb-2" variant="outlined" type="submit" fullWidth onClick={() => {
+            localStorage.removeItem('user')
+            setUser(null)
+            document.cookie = "access_token=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
+            setOpen(false);
+            router.push('/')
+          }}>Cerrar sesion</Button>
+        </div>
       </div>
-      <Button variant="contained" className="mx-5 mt-5" onClick={toggleDrawer(false, 'login')}>Cerrar</Button>
+
     </Box>
   );
   return (

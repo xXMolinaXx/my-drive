@@ -47,19 +47,34 @@ export class OrdersService {
     if (status) query.status = status;
     return await this.orderModel.find(query).countDocuments();
   }
-  async findAll({ startAt, endAt, branchName, serachWord, status, limit, skip, advanceSearch }: SearchOrderDto) {
+  async findAll({ startAt, endAt, branchName, serachWord, status, limit, skip, advanceSearch, typeOfSearch }: SearchOrderDto) {
     let query: any = {
       branch: branchName,
     };
-    if (advanceSearch) {
-      query = { createdAt: { $gte: new Date(startAt), $lte: new Date(endAt) }, branch: branchName };
+    if (typeOfSearch === 1) {
+      query = {
+        branch: branchName,
+        reservation: { $gte: new Date(startAt), $lte: new Date(endAt) },
+        status: { $in: ['en espera', 'generacion pago on click', 'toma de muestra', 'realizar pago', 'agregación del recibo'] },
+      };
+    } else if (typeOfSearch === 2) {
+      query = {
+        branch: branchName,
+        status: 'finalizada',
+      };
+    } else if (typeOfSearch === 3) {
+      query = {
+        branch: branchName,
+        status: 'en espera',
+      };
+    } else if (advanceSearch) {
+      query = { reservation: { $gte: new Date(startAt), $lte: new Date(endAt) }, branch: branchName };
       if (serachWord) {
         const ids = await this.usersService.findUser(serachWord);
-        query = { createdAt: { $gte: new Date(startAt), $lte: new Date(endAt) }, branch: branchName, userId: { $in: ids } };
+        query = { reservation: { $gte: new Date(startAt), $lte: new Date(endAt) }, branch: branchName, userId: { $in: ids } };
       }
       if (status) query.status = status;
     }
-
     return await this.orderModel
       .aggregate([
         {
@@ -123,7 +138,18 @@ export class OrdersService {
   }
 
   async update(id: string, updateOrderDto: UpdateOrderDto) {
-    console.log(id,updateOrderDto);
+    if (updateOrderDto.type === 3) {
+      await this.orderModel.updateOne({ _id: id }, { $set: { status: 'generacion pago on click', urlPayment: updateOrderDto.urlPayment } });
+      return;
+    }
+    if (updateOrderDto.type === 2) {
+      await this.orderModel.updateOne({ _id: id }, { $set: { isPayed: updateOrderDto.isPayed } });
+      return;
+    }
+    if (updateOrderDto.type === 1) {
+      await this.orderModel.updateOne({ _id: id }, { $set: { status: updateOrderDto.status } });
+      return;
+    }
     await this.orderModel.updateOne({ _id: id }, { $set: { status: updateOrderDto.status, payed: updateOrderDto.isPayed, urlPayment: updateOrderDto.urlPayment } });
   }
 
