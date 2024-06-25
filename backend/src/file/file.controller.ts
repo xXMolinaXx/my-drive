@@ -4,26 +4,36 @@ import { ApiTags } from '@nestjs/swagger';
 import { diskStorage } from 'multer';
 import { join } from 'path';
 import { Public } from 'src/auth/decorators/public.decorator';
+import { IhttpResponse } from 'src/common/interface/httpResponse/httpResponse.interface';
 @ApiTags('files')
 @Controller('files')
 export class FilesController {
-  @Post('upload')
+  @Post('upload/:imageName')
   @UseInterceptors(
     FileInterceptor('file', {
       dest: './uploads',
       storage: diskStorage({
         destination: './uploads',
         filename: (req, file, cb) => {
-          cb(null, `${file.originalname}`);
+          cb(null, `${req.params.imageName}`);
         },
       }),
     }),
   )
-  uploadFile(@UploadedFile() file: Express.Multer.File) {
+  uploadFile(@UploadedFile() file: Express.Multer.File, @Param('imageName') image: string): IhttpResponse {
     try {
-      return { fileName: file.originalname };
+      return {
+        message: 'Imagen actualizada',
+        success: true,
+        statusCode: 200,
+        data: { fileName: image },
+      };
     } catch (error) {
-      return { fileName: 'error' };
+      return {
+        error: error.toString(),
+        message: 'error al subir image',
+        success: false,
+      };
     }
   }
   @Public()

@@ -18,6 +18,7 @@ import MainAlert from "@/components/alerts/MainAlert";
 import { getCookieToken } from "@/common/utils/getCookieToken";
 import { createTimeAmPm } from "@/common/utils/time/formatTime";
 import { orderStatus, orderStatusAdmin, orderStatusFlebotomista } from "@/common/const/orders/statusOrders.const";
+import Image from "next/image";
 
 
 function primeraLetraMayus(palabra: string) {
@@ -57,8 +58,10 @@ export default function AdminLogin() {
     userId: '',
     user: [{ _id: '', DNI: '', fullName: '', identification: '', telphone: '', email: '' }],
     isPayed: false,
-    urlPayment: ''
+    urlPayment: '',
+    imagePaymentName: '',
   }])
+  const [imageSelect, setimageSelect] = useState('')
   const [openSnackBar, setOpenSnackBar] = useState(false)
   const [snackBarMessage, setSnackBarMessage] = useState('')
   const [snackbarType, setSnackbarType] = useState<'success' | 'error'>('error')
@@ -291,6 +294,9 @@ export default function AdminLogin() {
                       setselectValue(e.target.value)
                     }}
                     >
+                      <MenuItem value="todo">
+                        Todo
+                      </MenuItem>
                       {orderStatus.map((option, i) => (
                         <MenuItem key={`key-status-${option.value}-${i}`} value={option.value}>
                           {option.value}
@@ -346,12 +352,12 @@ export default function AdminLogin() {
                         Sucursal {order.branch}
                       </Typography>
                       <Divider textAlign="left" className="mb-5" variant="middle" />
-                      <TextField disabled={view === 'historicView' ? true : false } select className="" defaultValue={order.status} fullWidth label="Estado de orden" variant="outlined" onChange={(e) => {
+                      <TextField disabled={view === 'historicView' ? true : false} select className="" defaultValue={order.status} fullWidth label="Estado de orden" variant="outlined" onChange={(e) => {
                         handleUpdateOrder(order._id, e.target.value, 1)
                       }}
                       >
                         {
-                           user.role === 'flebotomista' && order.status !== 'toma de muestra' &&
+                          user.role === 'flebotomista' && order.status !== 'toma de muestra' &&
                           <MenuItem key={`key-status-${order.status}`} value={order.status}>
                             {primeraLetraMayus(order.status)}
                           </MenuItem>
@@ -410,6 +416,7 @@ export default function AdminLogin() {
                     <CardActions>
                       <Button size="small" variant="contained" onClick={() => {
                         setSelectedCart(order.cart)
+                        setimageSelect(order.imagePaymentName)
                         setOpenProductDetail(true)
                       }}>Ver examenes</Button>
                     </CardActions>
@@ -427,8 +434,8 @@ export default function AdminLogin() {
       </Grid>
 
       <MainAlert handleClose={() => { setOpenSnackBar(false); setSnackBarMessage(''); setSnackbarType('error') }} open={openSnackBar} message={snackBarMessage} type={snackbarType} />
-      <Dialog open={openProductDetail} onClose={() => { setOpenProductDetail(false) }} >
-        <div className="p-5 max-h-52">
+      <Dialog open={openProductDetail} onClose={() => { setOpenProductDetail(false), setSelectedCart([]); setimageSelect('') }} >
+        <div className="p-5 max-h-full">
           <Typography textAlign="center" variant="h6">PRODUCTOS</Typography>
           {selectedCart?.map((product: any) => (
             <>
@@ -436,7 +443,12 @@ export default function AdminLogin() {
               <Divider />
             </>
           ))}
-
+          {
+            imageSelect &&
+            <Grid container justifyContent="center">
+              <Image src={`${config.backend}/files/getFile/${imageSelect}`} alt="Imagen de pago" height={500} width={500} />
+            </Grid>
+          }
         </div>
       </Dialog>
     </div>

@@ -22,6 +22,7 @@ interface props2 {
 function OrderUser({ userOrder }: props2) {
   const router = useRouter()
   const [loadingOrders, setLoadingOrders] = useState(false);
+  const [imageSelect, setimageSelect] = useState('')
   const [skip, setSkip] = useState(0);
   const [limit, setLimit] = useState(25)
   const [amount, setAmount] = useState(0);
@@ -56,10 +57,7 @@ function OrderUser({ userOrder }: props2) {
   const [snackbarType, setSnackbarType] = useState<'success' | 'error'>('error')
   const [selectValue, setselectValue] = useState('');
   const [Cart, setCart] = useState<any>()
-  const [image, setImage] = useState<any>();
-  const [urlImage, seturlImage] = useState<any>();
-  const [imageName, setImageName] = useState("");
-  const [Index, setIndex] = useState('')
+
   const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
     setSkip(value * limit - limit)
     setPage(value)
@@ -105,48 +103,35 @@ function OrderUser({ userOrder }: props2) {
   const onChangeImage = async (target: React.ChangeEvent<any>, index: string) => {
     try {
       const file = target.currentTarget.files[0];
-      setImageName(file.name);
-      setImage(file);
-      const url = URL.createObjectURL(file);
-      seturlImage(url);
-      setIndex(index);
+      // file.name = `${index}`
       if (file !== undefined) {
-        console.log('hola');
         const formData = new FormData();
-        formData.append("file", image);
-        let data: any = await fetch(`${config.backend}/files/upload`, {
+        formData.append("file", file);
+        let data: any = await fetch(`${config.backend}/files/upload/${index}.${file.type.split('/')[1]}`, {
           method: "POST",
           body: formData,
         }).then(data => data.json());
-        if (data.fileName !== 'error') {
-          const resp2 = await fetch(`${config.backend}/orders/${index}`, {
-            method: 'PUT',
-            body: JSON.stringify({ urlPayment: data.fileName, type: 4 }),
-            headers: {
-              "Content-Type": "application/json",
-              Accept: "application/json",
-              Authorization: `Bearer ${getCookieToken()}`,
-            },
-          }).then(data => data.json());
-          if (resp2.statusCode === 200) {
-            getOrder()
-            setSnackBarMessage('Imagen cargada con exito');
-            setOpenSnackBar(true);
-            setSnackbarType('success')
-          } else {
-            setSnackBarMessage(resp2.error);
-            setOpenSnackBar(true);
-            setSnackbarType('error')
-          }
-
-        }
+        if (!data.success) throw data.error
+        const resp2 = await fetch(`${config.backend}/orders/${index}`, {
+          method: 'PUT',
+          body: JSON.stringify({ urlPayment: data.data.fileName, type: 4 }),
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            Authorization: `Bearer ${getCookieToken()}`,
+          },
+        }).then(data => data.json());
+        if (resp2.statusCode !== 200) throw resp2.error;
+        getOrder()
+        setSnackBarMessage('Imagen cargada con exito');
+        setOpenSnackBar(true);
+        setSnackbarType('success')
       }
     } catch (error: any) {
-      setSnackBarMessage(error.toString());
+      setSnackBarMessage(error);
       setOpenSnackBar(true);
       setSnackbarType('error')
     }
-
   };
   useEffect(() => {
     getOrder()
@@ -211,17 +196,7 @@ function OrderUser({ userOrder }: props2) {
                 <Typography className="font-bold">
                   {`Pago realizado:        ${order.isPayed ? 'SI' : 'NO'} `}
                 </Typography>
-                {
-                  order._id === Index && <Grid container justifyContent="center">
-                    <Image src={urlImage} alt="Image cancha" height={50} width={50} />
-                  </Grid>
-                }
-                {
-                  order.imagePaymentName &&
-                  <Grid container justifyContent="center">
-                    <Image src={`${config.backend}/files/getFile/${order.imagePaymentName}`} alt="Imagen de pago" height={50} width={50} />
-                  </Grid>
-                }
+
 
 
                 <input
@@ -239,6 +214,7 @@ function OrderUser({ userOrder }: props2) {
                   <Button size="small" variant="text" onClick={() => {
                     setOpen(true);
                     setCart(order.cart)
+                    setimageSelect(order.imagePaymentName)
                   }}>
                     <ShoppingBagIcon />
                   </Button>
@@ -275,7 +251,7 @@ function OrderUser({ userOrder }: props2) {
 
       <MainAlert handleClose={() => { setOpenSnackBar(false); setSnackBarMessage(''); setSnackbarType('error') }} open={openSnackBar} message={snackBarMessage} type={snackbarType} duration={10000} />
       <Dialog open={open} onClose={() => { setOpen(false) }} >
-        <div className="p-5 max-h-52">
+        <div className="p-5 max-h-screen">
           <Typography textAlign="center" variant="h6">TUS PRODUCTOS</Typography>
           {Cart?.map((product: any) => (
             <>
@@ -283,7 +259,12 @@ function OrderUser({ userOrder }: props2) {
               <Divider />
             </>
           ))}
-
+          {
+            imageSelect &&
+            <Grid container justifyContent="center">
+              <Image src={`${config.backend}/files/getFile/${imageSelect}`} alt="Imagen de pago" height={500} width={500} />
+            </Grid>
+          }
         </div>
       </Dialog>
     </div>

@@ -73,7 +73,7 @@ export class OrdersService {
         const ids = await this.usersService.findUser(serachWord);
         query = { reservation: { $gte: new Date(startAt), $lte: new Date(endAt) }, branch: branchName, userId: { $in: ids } };
       }
-      if (status) query.status = status;
+      if (status && status !== 'todo') query.status = status;
     }
     return await this.orderModel
       .aggregate([
