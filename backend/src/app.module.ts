@@ -12,6 +12,7 @@ import { ProductsModule } from './products/products.module';
 import { OrdersModule } from './orders/orders.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { FileModule } from './file/file.module';
 
 @Module({
   imports: [
@@ -50,6 +51,7 @@ import { join } from 'path';
     }),
     ProductsModule,
     OrdersModule,
+    FileModule,
   ],
   controllers: [AppController],
   providers: [AppService],

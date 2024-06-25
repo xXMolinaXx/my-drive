@@ -35,7 +35,7 @@ export class Order {
   userId: SchemaMongoose.Types.ObjectId;
   @Prop({ required: true, type: String, enum: EBRANCH })
   branch: string;
-  @Prop({ default: 'en espera', enum: ['en espera', 'pagada', 'terminada', 'cancelada', 'generacion pago on click', 'toma de muestra', 'agregacion del recibo','finalizada'] })
+  @Prop({ default: 'en espera', enum: ['en espera', 'pagada', 'terminada', 'cancelada', 'generacion pago on click', 'toma de muestra', 'agregacion del recibo', 'finalizada'] })
   status: string;
   @Prop()
   reservationDate: ReservationDate;
@@ -45,6 +45,8 @@ export class Order {
   payed: boolean;
   @Prop({ type: String, default: '' })
   urlPayment: string;
+  @Prop({ type: String, default: '' })
+  imagePaymentName: string;
 }
 
 export const OrderSchema = SchemaFactory.createForClass(Order);

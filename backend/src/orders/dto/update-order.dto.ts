@@ -10,4 +10,6 @@ export class UpdateOrderDto {
   urlPayment: string;
   @ApiProperty()
   type: number;
+  @ApiProperty()
+  fileName: string;
 }

@@ -91,7 +91,7 @@ export class OrdersController {
       };
     }
   }
-  @Roles(ERoles.ADMIN, ERoles.FLEBOTOMISTA)
+  @Roles(ERoles.ADMIN, ERoles.FLEBOTOMISTA, ERoles.USER)
   @Put('/:id')
   async updateOrder(@Body() body: UpdateOrderDto, @Param('id') id: string): Promise<IhttpResponse> {
     try {

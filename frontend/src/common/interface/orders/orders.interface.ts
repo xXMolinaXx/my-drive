@@ -12,6 +12,7 @@ export interface IOrder {
   user: user[]
   isPayed: boolean
   urlPayment: string
+  imagePaymentName: string
 }
 interface user {
 

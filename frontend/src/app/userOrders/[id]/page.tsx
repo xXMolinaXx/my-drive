@@ -2,18 +2,17 @@
 'use client'
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-
-import { Box, Button, Card, CardActions, CardContent, Chip, Dialog, Divider, Drawer, FormControl, FormControlLabel, FormLabel, Grid, LinearProgress, List, ListItem, ListItemButton, ListItemIcon, ListItemText, MenuItem, Pagination, Paper, Radio, RadioGroup, TextField, Typography } from "@mui/material";
-import LogoutIcon from '@mui/icons-material/Logout';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import PaymentIcon from '@mui/icons-material/Payment';
+import ShoppingBagIcon from '@mui/icons-material/ShoppingBag';
+import { Box, Button, Card, CardActions, CardContent, Chip, Dialog, Divider, Grid, LinearProgress, Pagination, Tooltip, Typography } from "@mui/material";
 import dayjs, { Dayjs } from 'dayjs';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DatePicker } from "@mui/x-date-pickers";
 import { config } from "@/common/configs/config";
 import { IOrder } from "@/common/interface/orders/orders.interface";
 import MainAlert from "@/components/alerts/MainAlert";
 import { getCookieToken } from "@/common/utils/getCookieToken";
 import MainLayout from "@/components/layout/MainLayout";
+import Image from "next/image";
 interface params {
   params: { id: string };
 }
@@ -48,7 +47,8 @@ function OrderUser({ userOrder }: props2) {
     userId: '',
     user: [{ _id: '', DNI: '', fullName: '', identification: '', telphone: '', email: '' }],
     isPayed: false,
-    urlPayment: ''
+    urlPayment: '',
+    imagePaymentName: ''
   }])
   const [open, setOpen] = useState(false);
   const [openSnackBar, setOpenSnackBar] = useState(false)
@@ -56,6 +56,10 @@ function OrderUser({ userOrder }: props2) {
   const [snackbarType, setSnackbarType] = useState<'success' | 'error'>('error')
   const [selectValue, setselectValue] = useState('');
   const [Cart, setCart] = useState<any>()
+  const [image, setImage] = useState<any>();
+  const [urlImage, seturlImage] = useState<any>();
+  const [imageName, setImageName] = useState("");
+  const [Index, setIndex] = useState('')
   const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
     setSkip(value * limit - limit)
     setPage(value)
@@ -122,6 +126,44 @@ function OrderUser({ userOrder }: props2) {
       setSnackBarMessage(e.toStroing());
     })
   }
+  const onChangeImage = async (target: React.ChangeEvent<any>, index: string) => {
+    try {
+      const file = target.currentTarget.files[0];
+      setImageName(file.name);
+      setImage(file);
+      const url = URL.createObjectURL(file);
+      seturlImage(url);
+      setIndex(index);
+      if (file !== undefined) {
+        console.log('hola');
+        const formData = new FormData();
+        formData.append("file", image);
+        let data: any = await fetch(`${config.backend}/files/upload`, {
+          method: "POST",
+          body: formData,
+        }).then(data => data.json());
+        if (data.fileName !== 'error') {
+          const resp2 = await fetch(`${config.backend}/orders/${index}`, {
+            method: 'PUT',
+            body: JSON.stringify({ fileName: data.fileName, type: 4 }),
+            headers: {
+              "Content-Type": "application/json",
+              Accept: "application/json",
+              Authorization: `Bearer ${getCookieToken()}`,
+            },
+          }).then(data => data.json());
+          setSnackBarMessage('Imagen cargada con exito');
+          setOpenSnackBar(true);
+          setSnackbarType('success')
+        }
+      }
+    } catch (error: any) {
+      setSnackBarMessage(error.toString());
+      setOpenSnackBar(true);
+      setSnackbarType('error')
+    }
+
+  };
   useEffect(() => {
     getOrder()
   }, [startAt, endAt, selectValue])
@@ -162,11 +204,11 @@ function OrderUser({ userOrder }: props2) {
       {loadingOrders && <Box sx={{ width: '100%' }}>
         <LinearProgress />
       </Box>}
-      <Grid container spacing={2} width={'100%'} className="px-32" justifyContent="center">
+      <Grid container spacing={2} width={'100%'} className="px-32" >
 
-        {orders.length === 0 ? <Typography className="mt-5 ml-5" variant="h5" textAlign='center'>No se encontro ninguna orden</Typography> : orders?.map(order => (
+        {orders.length === 0 ? <Typography className="mt-5 ml-5" variant="h5" textAlign='center'>No se encontro ninguna orden</Typography> : orders?.map((order, i) => (
           <Grid item sm={12} md={6} lg={3} key={order._id}>
-            <Card >
+            <Card className="h-full">
               <CardContent>
                 # orden: {order._id.substring(order._id.length - 6, order._id.length)}
                 <Typography variant="h4" className="text-blue-700" color="text.secondary" gutterBottom>
@@ -185,16 +227,59 @@ function OrderUser({ userOrder }: props2) {
                 <Typography className="font-bold">
                   {`Pago realizado:        ${order.isPayed ? 'SI' : 'NO'} `}
                 </Typography>
-                {!order.urlPayment ? <Chip label="Aun sin método de pago" color="error" className="my-2" /> : <Button variant="contained" size="small" className="my-2" onClick={() => {
-                  window.location.replace(order.urlPayment);
-                }}>Realizar Pago</Button>}
+                {
+                  order._id === Index && <Grid container justifyContent="center">
+                    <Image src={urlImage} alt="Image cancha" height={50} width={50} />
+                  </Grid>
+                }
+                {
+                  order.imagePaymentName &&
+                  <Grid container justifyContent="center">
+                    <Image src={order.imagePaymentName} alt="Imagen de pago" height={50} width={50} />
+                  </Grid>
+                }
+
+
+                <input
+                  id="fileInput"
+                  className="hidden"
+                  type="file"
+                  name="avatar"
+                  accept="image/png, image/jpeg"
+                  onChange={(e) => onChangeImage(e, order._id)}
+                />
 
               </CardContent>
               <CardActions>
-                <Button size="small" variant="contained" onClick={() => {
-                  setOpen(true);
-                  setCart(order.cart)
-                }}>Ver exámenes</Button>
+                <Tooltip title="Tus productos">
+                  <Button size="small" variant="text" onClick={() => {
+                    setOpen(true);
+                    setCart(order.cart)
+                  }}>
+                    <ShoppingBagIcon />
+                  </Button>
+                </Tooltip>
+                <Tooltip title="Sube tu imagen del pago al banco">
+                  <Button size="small" variant="text" onClick={() => {
+                    //@ts-ignore
+                    document.getElementById('fileInput').click()
+                  }}><CloudUploadIcon /></Button>
+                </Tooltip>
+                {!order.urlPayment &&
+                  <Tooltip title="Realizar pago a banco">
+                    <Button variant="text" size="small" className="my-2" onClick={() => {
+                      setSnackBarMessage('Después de realizar el pago, sube la imagen de tu factura para poder confirmar que realizastes tu pago. Haz click en el boton a la par de ver exámenes');
+                      setSnackbarType('success');
+                      setOpenSnackBar(true);
+                      setTimeout(() => {
+                        window.open(order.urlPayment, "_blank", "height=500,width=500");
+                      }, 5000);
+
+                    }}>
+                      <PaymentIcon />
+                    </Button>
+                  </Tooltip>
+                }
               </CardActions>
             </Card>
           </Grid>
@@ -204,7 +289,7 @@ function OrderUser({ userOrder }: props2) {
       </Grid>
       <Pagination className="mt-4" count={amount} page={page} color="primary" onChange={handleChange} />
 
-      <MainAlert handleClose={() => { setOpenSnackBar(false); setSnackBarMessage(''); setSnackbarType('error') }} open={openSnackBar} message={snackBarMessage} type={snackbarType} />
+      <MainAlert handleClose={() => { setOpenSnackBar(false); setSnackBarMessage(''); setSnackbarType('error') }} open={openSnackBar} message={snackBarMessage} type={snackbarType} duration={10000} />
       <Dialog open={open} onClose={() => { setOpen(false) }} >
         <div className="p-5 max-h-52">
           <Typography textAlign="center" variant="h6">TUS PRODUCTOS</Typography>
