@@ -102,30 +102,6 @@ function OrderUser({ userOrder }: props2) {
         setSnackBarMessage(e.toString())
       })
   }
-  const handleUpdateOrder = (id: string, status: string, isPayed: boolean) => {
-    fetch(`${config.backend}/orders/${id}`, {
-      method: 'PUT',
-      body: JSON.stringify({ status, isPayed }),
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        Authorization: `Bearer ${getCookieToken()}`,
-      },
-    }).then(data => data.json()).then(data => {
-      if (data.statusCode === 200) {
-        setOpenSnackBar(true);
-        setSnackBarMessage('orden actualizada');
-        setSnackbarType('success');
-        // getOrder();
-      } else {
-        setOpenSnackBar(true);
-        setSnackBarMessage(data.error);
-      }
-    }).catch(e => {
-      setOpenSnackBar(true);
-      setSnackBarMessage(e.toStroing());
-    })
-  }
   const onChangeImage = async (target: React.ChangeEvent<any>, index: string) => {
     try {
       const file = target.currentTarget.files[0];
@@ -145,16 +121,24 @@ function OrderUser({ userOrder }: props2) {
         if (data.fileName !== 'error') {
           const resp2 = await fetch(`${config.backend}/orders/${index}`, {
             method: 'PUT',
-            body: JSON.stringify({ fileName: data.fileName, type: 4 }),
+            body: JSON.stringify({ urlPayment: data.fileName, type: 4 }),
             headers: {
               "Content-Type": "application/json",
               Accept: "application/json",
               Authorization: `Bearer ${getCookieToken()}`,
             },
           }).then(data => data.json());
-          setSnackBarMessage('Imagen cargada con exito');
-          setOpenSnackBar(true);
-          setSnackbarType('success')
+          if (resp2.statusCode === 200) {
+            getOrder()
+            setSnackBarMessage('Imagen cargada con exito');
+            setOpenSnackBar(true);
+            setSnackbarType('success')
+          } else {
+            setSnackBarMessage(resp2.error);
+            setOpenSnackBar(true);
+            setSnackbarType('error')
+          }
+
         }
       }
     } catch (error: any) {
@@ -235,7 +219,7 @@ function OrderUser({ userOrder }: props2) {
                 {
                   order.imagePaymentName &&
                   <Grid container justifyContent="center">
-                    <Image src={order.imagePaymentName} alt="Imagen de pago" height={50} width={50} />
+                    <Image src={`${config.backend}/files/getFile/${order.imagePaymentName}`} alt="Imagen de pago" height={50} width={50} />
                   </Grid>
                 }
 
@@ -265,7 +249,7 @@ function OrderUser({ userOrder }: props2) {
                     document.getElementById('fileInput').click()
                   }}><CloudUploadIcon /></Button>
                 </Tooltip>
-                {!order.urlPayment &&
+                {!order.urlPayment && !order.isPayed &&
                   <Tooltip title="Realizar pago a banco">
                     <Button variant="text" size="small" className="my-2" onClick={() => {
                       setSnackBarMessage('Después de realizar el pago, sube la imagen de tu factura para poder confirmar que realizastes tu pago. Haz click en el boton a la par de ver exámenes');

@@ -139,7 +139,8 @@ export class OrdersService {
 
   async update(id: string, updateOrderDto: UpdateOrderDto) {
     if (updateOrderDto.type === 4) {
-      await this.orderModel.updateOne({ _id: id }, { $set: { imagePaymentName: updateOrderDto.urlPayment } });
+      console.log(updateOrderDto);
+      await this.orderModel.updateOne({ _id: id }, { $set: { imagePaymentName: updateOrderDto.urlPayment, isPayed: true, status: 'agregacion del recibo' } });
       return;
     }
     if (updateOrderDto.type === 3) {
