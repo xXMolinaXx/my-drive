@@ -60,7 +60,7 @@ export class OrdersService {
     } else if (typeOfSearch === 2) {
       query = {
         branch: branchName,
-        status: 'finalizada',
+        status: { $in: ['finalizada', 'cancelada'] },
       };
     } else if (typeOfSearch === 3) {
       query = {
