@@ -65,7 +65,8 @@ export class OrdersService {
     } else if (typeOfSearch === 3) {
       query = {
         branch: branchName,
-        status: 'en espera',
+        status: { $nin: ['terminada', 'cancelada', 'finalizada'] },
+        payed: false,
       };
     } else if (advanceSearch) {
       query = { reservation: { $gte: new Date(startAt), $lte: new Date(endAt) }, branch: branchName };
@@ -138,8 +139,8 @@ export class OrdersService {
   }
 
   async update(id: string, updateOrderDto: UpdateOrderDto) {
+    console.log(updateOrderDto);
     if (updateOrderDto.type === 4) {
-      console.log(updateOrderDto);
       await this.orderModel.updateOne({ _id: id }, { $set: { imagePaymentName: updateOrderDto.urlPayment, isPayed: true, status: 'agregacion del recibo' } });
       return;
     }
@@ -148,7 +149,7 @@ export class OrdersService {
       return;
     }
     if (updateOrderDto.type === 2) {
-      await this.orderModel.updateOne({ _id: id }, { $set: { isPayed: updateOrderDto.isPayed } });
+      await this.orderModel.updateOne({ _id: id }, { $set: { payed: updateOrderDto.isPayed } });
       return;
     }
     if (updateOrderDto.type === 1) {

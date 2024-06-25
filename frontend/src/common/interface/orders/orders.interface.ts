@@ -10,7 +10,7 @@ export interface IOrder {
   updatedAt: string
   __v: number
   user: user[]
-  isPayed: boolean
+  payed: boolean
   urlPayment: string
   imagePaymentName: string
 }

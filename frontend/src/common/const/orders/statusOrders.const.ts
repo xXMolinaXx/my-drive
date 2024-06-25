@@ -39,6 +39,7 @@ export const orderStatusFlebotomista = [
 export const orderStatusAdmin = [
   orderStatus[0],
   orderStatus[2],
+  orderStatus[4],
   orderStatus[1],
   orderStatus[5],
   orderStatus[6]

@@ -352,7 +352,7 @@ export default function AdminLogin() {
                         Sucursal {order.branch}
                       </Typography>
                       <Divider textAlign="left" className="mb-5" variant="middle" />
-                      <TextField disabled={view === 'historicView' ? true : false} select className="" defaultValue={order.status} fullWidth label="Estado de orden" variant="outlined" onChange={(e) => {
+                      <TextField select className="" defaultValue={order.status} fullWidth label="Estado de orden" variant="outlined" onChange={(e) => {
                         handleUpdateOrder(order._id, e.target.value, 1)
                       }}
                       >
@@ -377,11 +377,11 @@ export default function AdminLogin() {
                         }
                         { }
                       </TextField>
-                      <FormControl disabled={view === 'historicView' ? true : false}>
+                      <FormControl >
                         <FormLabel >Esta Pagado</FormLabel>
                         <RadioGroup
                           row
-                          defaultValue={order.isPayed}
+                          defaultValue={order.payed}
                           name="radio-buttons-group"
                           className="flex"
                           onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
@@ -398,7 +398,7 @@ export default function AdminLogin() {
                         id={`search-product-${order._id}`}
                         label="url pago"
                         variant="outlined"
-                        disabled={order.urlPayment ? true : false}
+
                         fullWidth
                         InputProps={{
                           endAdornment: <Button disabled={order.urlPayment ? true : false} className="sm:w-full md:w-1/3 lg:w-1/3 ml-2 rounded-r-lg" variant="contained" onClick={() => {
