@@ -47,7 +47,7 @@ function OrderUser({ userOrder }: props2) {
     updatedAt: '',
     userId: '',
     user: [{ _id: '', DNI: '', fullName: '', identification: '', telphone: '', email: '' }],
-    isPayed: false,
+    payed: false,
     urlPayment: '',
     imagePaymentName: ''
   }])
@@ -194,7 +194,7 @@ function OrderUser({ userOrder }: props2) {
                 </Typography>
 
                 <Typography className="font-bold">
-                  {`Pago realizado:        ${order.isPayed ? 'SI' : 'NO'} `}
+                  {`Pago realizado:        ${order.payed ? 'SI' : 'NO'} `}
                 </Typography>
 
 
@@ -225,7 +225,7 @@ function OrderUser({ userOrder }: props2) {
                     document.getElementById('fileInput').click()
                   }}><CloudUploadIcon /></Button>
                 </Tooltip>
-                {!order.urlPayment && !order.isPayed &&
+                {!order.urlPayment && !order.payed &&
                   <Tooltip title="Realizar pago a banco">
                     <Button variant="text" size="small" className="my-2" onClick={() => {
                       setSnackBarMessage('Después de realizar el pago, sube la imagen de tu factura para poder confirmar que realizastes tu pago. Haz click en el boton a la par de ver exámenes');

@@ -57,7 +57,7 @@ export default function AdminLogin() {
     updatedAt: '',
     userId: '',
     user: [{ _id: '', DNI: '', fullName: '', identification: '', telphone: '', email: '' }],
-    isPayed: false,
+    payed: false,
     urlPayment: '',
     imagePaymentName: '',
   }])
