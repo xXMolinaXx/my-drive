@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import PaymentIcon from '@mui/icons-material/Payment';
 import ShoppingBagIcon from '@mui/icons-material/ShoppingBag';
-import { Box, Button, Card, CardActions, CardContent, Chip, Dialog, Divider, Grid, LinearProgress, Pagination, Tooltip, Typography } from "@mui/material";
+import { Backdrop, Box, Button, Card, CardActions, CardContent, Chip, CircularProgress, Dialog, Divider, Grid, LinearProgress, Pagination, Tooltip, Typography } from "@mui/material";
 import dayjs, { Dayjs } from 'dayjs';
 import { config } from "@/common/configs/config";
 import { IOrder } from "@/common/interface/orders/orders.interface";
@@ -102,8 +102,8 @@ function OrderUser({ userOrder }: props2) {
   }
   const onChangeImage = async (target: React.ChangeEvent<any>, index: string) => {
     try {
+      setLoadingOrders(true)
       const file = target.currentTarget.files[0];
-      // file.name = `${index}`
       if (file !== undefined) {
         const formData = new FormData();
         formData.append("file", file);
@@ -132,6 +132,7 @@ function OrderUser({ userOrder }: props2) {
       setOpenSnackBar(true);
       setSnackbarType('error')
     }
+    setLoadingOrders(false);
   };
   useEffect(() => {
     getOrder()
@@ -225,7 +226,7 @@ function OrderUser({ userOrder }: props2) {
                     document.getElementById('fileInput').click()
                   }}><CloudUploadIcon /></Button>
                 </Tooltip>
-                {!order.urlPayment && !order.payed &&
+                {order.urlPayment && !order.payed &&
                   <Tooltip title="Realizar pago a banco">
                     <Button variant="text" size="small" className="my-2" onClick={() => {
                       setSnackBarMessage('Después de realizar el pago, sube la imagen de tu factura para poder confirmar que realizastes tu pago. Haz click en el boton a la par de ver exámenes');
@@ -267,6 +268,13 @@ function OrderUser({ userOrder }: props2) {
           }
         </div>
       </Dialog>
+      <Backdrop
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={loadingOrders}
+      // onClick={handleClose}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </div>
   )
 }

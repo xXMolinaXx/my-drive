@@ -55,7 +55,7 @@ export class OrdersService {
       query = {
         branch: branchName,
         reservation: { $gte: new Date(startAt), $lte: new Date(endAt) },
-        status: { $in: ['en espera', 'generacion pago on click', 'toma de muestra', 'realizar pago', 'agregación del recibo'] },
+        status: { $nin: ['terminada', 'cancelada', 'finalizada'] },
       };
     } else if (typeOfSearch === 2) {
       query = {
@@ -98,7 +98,7 @@ export class OrdersService {
       ])
       .limit(limit)
       .skip(skip)
-      .sort({ reservation: -1 })
+      .sort({ reservation: 1 })
       .exec();
   }
   async findAllUserCount({ startAt, endAt, status, userId }: SearchUserOrderDto) {

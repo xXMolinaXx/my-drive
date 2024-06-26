@@ -225,7 +225,7 @@ export default function AdminLogin() {
                       <ListItemIcon>
                         <TodayIcon />
                       </ListItemIcon>
-                      <ListItemText primary="Tomas rápidas en espera" />
+                      <ListItemText primary="Tomas rápidas en proceso" />
                     </ListItemButton>
                   </ListItem>
                   <ListItem disablePadding onClick={() => {
@@ -327,100 +327,11 @@ export default function AdminLogin() {
                 <LinearProgress />
               </Box>} {orders.length === 0 ? <Typography className="mt-5 ml-5" variant="h5" textAlign='center'>No se encontro ninguna orden</Typography> : orders?.map(order => (
                 <Grid item sm={12} md={6} lg={4} key={order._id}>
-                  <Card >
-                    <CardContent>
-                      # orden: {order._id.substring(order._id.length - 6, order._id.length)}
-                      <Typography variant="h5" noWrap>
-                        {(order.reservationDate.month + 1)?.toString()?.padStart(2, '0')}/{order.reservationDate.date?.toString()?.padStart(2, '0')}/{order.reservationDate.year} {createTimeAmPm(order.reservationDate.hour, order.reservationDate.minute)}
-                      </Typography>
-                      <Typography>
-                        Cliente: <b>{order.user[0].fullName}</b>
-                      </Typography>
-                      <Typography>
-                        DNI: <b> {order.user[0].DNI}</b>
-                      </Typography>
-                      <Typography noWrap={true} gutterBottom>
-                        Teléfono: {order.user[0].telphone}
-                      </Typography>
-                      <Typography noWrap={true} gutterBottom>
-                        Email:  {order.user[0].email}
-                      </Typography>
-                      <Typography variant="body1" mt={1} gutterBottom>
-                        Total a pagar:<b> L. {order.finalPayment}</b>
-                      </Typography>
-                      <Typography variant="body1" gutterBottom>
-                        Sucursal {order.branch}
-                      </Typography>
-                      <Divider textAlign="left" className="mb-5" variant="middle" />
-                      <TextField select className="" defaultValue={order.status} fullWidth label="Estado de orden" variant="outlined" onChange={(e) => {
-                        handleUpdateOrder(order._id, e.target.value, 1)
-                      }}
-                      >
-                        {
-                          user.role === 'flebotomista' && order.status !== 'toma de muestra' &&
-                          <MenuItem key={`key-status-${order.status}`} value={order.status}>
-                            {primeraLetraMayus(order.status)}
-                          </MenuItem>
-                        }
-
-
-                        {
-                          user.role === 'flebotomista' ? orderStatusFlebotomista.map((option, i) => (
-                            <MenuItem key={`key-status-${option.label}-${i}`} value={option.value}>
-                              {option.label}
-                            </MenuItem>
-                          )) : orderStatusAdmin.map((option, i) => (
-                            <MenuItem key={`key-status-${option.label}-${i}`} value={option.value}>
-                              {option.label}
-                            </MenuItem>
-                          ))
-                        }
-                        { }
-                      </TextField>
-                      <FormControl >
-                        <FormLabel >Esta Pagado</FormLabel>
-                        <RadioGroup
-                          row
-                          defaultValue={order.payed}
-                          name="radio-buttons-group"
-                          className="flex"
-                          onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                            handleUpdateOrder(order._id, Boolean((event.target as HTMLInputElement).value), 2)
-                          }}
-                        >
-                          <FormControlLabel value={true} control={<Radio />} label="Si" />
-                          <FormControlLabel value={false} control={<Radio />} label="No" />
-
-                        </RadioGroup>
-                      </FormControl>
-                      <TextField
-                        defaultValue={order.urlPayment}
-                        id={`search-product-${order._id}`}
-                        label="url pago"
-                        variant="outlined"
-
-                        fullWidth
-                        InputProps={{
-                          endAdornment: <Button disabled={order.urlPayment ? true : false} className="sm:w-full md:w-1/3 lg:w-1/3 ml-2 rounded-r-lg" variant="contained" onClick={() => {
-                            const input = document.querySelector(`#search-product-${order._id}`);
-                            //@ts-ignore
-                            if (input.value) {
-                              //@ts-ignore
-                              handleUpdateOrder(order._id, input?.value, 3)
-                            }
-
-                          }}><SaveIcon /></Button>
-                        }}
-                      />
-                    </CardContent>
-                    <CardActions>
-                      <Button size="small" variant="contained" onClick={() => {
-                        setSelectedCart(order.cart)
-                        setimageSelect(order.imagePaymentName)
-                        setOpenProductDetail(true)
-                      }}>Ver examenes</Button>
-                    </CardActions>
-                  </Card>
+                  <MeCard order={order} handleUpdateOrder={handleUpdateOrder} role={user.role || 'admin'} showDetailOrder={() => {
+                    setSelectedCart(order.cart)
+                    setimageSelect(order.imagePaymentName)
+                    setOpenProductDetail(true)
+                  }} />
                 </Grid>
               ))}
 
@@ -453,4 +364,149 @@ export default function AdminLogin() {
       </Dialog>
     </div>
   )
+}
+interface MeCardProp {
+  role: string
+  order: any
+  handleUpdateOrder: any
+  showDetailOrder: any
+}
+const MeCard = ({ role, order, handleUpdateOrder, showDetailOrder }: MeCardProp) => {
+  if (role === 'flebotomista') {
+    return (
+      <Card >
+        <CardContent>
+          # orden: {order._id.substring(order._id.length - 6, order._id.length)}
+          <Typography variant="h5" noWrap>
+            {(order.reservationDate.month + 1)?.toString()?.padStart(2, '0')}/{order.reservationDate.date?.toString()?.padStart(2, '0')}/{order.reservationDate.year} {createTimeAmPm(order.reservationDate.hour, order.reservationDate.minute)}
+          </Typography>
+          <Typography>
+            Cliente: <b>{order.user[0].fullName}</b>
+          </Typography>
+          <Typography>
+            DNI: <b> {order.user[0].DNI}</b>
+          </Typography>
+          <Typography noWrap={true} gutterBottom>
+            Teléfono: {order.user[0].telphone}
+          </Typography>
+          <Typography noWrap={true} gutterBottom>
+            Email:  {order.user[0].email}
+          </Typography>
+          <Typography variant="body1" gutterBottom>
+            Sucursal {order.branch}
+          </Typography>
+          <Typography variant="body1" gutterBottom>
+            Pago realizado: <b> {order.payed ? 'SI' : 'NO'}</b>
+          </Typography>
+          <Divider textAlign="left" className="mb-5" variant="middle" />
+          <TextField select className="" defaultValue={order.status} fullWidth label="Estado de orden" variant="outlined" onChange={(e) => {
+            handleUpdateOrder(order._id, e.target.value, 1)
+          }}
+          >
+            {
+              order.status !== 'toma de muestra' &&
+              <MenuItem key={`key-status-${order.status}`} value={order.status}>
+                {primeraLetraMayus(order.status)}
+              </MenuItem>
+            }
+
+
+            {
+              orderStatusFlebotomista.map((option, i) => (
+                <MenuItem key={`key-status-${option.label}-${i}`} value={option.value}>
+                  {option.label}
+                </MenuItem>
+              ))
+            }
+          </TextField>
+        </CardContent>
+        <CardActions>
+          <Button size="small" variant="contained" onClick={showDetailOrder}>Detalles de la compra</Button>
+        </CardActions>
+      </Card>
+    )
+  } else {
+    return (
+      <Card >
+        <CardContent>
+          # orden: {order._id.substring(order._id.length - 6, order._id.length)}
+          <Typography variant="h5" noWrap>
+            {(order.reservationDate.month + 1)?.toString()?.padStart(2, '0')}/{order.reservationDate.date?.toString()?.padStart(2, '0')}/{order.reservationDate.year} {createTimeAmPm(order.reservationDate.hour, order.reservationDate.minute)}
+          </Typography>
+          <Typography>
+            Cliente: <b>{order.user[0].fullName}</b>
+          </Typography>
+          <Typography>
+            DNI: <b> {order.user[0].DNI}</b>
+          </Typography>
+          <Typography noWrap={true} gutterBottom>
+            Teléfono: {order.user[0].telphone}
+          </Typography>
+          <Typography noWrap={true} gutterBottom>
+            Email:  {order.user[0].email}
+          </Typography>
+          <Typography variant="body1" mt={1} gutterBottom>
+            Total a pagar:<b> L. {order.finalPayment}</b>
+          </Typography>
+          <Typography variant="body1" gutterBottom>
+            Sucursal {order.branch}
+          </Typography>
+          <Divider textAlign="left" className="mb-5" variant="middle" />
+          <TextField select className="" defaultValue={order.status} fullWidth label="Estado de orden" variant="outlined" onChange={(e) => {
+            handleUpdateOrder(order._id, e.target.value, 1)
+          }}
+          >
+
+
+            {
+              orderStatusAdmin.map((option, i) => (
+                <MenuItem key={`key-status-${option.label}-${i}`} value={option.value}>
+                  {option.label}
+                </MenuItem>
+              ))
+            }
+          </TextField>
+          <FormControl >
+            <FormLabel >Esta Pagado</FormLabel>
+            <RadioGroup
+              row
+              defaultValue={order.payed}
+              name="radio-buttons-group"
+              className="flex"
+              onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                handleUpdateOrder(order._id, Boolean((event.target as HTMLInputElement).value), 2)
+              }}
+            >
+              <FormControlLabel value={true} control={<Radio />} label="Si" />
+              <FormControlLabel value={false} control={<Radio />} label="No" />
+
+            </RadioGroup>
+          </FormControl>
+          <TextField
+            defaultValue={order.urlPayment}
+            id={`search-product-${order._id}`}
+            label="url pago"
+            variant="outlined"
+
+            fullWidth
+            InputProps={{
+              endAdornment: <Button disabled={order.urlPayment ? true : false} className="sm:w-full md:w-1/3 lg:w-1/3 ml-2 rounded-r-lg" variant="contained" onClick={() => {
+                const input = document.querySelector(`#search-product-${order._id}`);
+                //@ts-ignore
+                if (input.value) {
+                  //@ts-ignore
+                  handleUpdateOrder(order._id, input?.value, 3)
+                }
+
+              }}><SaveIcon /></Button>
+            }}
+          />
+        </CardContent>
+        <CardActions>
+          <Button size="small" variant="contained" onClick={showDetailOrder}>Detalles de la compra</Button>
+        </CardActions>
+      </Card>
+    )
+  }
+
 }
