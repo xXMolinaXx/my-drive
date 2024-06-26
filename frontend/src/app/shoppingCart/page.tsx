@@ -63,6 +63,7 @@ function ShoppingCart2() {
   };
 
   const handleNext = () => {
+    window.scrollTo(0, 0)
     if (shoppingCart.products.length === 0) {
       return;
     }
@@ -237,7 +238,7 @@ function ShoppingCart2() {
         </Paper>}
       </Grid>
 
-      <Grid item md={5} lg={6} sm={12} xl={3}>
+      <Grid item md={5} lg={6} sm={12} xl={4}>
         <Paper elevation={4} className="w-full p-3">
           <Typography variant="h4" align="center" className="text-blue-500 bolder font-black" >Resumen de orden</Typography>
           <Divider />
@@ -251,16 +252,16 @@ function ShoppingCart2() {
                   <TableCell align="right">{shoppingCart.amountProducts}</TableCell>
                 </TableRow>
                 <TableRow>
-                  <TableCell component="th" scope="row">
+                  <TableCell className=" w-1/5">
                     DESCUENTO(3RA Y 4TA EDAD)
                   </TableCell>
-                  <TableCell align="right">{shoppingCart.amountProducts}</TableCell>
+                  <TableCell align="right" className="font-black w-4/5"> L. {shoppingCart.amountProducts.toFixed(2)}</TableCell>
                 </TableRow>
                 <TableRow>
-                  <TableCell component="th" className="font-black" scope="row">
+                  <TableCell className="font-black w-1/5"  >
                     TOTAL
                   </TableCell>
-                  <TableCell align="right" className="font-black">L. {totalPayment} </TableCell>
+                  <TableCell align="right" className="font-black w-4/5">L. {totalPayment.toFixed(2)} </TableCell>
                 </TableRow>
 
               </TableBody>
@@ -367,7 +368,7 @@ function ShoppingCart2() {
       </Stepper>
       {step[activeStep].children}
       <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
-        <Button onClick={() => setActiveStep(activeStep - 1)} disabled={[0, 2].includes(activeStep)}>
+        <Button onClick={() => { window.scrollTo(0, 0); setActiveStep(activeStep - 1) }} disabled={[0, 2].includes(activeStep)}>
           Regresar
         </Button>
         <Box sx={{ flex: '1 1 auto' }} />

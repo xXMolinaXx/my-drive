@@ -1,6 +1,9 @@
 'use client'
 import React, { FormEvent, useEffect, useState, createContext, useContext, Dispatch, SetStateAction } from "react";
+import MenuIcon from '@mui/icons-material/Menu';
+import PersonIcon from '@mui/icons-material/Person';
 import CloseIcon from '@mui/icons-material/Close';
+import LogoutIcon from '@mui/icons-material/Logout';
 import { useRouter } from 'next/navigation'
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
@@ -8,12 +11,13 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-import { Badge, Drawer, TextField, Tooltip } from "@mui/material";
+import { Badge, Collapse, Drawer, Grid, List, ListItem, ListItemButton, ListItemIcon, ListItemText, TextField, Tooltip } from "@mui/material";
 import Image from "next/image";
 import { config } from "@/common/configs/config";
 import { getCookieToken } from "@/common/utils/getCookieToken";
 import { IProduct, IProductState } from "@/common/interface/product.interface";
 import { getCart } from "@/common/utils/cart";
+import Link from "next/link";
 
 interface IContext {
   shoppingCart: IProductState,
@@ -38,108 +42,19 @@ function MainLayout({ children }: props) {
   const { shoppingCart } = useContext(StoreContext)
   const router = useRouter()
 
+  const [openDrawer, setOpenDrawer] = React.useState(false);
   const [open, setOpen] = React.useState(false);
   const [formType, setFormType] = useState<'register' | 'login' | 'user'>('register')
   const [loadingButton, setLoadingButton] = useState(false)
   const [user, setUser] = useState<any>();
   const toggleDrawer = (newOpen: boolean, PFormType: 'register' | 'login' | 'user') => () => {
-    setOpen(newOpen);
+    setOpenDrawer(newOpen);
     setFormType(PFormType);
   };
-  const logIn = (e: FormEvent<HTMLFormElement>) => {
-    var current = new Date(); //'Mar 11 2015' current.getTime() = 1426060964567
-    var followingDay = new Date(current.getTime() + 86400000); // + 1 day in ms
-    followingDay.toLocaleDateString();
 
-    e.preventDefault()
-    let userIdentification = ''
-    let password = 'prueba'
-    const elementUserIdentification: any = document.querySelector('#username')
-    const elementPassword: any = document.querySelector('#password-login')
-    if (elementUserIdentification) userIdentification = elementUserIdentification.value
-    if (elementPassword) password = elementPassword.value
-    fetch(`${config.backend}/auth/login`, {
-      method: 'POST',
-      body: JSON.stringify({
-        username: userIdentification,
-        password: password
-      }),
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        Authorization: `Bearer ${getCookieToken()}`,
-      },
-    }).then(data => data.json()).then(data => {
-      if (data.statusCode === 200) {
-        document.cookie = `access_token=${data.data.access_token}; expires=${followingDay}`;
-        localStorage.setItem(
-          "user",
-          JSON.stringify({ ...data.data, access_token: null })
-        );
-        setUser({ ...data.data, access_token: null })
-        setOpen(false)
-      }
-      else alert(data.message)
-    }).catch(e => alert('error en el sistema'))
-  }
-  const registerUser = (e: FormEvent<HTMLFormElement>) => {
-    var current = new Date(); //'Mar 11 2015' current.getTime() = 1426060964567
-    var followingDay = new Date(current.getTime() + 86400000); // + 1 day in ms
-    followingDay.toLocaleDateString();
-
-    e.preventDefault()
-    let userIdentification = ''
-    let fullName = ''
-    let password = ''
-    const elementUserIdentification: any = document.querySelector('#user-identification')
-    const elementUserName: any = document.querySelector('#user-name')
-    const elementPassword: any = document.querySelector('#password')
-    if (elementUserIdentification) userIdentification = elementUserIdentification.value
-    if (elementUserName) fullName = elementUserName.value
-    if (elementPassword) password = elementPassword.value
-    fetch(`${config.backend}/users`, {
-      method: 'POST',
-      body: JSON.stringify({
-        userIdentification: userIdentification,
-        fullName: fullName,
-        password: password
-      }),
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        Authorization: `Bearer ${getCookieToken()}`,
-      },
-    }).then(data => data.json()).then(data => {
-      if (data.statusCode === 200) {
-        fetch(`${config.backend}/auth/login`, {
-          method: 'POST',
-          body: JSON.stringify({
-            username: userIdentification,
-            password: password
-          }),
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            Authorization: `Bearer ${getCookieToken()}`,
-          },
-        }).then(data => data.json()).then(data => {
-          if (data.statusCode === 200) {
-            document.cookie = `access_token=${data.data.access_token}; expires=${followingDay}`;
-            localStorage.setItem(
-              "user",
-              JSON.stringify({ ...data.data, access_token: null })
-            );
-            setUser({ ...data.data, access_token: null })
-            setOpen(false)
-          }
-          else alert(data.message)
-        }).catch(e => alert('error en el sistema'))
-      } else {
-        alert(data.message)
-      }
-
-    }).catch(e => alert('error en el sistema'))
-  }
+  const handleToggle = () => {
+    setOpen(!open);
+  };
   useEffect(() => {
     const user = localStorage.getItem('user')
     if (user) {
@@ -160,6 +75,7 @@ function MainLayout({ children }: props) {
       </Tooltip>
       <div className="flex justify-center pl-5 pt-5 pr-5">
         <div>
+          <Typography variant="h5" noWrap>{user && user.fullName}</Typography>
           <Button className="mb-2" variant="outlined" type="submit" fullWidth onClick={() => {
             router.push(`/userOrders/${user._id}`)
           }}>Mis ordenes</Button>
@@ -169,7 +85,7 @@ function MainLayout({ children }: props) {
             document.cookie = "access_token=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
             setOpen(false);
             router.push('/')
-          }}>Cerrar sesion</Button>
+          }}>Cerrar sesión</Button>
         </div>
       </div>
 
@@ -179,7 +95,7 @@ function MainLayout({ children }: props) {
     < >
       <nav>
         <Box sx={{ flexGrow: 1 }}>
-          <Drawer anchor="right" open={open} onClose={toggleDrawer(false, 'login')}>
+          <Drawer anchor="left" open={openDrawer} onClose={toggleDrawer(false, 'login')}>
             {DrawerList}
           </Drawer>
           <AppBar position="static">
@@ -193,25 +109,89 @@ function MainLayout({ children }: props) {
             >
               <MenuIcon />
             </IconButton> */}
+              <MenuIcon sx={{ display: { xs: "block", sm: "none" } }} className="mr-5" onClick={toggleDrawer(true, 'user')} />
+
               <Image src="/LCM.png" alt="logo" width={100} height={100} onClick={() => router.push('/catalog')} />
               <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
 
               </Typography>
-              {user ? (<><Button color="inherit" onClick={toggleDrawer(true, 'user')}>{user.fullName}</Button>
-                <Badge badgeContent={shoppingCart.amountProducts} color="warning">
-                  <ShoppingCartIcon onClick={() => router.push('/shoppingCart')} />
-                </Badge></>) : (<>
-                  <Button color="inherit" onClick={toggleDrawer(true, 'register')}>Registrarse</Button>
-                  <Button color="inherit" onClick={toggleDrawer(true, 'login')}>Ingresar</Button></>)}
+              {user && (<>
+                <Box sx={{ display: { xs: "none", sm: "block" } }}>
+                  <Button variant="contained" color="secondary" className="mx-1" onClick={() => { setOpen(!open) }}>
+                    {user.fullName}
+                    <PersonIcon />
+                  </Button>
+                  <Collapse in={open} className="absolute bg-blue-500 rounded-md z-10 mt-4 text-white">
+                    <List >
+                      <ListItem>
+                        <ListItemButton onClick={() => {
+                          router.push(`/userOrders/${user._id}`)
+                        }}>
+                          <ListItemIcon>
+                            <ShoppingCartIcon className="text-white" />
+                          </ListItemIcon>
+                          <ListItemText primary="Mis ordenes" />
+                        </ListItemButton>
+                      </ListItem>
+                      <ListItem>
+                        <ListItemButton onClick={() => {
+                          localStorage.removeItem('user')
+                          setUser(null)
+                          document.cookie = "access_token=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
+                          setOpen(false);
+                          router.push('/')
+                        }}>
+                          <ListItemIcon>
+                            <LogoutIcon className="text-white" />
+                          </ListItemIcon>
+                          <ListItemText primary="Cerrar sesión" />
+                        </ListItemButton>
+                      </ListItem>
+                      {/* Agrega más opciones aquí */}
+                    </List>
+                  </Collapse>
+                </Box>
+
+                <Badge badgeContent={shoppingCart.amountProducts} className="mx-1" color="warning">
+                  <Button color="secondary" variant="contained">
+                    <ShoppingCartIcon onClick={() => router.push('/shoppingCart')} />
+                  </Button>
+
+                </Badge>
+              </>
+              )}
 
             </Toolbar>
           </AppBar>
         </Box>
       </nav>
       <main>
-
         {children}
       </main>
+      <footer className=" bg-blue-500 mx-14 rounded-t pt-5 px-5 pb-5">
+        <Grid container justifyContent={"center"} spacing={2}>
+          <Grid item xs={12} md={4}>
+            <Typography variant="h6" color="white">Oficinas principales</Typography>
+            <Typography variant="body1" color="white">Tegucigalpa</Typography>
+            <Typography variant="body1" color="white">Laboratorios centro medico la granja</Typography>
+            <Typography variant="body1" color="white">Telefono: falta agregar</Typography>
+          </Grid>
+          <Grid item md={4} justifyContent={"center"}>
+            <Image className="bg-white rounded-xl" src="/LCM.png" alt="logo" width={200} height={200} onClick={() => router.push('/catalog')} />
+          </Grid>
+          <Grid item xs={12} md={2}>
+            <Typography variant="h6" color="white">Síguenos en</Typography>
+            <Link href='https://chakra-ui.com' className="text-white">
+              Facebook
+            </Link>
+            <br />
+            <Link href='https://chakra-ui.com' className="text-white">
+              Instagram
+            </Link>
+          </Grid>
+        </Grid>
+
+      </footer>
     </>
   );
 }

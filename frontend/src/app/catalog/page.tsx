@@ -145,18 +145,21 @@ interface PropCard {
 function CardComponent({ price = 100, name = 'Productos', addToCart }: PropCard) {
   return (
     <Card >
-      <CardMedia
-        sx={{ height:180 }}
-        image="/card.webp"
-        title="green iguana"
-      />
+      <div className="px-3 pt-3">
+        <CardMedia
+          sx={{ height: 100 }}
+          image="/card.webp"
+          title="green iguana"
+        />
+      </div>
+
       <CardContent>
         <Tooltip title={name}>
-          <Typography variant="body1" component="div" noWrap={true}>
+          <Typography variant="body1" component="div" color="text.secondary" noWrap={true}>
             {name}
           </Typography>
         </Tooltip>
-        <Typography sx={{ mb: 1.5 }} color="text.secondary">
+        <Typography className="font-semibold">
           L. {price}
         </Typography>
       </CardContent>
