@@ -1,5 +1,7 @@
 'use client'
 import React, { FormEvent, useEffect, useState, createContext, useContext, Dispatch, SetStateAction } from "react";
+import FacebookIcon from '@mui/icons-material/Facebook';
+import InstagramIcon from '@mui/icons-material/Instagram';
 import MenuIcon from '@mui/icons-material/Menu';
 import PersonIcon from '@mui/icons-material/Person';
 import CloseIcon from '@mui/icons-material/Close';
@@ -168,7 +170,7 @@ function MainLayout({ children }: props) {
           </AppBar>
         </Box>
       </nav>
-      <main>
+      <main className="min-h-screen">
         {children}
       </main>
       <footer className=" bg-blue-500 mx-14 rounded-t pt-5 px-5 pb-5">
@@ -183,13 +185,13 @@ function MainLayout({ children }: props) {
             <Image className="bg-white rounded-xl" src="/LCM.png" alt="logo" width={200} height={200} onClick={() => router.push('/catalog')} />
           </Grid>
           <Grid item xs={12} md={2}>
-            <Typography variant="h6" color="white">Síguenos en</Typography>
+            <Typography variant="h6" color="white">Síguenos en: </Typography>
             <Link href='https://chakra-ui.com' className="text-white">
-              Facebook
+              <FacebookIcon /> Facebook
             </Link>
             <br />
             <Link href='https://chakra-ui.com' className="text-white">
-              Instagram
+              <InstagramIcon /> Instagram
             </Link>
           </Grid>
         </Grid>
