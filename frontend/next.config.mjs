@@ -10,7 +10,7 @@ const nextConfig = {
       },
       {
         protocol: 'http',
-        hostname: 'http://18.118.8.253/',
+        hostname: '18.118.8.253',
         pathname: '/files/getFile/**',
       },
     ],
