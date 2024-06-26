@@ -156,8 +156,8 @@ function MainLayout({ children }: props) {
                 </Box>
 
                 <Badge badgeContent={shoppingCart.amountProducts} className="mx-1" color="warning">
-                  <Button color="secondary" variant="contained">
-                    <ShoppingCartIcon onClick={() => router.push('/shoppingCart')} />
+                  <Button color="secondary" variant="contained" onClick={() => router.push('/shoppingCart')}>
+                    <ShoppingCartIcon />
                   </Button>
 
                 </Badge>
