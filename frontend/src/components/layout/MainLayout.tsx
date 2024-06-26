@@ -11,7 +11,7 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-import { Badge, Collapse, Drawer, Grid, List, ListItem, ListItemButton, ListItemIcon, ListItemText, TextField, Tooltip } from "@mui/material";
+import { Badge, Collapse, Drawer, Grid, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Paper, TextField, Tooltip } from "@mui/material";
 import Image from "next/image";
 import { config } from "@/common/configs/config";
 import { getCookieToken } from "@/common/utils/getCookieToken";
@@ -121,34 +121,37 @@ function MainLayout({ children }: props) {
                     {user.fullName}
                     <PersonIcon />
                   </Button>
-                  <Collapse in={open} className="absolute bg-blue-500 rounded-md z-10 mt-4 text-white">
-                    <List >
-                      <ListItem>
-                        <ListItemButton onClick={() => {
-                          router.push(`/userOrders/${user._id}`)
-                        }}>
-                          <ListItemIcon>
-                            <ShoppingCartIcon className="text-white" />
-                          </ListItemIcon>
-                          <ListItemText primary="Mis ordenes" />
-                        </ListItemButton>
-                      </ListItem>
-                      <ListItem>
-                        <ListItemButton onClick={() => {
-                          localStorage.removeItem('user')
-                          setUser(null)
-                          document.cookie = "access_token=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
-                          setOpen(false);
-                          router.push('/')
-                        }}>
-                          <ListItemIcon>
-                            <LogoutIcon className="text-white" />
-                          </ListItemIcon>
-                          <ListItemText primary="Cerrar sesión" />
-                        </ListItemButton>
-                      </ListItem>
-                      {/* Agrega más opciones aquí */}
-                    </List>
+                  <Collapse in={open} className="absolute  z-10 mt-4 ">
+                    <Paper elevation={3} className="bg-blue-500 rounded-md text-white">
+                      <List >
+                        <ListItem>
+                          <ListItemButton onClick={() => {
+                            router.push(`/userOrders/${user._id}`)
+                          }}>
+                            <ListItemIcon>
+                              <ShoppingCartIcon className="text-white" />
+                            </ListItemIcon>
+                            <ListItemText primary="Mis ordenes" />
+                          </ListItemButton>
+                        </ListItem>
+                        <ListItem>
+                          <ListItemButton onClick={() => {
+                            localStorage.removeItem('user')
+                            setUser(null)
+                            document.cookie = "access_token=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
+                            setOpen(false);
+                            router.push('/')
+                          }}>
+                            <ListItemIcon>
+                              <LogoutIcon className="text-white" />
+                            </ListItemIcon>
+                            <ListItemText primary="Cerrar sesión" />
+                          </ListItemButton>
+                        </ListItem>
+                        {/* Agrega más opciones aquí */}
+                      </List>
+                    </Paper>
+
                   </Collapse>
                 </Box>
 
