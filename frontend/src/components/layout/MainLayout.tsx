@@ -59,7 +59,8 @@ function MainLayout({ children }: props) {
   };
   useEffect(() => {
     const user = localStorage.getItem('user')
-    if (user) {
+    const token = getCookieToken();
+    if (user && token) {
       setUser(JSON.parse(user))
       if (JSON.parse(user).role === 'admin') router.push('/lcmadminlcm')
     } else router.push('/')

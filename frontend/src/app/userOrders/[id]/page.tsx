@@ -101,6 +101,7 @@ function OrderUser({ userOrder }: props2) {
       })
   }
   const onChangeImage = async (target: React.ChangeEvent<any>, index: string) => {
+    alert(index);
     try {
       setLoadingOrders(true)
       const file = target.currentTarget.files[0];
@@ -201,7 +202,7 @@ function OrderUser({ userOrder }: props2) {
 
 
                 <input
-                  id="fileInput"
+                  id={`fileInput-${order._id}`}
                   className="hidden"
                   type="file"
                   name="avatar"
@@ -223,7 +224,7 @@ function OrderUser({ userOrder }: props2) {
                 <Tooltip title="Sube tu imagen del pago al banco">
                   <Button size="small" variant="text" onClick={() => {
                     //@ts-ignore
-                    document.getElementById('fileInput').click()
+                    document.getElementById(`fileInput-${order._id}`).click()
                   }}><CloudUploadIcon /></Button>
                 </Tooltip>
                 {order.urlPayment && !order.payed &&
@@ -251,7 +252,7 @@ function OrderUser({ userOrder }: props2) {
       <Pagination className="mt-4" count={amount} page={page} color="primary" onChange={handleChange} />
 
       <MainAlert handleClose={() => { setOpenSnackBar(false); setSnackBarMessage(''); setSnackbarType('error') }} open={openSnackBar} message={snackBarMessage} type={snackbarType} duration={10000} />
-      <Dialog open={open} onClose={() => { setOpen(false) }} >
+      <Dialog open={open} onClose={() => { setOpen(false); setCart(null); setimageSelect('') }} >
         <div className="p-5 max-h-screen">
           <Typography textAlign="center" variant="h6">TUS PRODUCTOS</Typography>
           {Cart?.map((product: any) => (

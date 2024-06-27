@@ -174,10 +174,10 @@ export default function LoginRegister() {
               "user",
               JSON.stringify({ ...data.data, access_token: null })
             );
-            if (data.data.role === 'client' ) {
+            if (data.data.role === 'client') {
               router.push('/catalog')
-            } else if (data.data.role === 'admin'  ) {
-              
+            } else if (data.data.role === 'admin') {
+
               router.push('/lcmadminlcm')
             }
 
@@ -224,9 +224,13 @@ export default function LoginRegister() {
   }
   useEffect(() => {
     const token = getCookieToken();
+    const user = localStorage.getItem('user')
     if (token) {
-      router.push('/catalog');
+      if (user) {
+        router.push('/catalog');
+      }
     }
+
     setvalidationUser(true);
   }, [])
   if (!validationUser) return;
