@@ -175,11 +175,11 @@ function OrderUser({ userOrder }: props2) {
       {loadingOrders && <Box sx={{ width: '100%' }}>
         <LinearProgress />
       </Box>}
-      <Grid container spacing={2} width={'100%'} className="px-4  sm:px-32" >
+      <Grid container spacing={2} width={'100%'}  >
 
         {orders.length === 0 ? <Typography className="mt-5 ml-5" variant="h5" textAlign='center'>No se encontro ninguna orden</Typography> : orders?.map((order, i) => (
           <Grid item sm={12} md={6} lg={3} key={order._id}>
-            <Card className="h-full">
+            <Card className="h-full" >
               <CardContent>
                 # orden: {order._id.substring(order._id.length - 6, order._id.length)}
                 <Typography variant="h4" className="text-blue-700" color="text.secondary" gutterBottom>
@@ -242,6 +242,7 @@ function OrderUser({ userOrder }: props2) {
                     </Button>
                   </Tooltip>
                 }
+                <Button onClick={() => router.push(`/userOrders/detailOrder/${order._id}`)}>Ver orden</Button>
               </CardActions>
             </Card>
           </Grid>
@@ -249,7 +250,7 @@ function OrderUser({ userOrder }: props2) {
 
 
       </Grid>
-      <Pagination className="mt-4 px-32" count={amount} page={page} color="primary" onChange={handleChange} />
+      <Pagination className="mt-4 px-4  sm:px-32" count={amount} page={page} color="primary" onChange={handleChange} />
 
       <MainAlert handleClose={() => { setOpenSnackBar(false); setSnackBarMessage(''); setSnackbarType('error') }} open={openSnackBar} message={snackBarMessage} type={snackbarType} duration={10000} />
       <Dialog open={open} onClose={() => { setOpen(false); setCart(null); setimageSelect('') }} >

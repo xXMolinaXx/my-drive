@@ -196,13 +196,13 @@ function MainLayout({ children }: props) {
               <Button className="mb-5" variant="text" onClick={() => {
                 router.push(`/userOrders/${user._id}`)
               }}>
-                <ShoppingCartIcon  />
+                <ShoppingCartIcon />
               </Button>
             </Tooltip>
           </div>
 
         </Paper>
-        <div className="pt-16">
+        <div className="pt-16  px-4  sm:px-32" >
           {children}
         </div>
 

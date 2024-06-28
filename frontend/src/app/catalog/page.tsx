@@ -89,7 +89,7 @@ function Catalog2() {
 
 
   return (
-    <div className="px-4  md:px-[20%] lg:px-[20%] mb-14">
+    <div className="px-4   mb-14">
       <section className="mt-4 flex">
         <TextField
           id="search-product"
