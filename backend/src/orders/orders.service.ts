@@ -134,8 +134,8 @@ export class OrdersService {
     }
     return schedulesAvailables;
   }
-  findOne(id: number) {
-    return `This action returns a #${id} order`;
+  async findOne(id: string) {
+    return await this.orderModel.findById(id);
   }
 
   async update(id: string, updateOrderDto: UpdateOrderDto) {

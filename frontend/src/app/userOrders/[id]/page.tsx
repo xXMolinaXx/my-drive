@@ -188,16 +188,16 @@ function OrderUser({ userOrder }: props2) {
                 <Typography className="font-bold">
                   Fecha: {`${dayjs(order.createdAt).format("YYYY MMMM DD")} ${order.reservationDate.hour > 9 ? order.reservationDate.hour : `0${order.reservationDate.hour}`}:${order.reservationDate.minute > 9 ? order.reservationDate.minute : `0${order.reservationDate.minute}`} `}
                 </Typography>
-                <Typography color="text.secondary">
+                {/* <Typography color="text.secondary">
                   Total a pagar: L. {order.finalPayment}
-                </Typography>
+                </Typography> */}
                 <Typography variant="body2">
                   Sucursal {order.branch}
                 </Typography>
-
+{/* 
                 <Typography className="font-bold">
                   {`Pago realizado:        ${order.payed ? 'SI' : 'NO'} `}
-                </Typography>
+                </Typography> */}
 
 
 
@@ -212,7 +212,7 @@ function OrderUser({ userOrder }: props2) {
 
               </CardContent>
               <CardActions>
-                <Tooltip title="Tus productos">
+                {/* <Tooltip title="Tus productos">
                   <Button size="small" variant="text" onClick={() => {
                     setOpen(true);
                     setCart(order.cart)
@@ -240,8 +240,8 @@ function OrderUser({ userOrder }: props2) {
                     }}>
                       <PaymentIcon />
                     </Button>
-                  </Tooltip>
-                }
+                  </Tooltip> */}
+                {/* } */}
                 <Button onClick={() => router.push(`/userOrders/detailOrder/${order._id}`)}>Ver orden</Button>
               </CardActions>
             </Card>

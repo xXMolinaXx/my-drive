@@ -16,6 +16,25 @@ import { ERoles } from 'src/common/enums/roles.enum';
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) { }
   @Roles(ERoles.USER)
+  @Get('/:index')
+  async getOrder(@Param('index') id: string): Promise<IhttpResponse> {
+    try {
+      return {
+        message: '',
+        success: true,
+        data: await this.ordersService.findOne(id),
+        statusCode: 200,
+      };
+    } catch (error) {
+      return {
+        statusCode: 500,
+        success: false,
+        message: 'Error al recoger orden',
+        error: typeof error === 'string' ? error : 'Error en el sistema',
+      };
+    }
+  }
+  @Roles(ERoles.USER)
   @Post()
   async create(@Body() createOrderDto: CreateOrderDto): Promise<IhttpResponse> {
     try {
