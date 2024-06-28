@@ -175,7 +175,7 @@ function OrderUser({ userOrder }: props2) {
       {loadingOrders && <Box sx={{ width: '100%' }}>
         <LinearProgress />
       </Box>}
-      <Grid container spacing={2} width={'100%'} className="px-32" >
+      <Grid container spacing={2} width={'100%'} className="px-4  sm:px-32" >
 
         {orders.length === 0 ? <Typography className="mt-5 ml-5" variant="h5" textAlign='center'>No se encontro ninguna orden</Typography> : orders?.map((order, i) => (
           <Grid item sm={12} md={6} lg={3} key={order._id}>
@@ -249,7 +249,7 @@ function OrderUser({ userOrder }: props2) {
 
 
       </Grid>
-      <Pagination className="mt-4" count={amount} page={page} color="primary" onChange={handleChange} />
+      <Pagination className="mt-4 px-32" count={amount} page={page} color="primary" onChange={handleChange} />
 
       <MainAlert handleClose={() => { setOpenSnackBar(false); setSnackBarMessage(''); setSnackbarType('error') }} open={openSnackBar} message={snackBarMessage} type={snackbarType} duration={10000} />
       <Dialog open={open} onClose={() => { setOpen(false); setCart(null); setimageSelect('') }} >

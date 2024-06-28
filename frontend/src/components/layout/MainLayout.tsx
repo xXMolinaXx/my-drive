@@ -1,5 +1,6 @@
 'use client'
 import React, { FormEvent, useEffect, useState, createContext, useContext, Dispatch, SetStateAction } from "react";
+import HomeIcon from '@mui/icons-material/Home';
 import FacebookIcon from '@mui/icons-material/Facebook';
 import InstagramIcon from '@mui/icons-material/Instagram';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -73,12 +74,12 @@ function MainLayout({ children }: props) {
   }, [])
   const DrawerList = (
     <Box sx={{ width: 300 }} role="presentation" >
-      <Tooltip title="Cerrar menu lateral">
-        <Button variant="contained" className="mx-5 mt-5" onClick={toggleDrawer(false, 'login')}><CloseIcon /></Button>
-      </Tooltip>
       <div className="flex justify-center pl-5 pt-5 pr-5">
         <div>
           <Typography variant="h5" noWrap>{user && user.fullName}</Typography>
+          <Button className="mb-2" variant="outlined" type="submit" fullWidth onClick={() => {
+            router.push('/catalog')
+          }}>Inicio</Button>
           <Button className="mb-2" variant="outlined" type="submit" fullWidth onClick={() => {
             router.push(`/userOrders/${user._id}`)
           }}>Mis ordenes</Button>
@@ -101,7 +102,7 @@ function MainLayout({ children }: props) {
           <Drawer anchor="left" open={openDrawer} onClose={toggleDrawer(false, 'login')}>
             {DrawerList}
           </Drawer>
-          <AppBar position="static">
+          <AppBar position="fixed">
             <Toolbar>
               {/* <IconButton
               size="large"
@@ -118,7 +119,7 @@ function MainLayout({ children }: props) {
               <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
 
               </Typography>
-              {user && (<>
+              {/* {user && (<>
                 <Box sx={{ display: { xs: "none", sm: "block" } }}>
                   <Button variant="contained" color="secondary" className="mx-1" onClick={() => { setOpen(!open) }}>
                     {user.fullName}
@@ -151,30 +152,62 @@ function MainLayout({ children }: props) {
                             <ListItemText primary="Cerrar sesión" />
                           </ListItemButton>
                         </ListItem>
-                        {/* Agrega más opciones aquí */}
+              
                       </List>
                     </Paper>
 
                   </Collapse>
                 </Box>
 
-                <Badge badgeContent={shoppingCart.amountProducts} className="mx-1" color="warning">
-                  <Button color="secondary" variant="contained" onClick={() => router.push('/shoppingCart')}>
-                    <ShoppingCartIcon />
-                  </Button>
-
-                </Badge>
+                
               </>
-              )}
+              )} */}
+              <Badge badgeContent={shoppingCart.amountProducts} className="mx-1" color="warning">
+                <Button variant="text" className="text-white" onClick={() => router.push('/shoppingCart')}>
+                  <ShoppingCartIcon />
+                </Button>
 
+              </Badge>
             </Toolbar>
           </AppBar>
         </Box>
       </nav>
       <main className="min-h-screen">
-        {children}
+        <Paper elevation={1} className="h-full fixed rounded-none pt-24 w-16 flex justify-center hidden sm:block">
+          <div>
+            <Tooltip title="Catalogo">
+              <Button className="mb-5" variant="text" onClick={() => router.push('/catalog')}>
+
+                <HomeIcon />
+              </Button>
+            </Tooltip>
+            <Tooltip title="Cerrar sesión">
+              <Button className="mb-5" variant="text" onClick={() => {
+                localStorage.removeItem('user')
+                setUser(null)
+                document.cookie = "access_token=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
+                setOpen(false);
+                router.push('/')
+              }}>
+                <LogoutIcon />
+              </Button>
+            </Tooltip>
+            <Tooltip title="Mis ordenes">
+              <Button className="mb-5" variant="text" onClick={() => {
+                router.push(`/userOrders/${user._id}`)
+              }}>
+                <ShoppingCartIcon  />
+              </Button>
+            </Tooltip>
+          </div>
+
+        </Paper>
+        <div className="pt-16">
+          {children}
+        </div>
+
       </main>
-      <footer className=" bg-blue-500 mx-14 rounded-t pt-5 px-5 pb-5">
+      <footer className=" bg-blue-500 pt-5 px-5 pb-5 ">
         <Grid container justifyContent={"center"} spacing={2}>
           <Grid item xs={12} md={4}>
             <Typography variant="h6" color="white">Oficinas principales</Typography>
