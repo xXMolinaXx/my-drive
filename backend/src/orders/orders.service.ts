@@ -136,7 +136,7 @@ export class OrdersService {
   async findAvailablesSchedules(scheduleSelected: SearchAvailableSchedulesDto) {
     const selectDate = new Date(scheduleSelected.date);
     const schedulesAvailables = [];
-    for (let index = 6; index < 22; index++) {
+    for (let index = 6; index < 10; index++) {
       for (let index2 = 0; index2 < 60; index2 += 20) {
         const existOrder = await this.orderModel.findOne({
           'reservationDate.hour': index,

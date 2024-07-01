@@ -171,12 +171,14 @@ function MainLayout({ children }: props) {
               <p className="hidden sm:block">
                 {user?.fullName}
               </p>
-              <Badge badgeContent={shoppingCart.amountProducts} className="mx-1" color="warning">
-                <Button variant="text" className="text-white" onClick={() => router.push('/shoppingCart')}>
-                  <ShoppingCartIcon />
-                </Button>
 
-              </Badge>
+              <Button variant="text" className="text-white" onClick={() => router.push('/shoppingCart')}>
+                <Badge badgeContent={shoppingCart.amountProducts} className="mx-1" color="warning">
+                  <ShoppingCartIcon />
+                </Badge>
+              </Button>
+
+
             </Toolbar>
           </AppBar>
         </Box>
