@@ -1,6 +1,7 @@
 'use client'
 import { useEffect, useState } from "react";
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import PaymentIcon from '@mui/icons-material/Payment';
 import { IOrder } from "@/common/interface/orders/orders.interface";
 import MainLayout from "@/components/layout/MainLayout";
 import { Backdrop, Button, CircularProgress, Divider, Grid, Paper, Table, TableBody, TableCell, TableContainer, TableRow, Tooltip, Typography } from "@mui/material";
@@ -155,13 +156,27 @@ function DetailOrder({ userOrder }: props2) {
         accept="image/png, image/jpeg"
         onChange={(e) => onChangeImage(e, order._id)}
       />
-      <Tooltip title="Sube tu imagen del pago al banco">
+      {!order.payed && <Tooltip title="Sube tu imagen del pago al banco">
         <Button size="small" variant="text" onClick={() => {
           //@ts-ignore
           document.getElementById(`fileInput`).click()
         }}><CloudUploadIcon className="mx-2" />Carga tu imagen de pago</Button>
-      </Tooltip>
-      <Image src={`${config.backend}/files/getFile/${order.imagePaymentName}`} alt="Imagen de pago" height={500} width={500} />
+      </Tooltip>}
+      {order.urlPayment && !order.payed &&
+        <Tooltip title="Realizar pago a banco">
+          <Button variant="text" size="small" className="my-2" onClick={() => {
+            setSnackBarMessage('Después de realizar el pago, sube la imagen de tu factura para poder confirmar que realizastes tu pago. Haz click en el boton a la par de ver exámenes');
+            setSnackbarType('success');
+            setOpenSnackBar(true);
+            setTimeout(() => {
+              window.open(order.urlPayment, "_blank", "height=500,width=500");
+            }, 5000);
+
+          }}>
+            <PaymentIcon className="mr-3" /> Realiza tu pago
+          </Button>
+        </Tooltip>}
+      < Image src={`${config.backend}/files/getFile/${order.imagePaymentName}`} alt="Imagen de pago" height={500} width={500} />
     </Grid>
     <MainAlert handleClose={() => { setOpenSnackBar(false); setSnackBarMessage(''); setSnackbarType('error') }} open={openSnackBar} message={snackBarMessage} type={snackbarType} duration={10000} />
     <Backdrop

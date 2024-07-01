@@ -10,7 +10,7 @@ import MainAlert from "@/components/alerts/MainAlert";
 import { getCookieToken } from "@/common/utils/getCookieToken";
 
 function Catalog2() {
-  const { setShoppingCart, shoppingCart } = useContext(StoreContext);
+  const { setShoppingCart, shoppingCart, user } = useContext(StoreContext);
   const [products, setProducts] = useState<IProduct[]>([
     {
       category: '',
@@ -28,6 +28,7 @@ function Catalog2() {
   const [loadingProducts, setLoadingProducts] = useState(false);
   const [openAlert, setOpenAlert] = useState(false);
   const [messageAlert, setmessageAlert] = useState('');
+  const [discount, setDiscount] = useState<'senior' | 'superSenior' | 'normal'>('normal')
   const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
     setSkip(value * limit - limit)
     setPage(value)
@@ -82,7 +83,17 @@ function Catalog2() {
       setmessageAlert(e.toString())
     })
   }
+  const getTypeDiscount = () => {
+    const actualYear = new Date().getFullYear()
+    if (actualYear - user?.yearBorn < 60)
+      setDiscount('normal');
+    else if (actualYear - user?.yearBorn > 80)
+      return setDiscount('superSenior');
+    return setDiscount('senior');
+
+  }
   useEffect(() => {
+    getTypeDiscount()
     handleSearchProducts()
   }, [skip])
 
@@ -120,7 +131,7 @@ function Catalog2() {
         <Grid container spacing={2} justifyContent="center">
           {loadingProducts ? <CircularProgress /> : products?.map(data => (
             <Grid key={data._id} item xs={12} md={3} lg={3}>
-              <CardComponent name={data.name} price={data.price} addToCart={() => handleAddToCart(data)} />
+              <CardComponent name={data.name} price={data.price} addToCart={() => handleAddToCart(data)} discount={discount} />
             </Grid>
           ))}
         </Grid>
@@ -140,9 +151,10 @@ export default function Catalog() {
 interface PropCard {
   price: number,
   name: string,
-  addToCart: () => void
+  addToCart: () => void,
+  discount: 'senior' | 'superSenior' | 'normal'
 }
-function CardComponent({ price = 100, name = 'Productos', addToCart }: PropCard) {
+function CardComponent({ price = 100, name = 'Productos', addToCart, discount = 'senior' }: PropCard) {
   return (
     <Card >
       <div className="px-3 pt-3">
@@ -160,7 +172,13 @@ function CardComponent({ price = 100, name = 'Productos', addToCart }: PropCard)
           </Typography>
         </Tooltip>
         <Typography className="font-semibold">
-          L. {price}
+          L.
+          {discount === 'normal' && (price)}
+          {discount === 'senior' && (price - (price * 0.30))}
+          {discount === 'superSenior' && (price - (price * 0.40))}
+        </Typography>
+        <Typography color={"text.secondary"} variant="body2">
+          Descuento / ISV incluido
         </Typography>
       </CardContent>
       <CardActions className="flex justify-center">

@@ -30,7 +30,8 @@ export class User {
   store: string;
   @Prop()
   resetPassword: resetPassword;
+  @Prop({ type: Number, require: true })
+  yearBorn: number;
 }
-
 
 export const UserSchema = SchemaFactory.createForClass(User);

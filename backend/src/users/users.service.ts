@@ -7,6 +7,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './schemas/users.schemas';
 import { ConfigService } from '@nestjs/config';
+import { DNI_REGEX } from 'src/common/regex/dni.regex';
 
 @Injectable()
 export class UsersService {
@@ -20,9 +21,15 @@ export class UsersService {
     return hash;
   }
   async create(createUserDto: CreateUserDto) {
-    const user = await this.userModel.findOne({ email: createUserDto.email });
-    if (user) throw 'Ya existe un usuario con este nombre';
+    const user = await this.userModel.findOne({ email: createUserDto.email.trim().toLowerCase() });
+    const userFoundWithId = await this.userModel.find({ DNI: createUserDto.DNI }).countDocuments();
+    if (user) throw 'Ya existe un usuario con este correo';
+    if (userFoundWithId > 1) throw 'Ya existe un cliente cone este numero de identidad';
+    if (!DNI_REGEX.test(createUserDto.DNI)) throw 'El DNI ingresado no tiene un formato de DNI valido';
+    const yearBorn = Number(createUserDto.DNI.substring(4, 8));
     const password = await this.hashPassword(createUserDto.password);
+    const isSenior = new Date().getFullYear() - yearBorn >= 60;
+    const isSuperSenior = new Date().getFullYear() - yearBorn >= 80;
     await new this.userModel({
       bornAt: createUserDto.bornAt,
       DNI: createUserDto.DNI.trim(),
@@ -31,6 +38,9 @@ export class UsersService {
       gender: createUserDto.gender,
       telphone: '+504' + createUserDto.telphone.trim(),
       password,
+      yearBorn,
+      senior: isSenior,
+      superSenior: isSuperSenior,
     }).save();
   }
   async sendEmail(email: string, subject: string) {
@@ -100,6 +110,9 @@ export class UsersService {
       })
       .exec()
       .then((users) => users.map((user) => user._id));
+  }
+  async findById(id: string) {
+    return await this.userModel.findById(id);
   }
   async update(id: string, updateUserDto: UpdateUserDto) {
     const user = await this.userModel.findById(id);

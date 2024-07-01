@@ -16,15 +16,30 @@ export class OrdersService {
   constructor(
     @InjectModel(Order.name) private orderModel: Model<Order>,
     private readonly productsService: ProductsService,
-    private readonly usersService: UsersService
+    private readonly usersService: UsersService,
   ) { }
   async create(createOrderDto: CreateOrderDto) {
+    const { yearBorn } = await this.usersService.findById(createOrderDto.userId);
+    let discount: 'normal' | 'superSenior' | 'senior' = 'normal';
+    const actualYear = new Date().getFullYear();
+    if (actualYear - yearBorn > 80) discount = 'superSenior';
+    else if (actualYear - yearBorn > 60) discount = 'senior';
+
     const resevationDate = new Date(createOrderDto.date);
     let totalToPay = 0;
+    let totalDiscount = 0;
     for (let index = 0; index < createOrderDto.cart.length; index++) {
       const element = createOrderDto.cart[index];
       const product = await this.productsService.findOne(element._id);
       totalToPay += element.amount * product.price;
+    }
+    const priceWithoutDiscount = totalToPay;
+    if (discount === 'senior') {
+      totalToPay = totalToPay - totalToPay * 0.3;
+      totalDiscount = totalToPay * 0.3;
+    } else if (discount === 'superSenior') {
+      totalToPay = totalToPay - totalToPay * 0.4;
+      totalDiscount = totalToPay * 0.4;
     }
     await new this.orderModel({
       ...createOrderDto,
@@ -38,6 +53,8 @@ export class OrdersService {
       },
       branch: String(createOrderDto.branch).toLowerCase(),
       reservation: resevationDate,
+      totalDiscount,
+      totalWithoutDiscount: priceWithoutDiscount,
     }).save();
   }
 

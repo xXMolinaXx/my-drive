@@ -47,6 +47,10 @@ export class Order {
   urlPayment: string;
   @Prop({ type: String, default: '' })
   imagePaymentName: string;
+  @Prop({ type: Number, default: 0 })
+  totalDiscount;
+  @Prop({ type: Number, default: 0 })
+  totalWithoutDiscount;
 }
 
 export const OrderSchema = SchemaFactory.createForClass(Order);

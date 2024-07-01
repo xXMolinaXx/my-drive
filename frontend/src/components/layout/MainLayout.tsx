@@ -21,10 +21,13 @@ import { getCookieToken } from "@/common/utils/getCookieToken";
 import { IProduct, IProductState } from "@/common/interface/product.interface";
 import { getCart } from "@/common/utils/cart";
 import Link from "next/link";
+import { UserLog } from "@/common/interface/users/user.interface";
 
 interface IContext {
   shoppingCart: IProductState,
   setShoppingCart: Dispatch<SetStateAction<IProductState>>,
+  user: UserLog,
+  setUser: Dispatch<SetStateAction<any>>,
 }
 
 export const StoreContext = createContext<IContext>({
@@ -36,20 +39,30 @@ export const StoreContext = createContext<IContext>({
       price: 0,
       category: ''
     }]
-  }
+  },
+  user: {
+    _id: '',
+    access_token: '',
+    fullName: '',
+    role: '',
+    store: '',
+    userIdentification: '',
+    yearBorn: 0
+  },
+  setUser: () => { }
 });
 interface props {
   children: React.ReactNode,
 }
 function MainLayout({ children }: props) {
-  const { shoppingCart } = useContext(StoreContext)
+  const { shoppingCart, user, setUser } = useContext(StoreContext)
   const router = useRouter()
 
   const [openDrawer, setOpenDrawer] = React.useState(false);
   const [open, setOpen] = React.useState(false);
   const [formType, setFormType] = useState<'register' | 'login' | 'user'>('register')
   const [loadingButton, setLoadingButton] = useState(false)
-  const [user, setUser] = useState<any>();
+
   const toggleDrawer = (newOpen: boolean, PFormType: 'register' | 'login' | 'user') => () => {
     setOpenDrawer(newOpen);
     setFormType(PFormType);
@@ -58,14 +71,7 @@ function MainLayout({ children }: props) {
   const handleToggle = () => {
     setOpen(!open);
   };
-  useEffect(() => {
-    const user = localStorage.getItem('user')
-    const token = getCookieToken();
-    if (user && token) {
-      setUser(JSON.parse(user))
-      if (JSON.parse(user).role === 'admin') router.push('/lcmadminlcm')
-    } else router.push('/')
-  }, [])
+
   useEffect(() => {
     const token = getCookieToken();
     if (!token) {
@@ -162,6 +168,9 @@ function MainLayout({ children }: props) {
                 
               </>
               )} */}
+              <p className="hidden sm:block">
+                {user?.fullName}
+              </p>
               <Badge badgeContent={shoppingCart.amountProducts} className="mx-1" color="warning">
                 <Button variant="text" className="text-white" onClick={() => router.push('/shoppingCart')}>
                   <ShoppingCartIcon />
@@ -236,6 +245,7 @@ function MainLayout({ children }: props) {
 }
 
 export default function MyApp({ children }: any) {
+  const router = useRouter()
   const [shoppingCart, setShoppingCart] = useState<IProductState>({
     products: [{
       name: '',
@@ -245,6 +255,7 @@ export default function MyApp({ children }: any) {
     }],
     amountProducts: 0,
   })
+  const [user, setUser] = useState<any>();
   useEffect(() => {
     const cart = getCart();
     let productAmount = 0
@@ -254,9 +265,17 @@ export default function MyApp({ children }: any) {
     })
     setShoppingCart({ amountProducts: productAmount, products: cart })
   }, [])
+  useEffect(() => {
+    const user = localStorage.getItem('user')
+    const token = getCookieToken();
+    if (user && token) {
+      setUser(JSON.parse(user))
+      if (JSON.parse(user).role === 'admin') router.push('/lcmadminlcm')
+    } else router.push('/')
+  }, [])
   return (
     <StoreContext.Provider value={{
-      shoppingCart, setShoppingCart
+      shoppingCart, setShoppingCart, user, setUser
     }}>
       <MainLayout >{children}</MainLayout>
     </StoreContext.Provider>

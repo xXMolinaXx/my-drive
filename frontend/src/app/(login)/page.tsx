@@ -348,6 +348,7 @@ export default function LoginRegister() {
                       variant="outlined"
                       fullWidth
                       id='DNI'
+                      placeholder='0801199011111'
                       value={registrerForm.DNI}
                       onChange={onChangeInput}
                       error={auxiliarTextRegistrerForm.DNI ? true : false}

@@ -26,6 +26,7 @@ export class AuthService {
       role: user.role,
       _id: user._id,
       userIdentification: user.DNI,
+      yearBorn: user.yearBorn,
       fullName: user.fullName,
       store: user.store,
     };

@@ -26,7 +26,7 @@ import dayjs, { Dayjs } from "dayjs";
 import { STORES } from "@/common/const/store";
 const steps = ['Carrito', 'Selecionar sucursal', 'Confirmación'];
 function ShoppingCart2() {
-  const { setShoppingCart: setShoppingCartContext, shoppingCart: shoppingCartContext } = useContext(StoreContext);
+  const { setShoppingCart: setShoppingCartContext, shoppingCart: shoppingCartContext, setUser, user } = useContext(StoreContext);
   const router = useRouter()
   const [activeStep, setActiveStep] = useState(0);
   const [skipped, setSkipped] = useState(new Set<number>());
@@ -50,6 +50,7 @@ function ShoppingCart2() {
     hour: -1,
     minute: -1,
   })
+  const [discount, setDiscount] = useState<'senior' | 'superSenior' | 'normal'>('normal');
   const handleClose = (event: React.SyntheticEvent | Event, reason?: string) => {
     if (reason === 'clickaway') {
       return;
@@ -196,7 +197,17 @@ function ShoppingCart2() {
         })
     }
   }
+  const getTypeDiscount = () => {
+    const actualYear = new Date().getFullYear()
+    if (actualYear - user?.yearBorn < 60)
+      setDiscount('normal');
+    else if (actualYear - user?.yearBorn > 80)
+      return setDiscount('superSenior');
+    return setDiscount('senior');
+
+  }
   useEffect(() => {
+    getTypeDiscount()
     getAvalableSchedules();
     const cart = getCart();
     let productAmount = 0
@@ -253,15 +264,21 @@ function ShoppingCart2() {
                 </TableRow>
                 <TableRow>
                   <TableCell className=" w-1/5">
+                    TOTAL SIN DESCUENTOS
+                  </TableCell>
+                  <TableCell align="right" className="font-black w-4/5"> L. {totalPayment.toFixed(2)}</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell className=" w-1/5">
                     DESCUENTO(3RA Y 4TA EDAD)
                   </TableCell>
-                  <TableCell align="right" className="font-black w-4/5"> L. {shoppingCart.amountProducts.toFixed(2)}</TableCell>
+                  <TableCell align="right" className="font-black w-4/5"> L. {discount === 'normal' && 0} {discount === 'senior' && (totalPayment * 0.30).toFixed(2)} {discount === 'superSenior' && (totalPayment * 0.40).toFixed(2)} </TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell className="font-black w-1/5"  >
                     TOTAL
                   </TableCell>
-                  <TableCell align="right" className="font-black w-4/5">L. {totalPayment.toFixed(2)} </TableCell>
+                  <TableCell align="right" className="font-black w-4/5">L. {discount === 'normal' && totalPayment.toFixed(2)} {discount === 'senior' && (totalPayment - (totalPayment * 0.30)).toFixed(2)} {discount === 'superSenior' && (totalPayment - (totalPayment * 0.40)).toFixed(2)} </TableCell>
                 </TableRow>
 
               </TableBody>
