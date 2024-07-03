@@ -42,7 +42,9 @@ function DetailOrder({ userOrder }: props2) {
     user: [{ _id: '', DNI: '', fullName: '', identification: '', telphone: '', email: '' }],
     payed: false,
     urlPayment: '',
-    imagePaymentName: ''
+    imagePaymentName: '',
+    totalDiscount: 0,
+    totalWithoutDiscount: 0
   })
   const onChangeImage = async (target: React.ChangeEvent<any>, index: string) => {
     try {
@@ -122,9 +124,9 @@ function DetailOrder({ userOrder }: props2) {
                 order.cart.map(product => (
                   <TableRow key={product._id}>
                     <TableCell component="th" scope="row">
-                      {product.name} * {product.amount}
+                      {product.name} * {product.amount }
                     </TableCell>
-                    <TableCell align="right">{product.price}</TableCell>
+                    <TableCell align="right">L. {product.price * product.amount}</TableCell>
                   </TableRow>
                 ))
               }
@@ -133,7 +135,7 @@ function DetailOrder({ userOrder }: props2) {
                 <TableCell className=" w-1/5">
                   DESCUENTO(3RA Y 4TA EDAD)
                 </TableCell>
-                <TableCell align="right" className="font-black w-4/5"> L. 1</TableCell>
+                <TableCell align="right" className="font-black w-4/5"> L. {order.totalDiscount.toFixed(2)}</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell className="font-black w-1/5"  >

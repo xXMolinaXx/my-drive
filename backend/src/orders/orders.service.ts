@@ -36,10 +36,10 @@ export class OrdersService {
     const priceWithoutDiscount = totalToPay;
     if (discount === 'senior') {
       totalToPay = totalToPay - totalToPay * 0.3;
-      totalDiscount = totalToPay * 0.3;
+      totalDiscount = priceWithoutDiscount * 0.3;
     } else if (discount === 'superSenior') {
       totalToPay = totalToPay - totalToPay * 0.4;
-      totalDiscount = totalToPay * 0.4;
+      totalDiscount = priceWithoutDiscount * 0.4;
     }
     await new this.orderModel({
       ...createOrderDto,

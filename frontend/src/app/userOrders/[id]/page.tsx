@@ -49,7 +49,9 @@ function OrderUser({ userOrder }: props2) {
     user: [{ _id: '', DNI: '', fullName: '', identification: '', telphone: '', email: '' }],
     payed: false,
     urlPayment: '',
-    imagePaymentName: ''
+    imagePaymentName: '',
+    totalDiscount: 0,
+    totalWithoutDiscount: 0,
   }])
   const [open, setOpen] = useState(false);
   const [openSnackBar, setOpenSnackBar] = useState(false)
@@ -194,7 +196,7 @@ function OrderUser({ userOrder }: props2) {
                 <Typography variant="body2">
                   Sucursal {order.branch}
                 </Typography>
-{/* 
+                {/* 
                 <Typography className="font-bold">
                   {`Pago realizado:        ${order.payed ? 'SI' : 'NO'} `}
                 </Typography> */}

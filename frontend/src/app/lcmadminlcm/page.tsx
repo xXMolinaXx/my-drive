@@ -1,11 +1,12 @@
 'use client'
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import MenuIcon from '@mui/icons-material/Menu';
 import SaveIcon from '@mui/icons-material/Save';
 import TodayIcon from '@mui/icons-material/Today';
 import HistoryIcon from '@mui/icons-material/History';
 import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
-import { Box, Button, Card, CardActions, CardContent, Dialog, Divider, Drawer, FormControl, FormControlLabel, FormGroup, FormLabel, Grid, LinearProgress, List, ListItem, ListItemButton, ListItemIcon, ListItemText, MenuItem, Pagination, Paper, Radio, RadioGroup, Switch, TextField, Typography } from "@mui/material";
+import { Box, Button, Card, CardActions, CardContent, Dialog, Divider, Drawer, FormControl, FormControlLabel, FormGroup, FormLabel, Grid, LinearProgress, List, ListItem, ListItemButton, ListItemIcon, ListItemText, MenuItem, Pagination, Paper, Radio, RadioGroup, Switch, TextField, Tooltip, Typography } from "@mui/material";
 import LogoutIcon from '@mui/icons-material/Logout';
 import dayjs, { Dayjs } from 'dayjs';
 import { DemoContainer, DemoItem } from '@mui/x-date-pickers/internals/demo';
@@ -60,6 +61,8 @@ export default function AdminLogin() {
     payed: false,
     urlPayment: '',
     imagePaymentName: '',
+    totalDiscount: 0,
+    totalWithoutDiscount: 0,
   }])
   const [imageSelect, setimageSelect] = useState('')
   const [openSnackBar, setOpenSnackBar] = useState(false)
@@ -69,6 +72,7 @@ export default function AdminLogin() {
   const [advanceSearch, setAdvanceSearch] = useState(false);
   const [openProductDetail, setOpenProductDetail] = useState(false);
   const [selectedCart, setSelectedCart] = useState<any>([]);
+  const [openDrawer, setOpenDrawer] = useState(false);
   const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
     setSkip(value * limit - limit)
     setPage(value)
@@ -185,7 +189,81 @@ export default function AdminLogin() {
       setSnackBarMessage(e.toStroing());
     })
   }
+  const DrawerList = (
+    <List>
+      <ListItem>
+        <Typography variant="h5">{user.fullName}</Typography>
+      </ListItem>
+      <Tooltip title="Ordenes del dia, son las ordenes que tienen que ser procesadas el dia de hoy">
+        <ListItem disablePadding onClick={() => {
+          setView('todayView');
+          setOpenDrawer(false);
+        }}>
+          <ListItemButton >
+            <ListItemIcon>
+              <AssignmentTurnedInIcon />
+            </ListItemIcon>
+            <ListItemText primary="Tomas rápidas pendiente del dia" />
+          </ListItemButton>
+        </ListItem>
+      </Tooltip>
+      {user.role === 'admin' &&
+        <>
+          <Tooltip title="Son todas las ordenes que no se ha confirmado que el pago esta realizado">
+            <ListItem disablePadding onClick={() => {
+              setView('waitingView');
+              setOpenDrawer(false);
+            }}>
+              <ListItemButton >
+                <ListItemIcon>
+                  <TodayIcon />
+                </ListItemIcon>
+                <ListItemText primary="Tomas rápidas en proceso" />
+              </ListItemButton>
+            </ListItem>
+          </Tooltip>
+          <ListItem disablePadding onClick={() => {
+            setView('finishedView');
+            setOpenDrawer(false);
+          }}>
+            <ListItemButton >
+              <ListItemIcon>
+                <TodayIcon />
+              </ListItemIcon>
+              <ListItemText primary="Tomas rápidas finalizadas" />
+            </ListItemButton>
+          </ListItem>
+          <Tooltip title="Puedes buscar las ordenes por fechas, estados y por cliente">
+            <ListItem disablePadding onClick={() => {
+              setView('historicView');
+              setOpenDrawer(false);
+            }}>
+              <ListItemButton >
+                <ListItemIcon>
+                  <HistoryIcon />
+                </ListItemIcon>
+                <ListItemText primary="Historial Tomas rápidas" />
+              </ListItemButton>
+            </ListItem>
+          </Tooltip>
+        </>
+      }
 
+      <ListItem disablePadding onClick={() => {
+        localStorage.removeItem('user')
+        setUser({ "access_token": null, "role": null, "_id": null, "fullName": null, store: '' })
+        document.cookie = "access_token=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
+        router.push('/')
+      }}>
+        <ListItemButton >
+          <ListItemIcon>
+            <LogoutIcon />
+          </ListItemIcon>
+          <ListItemText primary="Cerrar sección" />
+        </ListItemButton>
+      </ListItem>
+    </List>
+  );
   useEffect(() => {
     const userLocalStorage = localStorage.getItem('user')
     if (userLocalStorage) {
@@ -199,35 +277,46 @@ export default function AdminLogin() {
   }, [startAt, endAt, selectValue, user, view])
   return (
     <div className="min-h-screen">
+      <Drawer anchor="left" open={openDrawer} onClose={() => setOpenDrawer(false)}>
+        {DrawerList}
+      </Drawer>
+      <div className="m-5 bg-blue-500 rounded-full w-10 h-10 flex justify-center  items-center text-white shadow-lg  sm:hidden">
+        <MenuIcon sx={{ display: { xs: "block", sm: "none" } }} onClick={() => setOpenDrawer(true)} />
+      </div>
+
       <Grid container spacing={3}>
-        <Grid xs={3} item>
+        <Grid xs={3} item className="hidden sm:block">
           <Paper elevation={3} className="min-h-screen h-full ">
             <List>
               <ListItem>
                 <Typography variant="h5">{user.fullName}</Typography>
               </ListItem>
-              <ListItem disablePadding onClick={() => {
-                setView('todayView')
-              }}>
-                <ListItemButton >
-                  <ListItemIcon>
-                    <AssignmentTurnedInIcon />
-                  </ListItemIcon>
-                  <ListItemText primary="Tomas rápidas pendiente del dia" />
-                </ListItemButton>
-              </ListItem>
+              <Tooltip title="Ordenes del dia, son las ordenes que tienen que ser procesadas el dia de hoy">
+                <ListItem disablePadding onClick={() => {
+                  setView('todayView');
+                }}>
+                  <ListItemButton >
+                    <ListItemIcon>
+                      <AssignmentTurnedInIcon />
+                    </ListItemIcon>
+                    <ListItemText primary="Tomas rápidas pendiente del dia" />
+                  </ListItemButton>
+                </ListItem>
+              </Tooltip>
               {user.role === 'admin' &&
                 <>
-                  <ListItem disablePadding onClick={() => {
-                    setView('waitingView')
-                  }}>
-                    <ListItemButton >
-                      <ListItemIcon>
-                        <TodayIcon />
-                      </ListItemIcon>
-                      <ListItemText primary="Tomas rápidas en proceso" />
-                    </ListItemButton>
-                  </ListItem>
+                  <Tooltip title="Son todas las ordenes que no se ha confirmado que el pago esta realizado">
+                    <ListItem disablePadding onClick={() => {
+                      setView('waitingView')
+                    }}>
+                      <ListItemButton >
+                        <ListItemIcon>
+                          <TodayIcon />
+                        </ListItemIcon>
+                        <ListItemText primary="Tomas rápidas en proceso" />
+                      </ListItemButton>
+                    </ListItem>
+                  </Tooltip>
                   <ListItem disablePadding onClick={() => {
                     setView('finishedView')
                   }}>
@@ -238,16 +327,18 @@ export default function AdminLogin() {
                       <ListItemText primary="Tomas rápidas finalizadas" />
                     </ListItemButton>
                   </ListItem>
-                  <ListItem disablePadding onClick={() => {
-                    setView('historicView')
-                  }}>
-                    <ListItemButton >
-                      <ListItemIcon>
-                        <HistoryIcon />
-                      </ListItemIcon>
-                      <ListItemText primary="Historial Tomas rápidas" />
-                    </ListItemButton>
-                  </ListItem>
+                  <Tooltip title="Puedes buscar las ordenes por fechas, estados y por cliente">
+                    <ListItem disablePadding onClick={() => {
+                      setView('historicView')
+                    }}>
+                      <ListItemButton >
+                        <ListItemIcon>
+                          <HistoryIcon />
+                        </ListItemIcon>
+                        <ListItemText primary="Historial Tomas rápidas" />
+                      </ListItemButton>
+                    </ListItem>
+                  </Tooltip>
                 </>
               }
 
@@ -269,7 +360,7 @@ export default function AdminLogin() {
 
         </Grid>
         <Grid xs={9} item>
-          <div className="pt-5 pr-5 pb-5 ">
+          <div className="p-5 sm:pt-5 sm:pr-5 sm:pb-5  ">
             <div className="mb-5 mt-3">
               {/* <FormGroup>
                 <FormControlLabel control={<Switch />} label="Búsqueda avanzada" onChange={() => { setAdvanceSearch(!advanceSearch) }} />
@@ -413,7 +504,7 @@ const MeCard = ({ role, order, handleUpdateOrder, showDetailOrder }: MeCardProp)
 
             {
               orderStatusFlebotomista.map((option, i) => (
-                <MenuItem key={`key-status-${option.label}-${i}`} value={option.value}>
+                <MenuItem key={`key-status-${option.label}-${i}`} value={option.value} disabled={option.disabled}>
                   {option.label}
                 </MenuItem>
               ))
@@ -460,7 +551,7 @@ const MeCard = ({ role, order, handleUpdateOrder, showDetailOrder }: MeCardProp)
 
             {
               orderStatusAdmin.map((option, i) => (
-                <MenuItem key={`key-status-${option.label}-${i}`} value={option.value}>
+                <MenuItem key={`key-status-${option.label}-${i}`} value={option.value} disabled={option.disabled}>
                   {option.label}
                 </MenuItem>
               ))

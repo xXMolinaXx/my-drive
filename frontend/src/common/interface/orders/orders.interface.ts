@@ -13,6 +13,8 @@ export interface IOrder {
   payed: boolean
   urlPayment: string
   imagePaymentName: string
+  totalWithoutDiscount: number
+  totalDiscount: number
 }
 interface user {
 
