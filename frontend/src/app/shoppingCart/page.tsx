@@ -202,12 +202,12 @@ function ShoppingCart2() {
     if (actualYear - user?.yearBorn < 60)
       setDiscount('normal');
     else if (actualYear - user?.yearBorn > 80)
-      return setDiscount('superSenior');
-    return setDiscount('senior');
+      setDiscount('superSenior');
+    else setDiscount('senior');
 
   }
   useEffect(() => {
-    getTypeDiscount()
+
     getAvalableSchedules();
     const cart = getCart();
     let productAmount = 0
@@ -217,6 +217,9 @@ function ShoppingCart2() {
     })
     setShoppingCart({ amountProducts: productAmount, products: cart })
   }, [])
+  useEffect(() => {
+    getTypeDiscount()
+  }, [user])
   useEffect(() => {
     getAvalableSchedules()
   }, [selectBranch, selectDate])
@@ -406,10 +409,10 @@ function MyCard({ productName, price, productAmount, addMoreProduct, restMorePro
       <Grid container spacing={2}>
         <Grid item xs={12} >
           <Typography variant="body2" textAlign={"center"}>{productName}</Typography>
-          <Typography variant="body2"  textAlign={"center"}> L. {price}</Typography>
+          <Typography variant="body2" textAlign={"center"}> L. {price}</Typography>
           <p className="text-gray-500" >Descuento no incluido </p>
         </Grid>
-        <Grid item justifyContent={"center"} alignItems={"center"}  xs={8}>
+        <Grid item justifyContent={"center"} alignItems={"center"} xs={8}>
           <div className="flex justify-center">
             <AddIcon className="text-white mx-4 bg-blue-500 rounded-full hover:bg-blue-700" onClick={addMoreProduct} />
             <Typography variant="subtitle1" className="bg-gray-400 rounded-full text-white w-10 text-center border-blue-500 border-2">{productAmount}</Typography>
@@ -417,7 +420,7 @@ function MyCard({ productName, price, productAmount, addMoreProduct, restMorePro
           </div>
 
         </Grid>
-        <Grid item  xs={2}>
+        <Grid item xs={2}>
           <DeleteIcon className="text-red-600 m-1 mx-4 hover:text-red-800 " onClick={deleteProduct} />
         </Grid>
       </Grid>

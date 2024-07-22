@@ -93,11 +93,13 @@ function Catalog2() {
 
   }
   useEffect(() => {
-    getTypeDiscount()
+
     handleSearchProducts()
   }, [skip])
 
-
+  useEffect(() => {
+    getTypeDiscount()
+  }, [user])
 
   return (
     <div className="px-4   mb-14">
