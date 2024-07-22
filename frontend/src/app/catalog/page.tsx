@@ -88,8 +88,8 @@ function Catalog2() {
     if (actualYear - user?.yearBorn < 60)
       setDiscount('normal');
     else if (actualYear - user?.yearBorn > 80)
-      return setDiscount('superSenior');
-    return setDiscount('senior');
+      setDiscount('superSenior');
+    else setDiscount('senior');
 
   }
   useEffect(() => {
@@ -154,7 +154,7 @@ interface PropCard {
   addToCart: () => void,
   discount: 'senior' | 'superSenior' | 'normal'
 }
-function CardComponent({ price = 100, name = 'Productos', addToCart, discount = 'senior' }: PropCard) {
+function CardComponent({ price = 100, name = 'Productos', addToCart, discount = 'normal' }: PropCard) {
   return (
     <Card >
       <div className="px-3 pt-3">

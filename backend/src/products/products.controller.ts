@@ -8,6 +8,7 @@ import { ApiKeyGuard } from 'src/auth/guards/api-key.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { Roles } from 'src/auth/decorators/roles.decorator';
 import { ERoles } from 'src/common/enums/roles.enum';
+import { Public } from 'src/auth/decorators/public.decorator';
 @ApiTags('products')
 @Controller('products')
 @UseGuards(ApiKeyGuard, RolesGuard)
@@ -20,7 +21,7 @@ export class ProductsController {
   // }
   @Roles(ERoles.USER)
   @Get('/:skip/:limit/:searchWord')
-  async findAll(@Param('skip', ParseIntPipe) skip: number, @Param('limit', ParseIntPipe) limit: number,@Param('searchWord') searchWord: string): Promise<IhttpResponse> {
+  async findAll(@Param('skip', ParseIntPipe) skip: number, @Param('limit', ParseIntPipe) limit: number, @Param('searchWord') searchWord: string): Promise<IhttpResponse> {
     try {
       return {
         message: '',
@@ -37,7 +38,25 @@ export class ProductsController {
       };
     }
   }
-
+  @Public()
+  @Get('/updateProducts')
+  async updateProduct(): Promise<IhttpResponse> {
+    try {
+      await this.productsService.updateProducts();
+      return {
+        message: '',
+        success: true,
+        statusCode: 200,
+      };
+    } catch (error) {
+      return {
+        message: 'Error',
+        error: error.toString(),
+        success: false,
+        statusCode: 500,
+      };
+    }
+  }
   // @Get(':id')
   // findOne(@Param('id') id: string) {
   //   return this.productsService.findOne(+id);
