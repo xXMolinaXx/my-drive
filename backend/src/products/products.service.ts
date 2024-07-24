@@ -8,6 +8,7 @@ import { HttpService } from '@nestjs/axios';
 import { catchError, firstValueFrom } from 'rxjs';
 import { AxiosError } from 'axios';
 import { ILCManswer } from 'src/common/interface/products/lcmQueryResponse';
+import { Cron, CronExpression } from '@nestjs/schedule';
 
 @Injectable()
 export class ProductsService {
@@ -81,6 +82,7 @@ export class ProductsService {
   remove(id: number) {
     return `This action removes a #${id} product`;
   }
+  @Cron(CronExpression.EVERY_DAY_AT_1PM)
   async updateProducts() {
     const { data } = await firstValueFrom(
       this.httpService.get<ILCManswer>('https://lcm.clinsis.com/LCMLabTestCatalog').pipe(
