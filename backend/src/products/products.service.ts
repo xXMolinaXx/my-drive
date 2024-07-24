@@ -111,6 +111,5 @@ export class ProductsService {
         }
       }
     }
-    return { hola: 'adsd' };
   }
 }
