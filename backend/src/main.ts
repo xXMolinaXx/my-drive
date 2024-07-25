@@ -11,12 +11,7 @@ async function bootstrap() {
   app.enableCors({ credentials: true });
   const configService = app.get(ConfigService);
   const port = configService.get('puerto');
-  const config = new DocumentBuilder()
-    .setTitle('Toma de huella LCM')
-    .setDescription('')
-    .setVersion('1.0')
-    .addTag('LCM')
-    .build();
+  const config = new DocumentBuilder().setTitle('Toma de huella LCM').setDescription('').setVersion('1.0').addTag('LCM').build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('lcm-api', app, document);
   await app.listen(process.env.PORT || port);
