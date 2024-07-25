@@ -18,6 +18,9 @@ function Catalog2() {
       price: 0,
       __v: 0,
       _id: '',
+      categories: [
+        { _id: '', name: '' }
+      ]
     }
   ]);
   const [searchWord, setSearchWord] = useState('ninguno');
@@ -62,7 +65,7 @@ function Catalog2() {
   const handleSearchProducts = () => {
     setLoadingProducts(true);
     setProducts([])
-    fetch(`${config.backend}/products/${skip}/${limit}/${searchWord}`, {
+    fetch(`${config.backend}/products/${skip}/${limit}/${searchWord ? searchWord : 'ninguno'}`, {
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
@@ -104,36 +107,42 @@ function Catalog2() {
   return (
     <div className="px-4   mb-14">
       <section className="mt-4 flex">
-        <TextField
-          id="search-product"
-          label="Buscar por nombre del producto"
-          variant="outlined"
-          fullWidth
-          InputProps={{
-            endAdornment: <Button className="sm:w-full md:w-1/3 lg:w-1/3 ml-2 rounded-r-lg" variant="contained" onClick={() => {
-              setSkip(0);
-              handleSearchProducts();
-            }}>Buscar</Button>
-          }}
-          onChange={(e) => {
-            setSearchWord(e.target.value)
-          }} onKeyDown={e => {
-            if (e.key === 'Enter') {
-              setSkip(0);
-              handleSearchProducts();
-            }
-          }} />
+        <Tooltip title="Coloca el input de búsqueda en vació y haz click en buscar para mostrarte todo el catalogó">
+          <TextField
+            id="search-product"
+            label="Buscar por nombre del producto"
+            variant="outlined"
+            fullWidth
+            InputProps={{
+              endAdornment: <Button className="sm:w-full md:w-1/3 lg:w-1/3 ml-2 rounded-r-lg" variant="contained" onClick={() => {
+                setSkip(0);
+                handleSearchProducts();
+              }}>Buscar</Button>
+            }}
+            onChange={(e) => {
+              setSearchWord(e.target.value)
+            }} onKeyDown={e => {
+              if (e.key === 'Enter') {
+                setSkip(0);
+                handleSearchProducts();
+              }
+            }} />
+        </Tooltip>
+        {/* <Button variant="text" onClick={() => {
+          setSearchWord('ninguno');
+          setSkip(0);
+          setTimeout(() => {
+            handleSearchProducts();
+          }, 10000);
 
-        {/* <Button  variant="text" onClick={() => {
-
-            setSearchWord('ninguno')
-          }}>Reset</Button> */}
+        }}>Reset</Button> */}
       </section>
       <section className="mt-4 ">
         <Grid container spacing={2} justifyContent="center">
           {loadingProducts ? <CircularProgress /> : products?.map(data => (
             <Grid key={data._id} item xs={12} md={3} lg={3}>
-              <CardComponent name={data.name} price={data.price} addToCart={() => handleAddToCart(data)} discount={discount} />
+              {/* @ts-ignore */}
+              <CardComponent name={data.name} price={data.price} addToCart={() => handleAddToCart(data)} discount={discount} categories={data?.categories[0]?.name ? data?.categories[0]?.name : ''} />
             </Grid>
           ))}
         </Grid>
@@ -153,26 +162,30 @@ export default function Catalog() {
 interface PropCard {
   price: number,
   name: string,
+  categories?: string,
   addToCart: () => void,
   discount: 'senior' | 'superSenior' | 'normal'
 }
-function CardComponent({ price = 100, name = 'Productos', addToCart, discount = 'normal' }: PropCard) {
+function CardComponent({ price = 100, name = 'Productos', addToCart, discount = 'normal', categories = '' }: PropCard) {
   return (
     <Card >
-      <div className="px-3 pt-3">
+      {/* <div className="px-3 pt-3">
         <CardMedia
           sx={{ height: 100 }}
           image="/card.webp"
           title="green iguana"
         />
-      </div>
+      </div> */}
 
       <CardContent>
         <Tooltip title={name}>
-          <Typography variant="body1" component="div" color="text.secondary" noWrap={true}>
+          <Typography variant="body1" component="div" noWrap={true}>
             {name}
           </Typography>
         </Tooltip>
+        <Typography variant="body1" component="div" color="text.secondary" noWrap={true}>
+          {categories}
+        </Typography>
         <Typography className="font-semibold">
           L.
           {discount === 'normal' && (price)}

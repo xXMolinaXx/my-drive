@@ -17,7 +17,7 @@ export class ProductsService {
     @InjectModel(Product.name) private productModel: Model<Product>,
     @InjectModel(CategoriesProduct.name) private categoriesProductModel: Model<CategoriesProduct>,
     private readonly httpService: HttpService,
-  ) { }
+  ) {}
   // async create(createProductDto: CreateProductDto) {
   //   const productModel = this.productModel;
   //   const categoriesProduct = this.categoriesProductModel;
@@ -57,12 +57,33 @@ export class ProductsService {
   findAll({ skip = 0, limit = 25, searchWord = '' }) {
     if (searchWord !== 'ninguno') {
       return this.productModel
-        .find({ name: { $regex: searchWord, $options: 'i' } })
+        .aggregate([
+          {
+            $lookup: {
+              from: 'categoriesproducts',
+              localField: 'category',
+              foreignField: '_id',
+              as: 'categories',
+            },
+          },
+          { $match: { name: { $regex: searchWord, $options: 'i' } } },
+        ])
         .skip(skip)
-        .limit(limit)
-        .exec();
+        .limit(limit);
     }
-    return this.productModel.find().skip(skip).limit(limit).exec();
+    return this.productModel
+      .aggregate([
+        {
+          $lookup: {
+            from: 'categoriesproducts',
+            localField: 'category',
+            foreignField: '_id',
+            as: 'categories',
+          },
+        },
+      ])
+      .skip(skip)
+      .limit(limit);
   }
   findAllCount(searchWord) {
     if (searchWord !== 'ninguno') {
