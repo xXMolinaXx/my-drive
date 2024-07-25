@@ -18,3 +18,11 @@
     - is public.decorator.ts hace todos los endpoint de libre acceso
     - is roles.decorator.ts hace que los endpoint solo funciona con un usario verificado
 
+## Docker lea los cambios de nest js
+-  "watchOptions": {
+    "watchFile": "dynamicPriorityPolling",
+    "watchDirectory": "dynamicPriorityPolling",
+    "excludeDirectories": ["**/node_modules","dist"]
+  }
+- se coloco esas ocpiones en el tsconfig.json
+

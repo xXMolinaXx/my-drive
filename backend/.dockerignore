@@ -12,3 +12,6 @@ npm-debug.log
 # Ignorar archivos generados por herramientas de construcción (por ejemplo, webpack)
 dist/
 build/
+.gitignore
+.git
+test/
