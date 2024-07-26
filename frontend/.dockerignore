@@ -1,17 +1,9 @@
-# Ejemplo de .dockerignore para una aplicación Node.js
-
-# Ignorar la carpeta node_modules
-node_modules/
-
-# Ignorar archivos de registro
+Dockerfile
+.dockerignore
+node_modules
 npm-debug.log
-
-# Ignorar archivos de configuración local (si los tienes)
-.env
-
-# Ignorar archivos generados por herramientas de construcción (por ejemplo, webpack)
-dist/
-build/
-.gitignore
+README.md
+.next
+!.next/static
+!.next/standalone
 .git
-test/
