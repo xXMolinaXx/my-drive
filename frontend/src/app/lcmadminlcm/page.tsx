@@ -248,6 +248,18 @@ export default function AdminLogin() {
           </Tooltip>
         </>
       }
+      <ListItem disablePadding onClick={() => {
+        setView('historicView');
+        setOpenDrawer(false);
+      }}>
+        <ListItemButton >
+          <ListItemIcon>
+
+          </ListItemIcon>
+          <ListItemText primary="Usuarios" />
+        </ListItemButton>
+      </ListItem>
+
 
       <ListItem disablePadding onClick={() => {
         localStorage.removeItem('user')
