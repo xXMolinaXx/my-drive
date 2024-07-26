@@ -17,7 +17,7 @@ export class ProductsService {
     @InjectModel(Product.name) private productModel: Model<Product>,
     @InjectModel(CategoriesProduct.name) private categoriesProductModel: Model<CategoriesProduct>,
     private readonly httpService: HttpService,
-  ) {}
+  ) { }
   // async create(createProductDto: CreateProductDto) {
   //   const productModel = this.productModel;
   //   const categoriesProduct = this.categoriesProductModel;
@@ -103,8 +103,9 @@ export class ProductsService {
   remove(id: number) {
     return `This action removes a #${id} product`;
   }
-  @Cron(CronExpression.EVERY_DAY_AT_1PM)
+  @Cron(CronExpression.EVERY_DAY_AT_1AM)
   async updateProducts() {
+    this.logger.debug('**********Actualizando productos**********')
     const { data } = await firstValueFrom(
       this.httpService.get<ILCManswer>('https://lcm.clinsis.com/LCMLabTestCatalog').pipe(
         catchError((error: AxiosError) => {
@@ -122,13 +123,18 @@ export class ProductsService {
         if (!category) await new this.categoriesProductModel({ name: el?.test_type?.description }).save();
       }
       for (let index = 0; index < data.data.length; index++) {
-        const el = data.data[index];
-        const category = await this.categoriesProductModel.findOne({ name: el.test_type?.description });
-        const product = await this.productModel.findOne({ name: el.name_complete });
-        if (product) {
-          await this.productModel.updateOne({ nameComplete: el.name_complete }, { $set: { category: category?._id, codFact: el?.cod_fact, discount: el?.discount, name: el?.name, nameComplete: el?.name_complete, price: el?.price, recommendations: el?.recommendations[0]?.recommendation, synonym: el?.synonym, type: el?.type } });
-        } else {
-          await new this.productModel({ category: category?._id, codFact: el?.cod_fact, discount: el?.discount, name: el?.name, nameComplete: el?.name_complete, price: el?.price, recommendations: el?.recommendations[0]?.recommendation, synonym: el?.synonym, type: el?.type }).save();
+        try {
+          console.log(index);
+          const el = data.data[index];
+          const category = await this.categoriesProductModel.findOne({ name: el.test_type?.description });
+          const product = await this.productModel.findOne({ name: el.name_complete });
+          if (product) {
+            await this.productModel.updateOne({ nameComplete: el.name_complete }, { $set: { category: category?._id, codFact: el?.cod_fact, discount: el?.discount, name: el?.name, nameComplete: el?.name_complete, price: el?.price, recommendations: el?.recommendations ? el?.recommendations[0]?.recommendation : '', synonym: el?.synonym, type: el?.type } });
+          } else {
+            await new this.productModel({ category: category?._id, codFact: el?.cod_fact, discount: el?.discount, name: el?.name, nameComplete: el?.name_complete, price: el?.price, recommendations: el?.recommendations ? el?.recommendations[0]?.recommendation : '', synonym: el?.synonym, type: el?.type }).save();
+          }
+        } catch (error) {
+          this.logger.error(error.toString());
         }
       }
     }
