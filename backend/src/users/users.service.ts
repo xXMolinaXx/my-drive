@@ -3,7 +3,7 @@ import * as bcrypt from 'bcrypt';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import * as nodemailer from 'nodemailer';
-import { CreateUserDto } from './dto/create-user.dto';
+import { CreateUserDto, UpdateUserDto2 } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './schemas/users.schemas';
 import { ConfigService } from '@nestjs/config';
@@ -41,6 +41,16 @@ export class UsersService {
       yearBorn,
       senior: isSenior,
       superSenior: isSuperSenior,
+    }).save();
+  }
+  async createStaff(createUserDto: UpdateUserDto2) {
+    const user = await this.userModel.findOne({ email: createUserDto.email.trim().toLowerCase() });
+    if (user) throw 'Ya existe un usuario con este correo';
+    const password = await this.hashPassword(createUserDto.password);
+    await new this.userModel({
+      email: createUserDto.email.trim().toLowerCase(),
+      fullName: createUserDto.fullName.trim(),
+      password,
     }).save();
   }
   async sendEmail(email: string, subject: string) {

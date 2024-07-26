@@ -1,5 +1,6 @@
 'use client'
 import { useEffect, useState } from "react";
+import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
 import { useRouter } from "next/navigation";
 import MenuIcon from '@mui/icons-material/Menu';
 import SaveIcon from '@mui/icons-material/Save';
@@ -353,7 +354,16 @@ export default function AdminLogin() {
                   </Tooltip>
                 </>
               }
-
+              <ListItem disablePadding onClick={() => {
+                router.push('lcmadminlcm/users')
+              }}>
+                <ListItemButton >
+                  <ListItemIcon>
+                    <PersonOutlineIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Usuarios" />
+                </ListItemButton>
+              </ListItem>
               <ListItem disablePadding onClick={() => {
                 localStorage.removeItem('user')
                 setUser({ "access_token": null, "role": null, "_id": null, "fullName": null, store: '' })

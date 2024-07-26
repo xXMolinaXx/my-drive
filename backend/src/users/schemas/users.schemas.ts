@@ -14,23 +14,23 @@ export class User {
   fullName: string;
   @Prop({ required: true })
   email: string;
-  @Prop({ required: true })
+  @Prop({ required: true, default: '1' })
   telphone: string;
-  @Prop({ required: true })
+  @Prop({ required: true, default: '1' })
   DNI: string;
-  @Prop({ required: true })
+  @Prop({ required: true, default: new Date() })
   bornAt: Date;
-  @Prop({ required: true, enum: ['hombre', 'mujer'] })
+  @Prop({ required: true, enum: ['hombre', 'mujer'], default: 'hombre' })
   gender: string;
   @Prop({ required: true })
   password: string;
-  @Prop({ default: 'client', type: String, enum: ['client', 'admin'], required: true })
+  @Prop({ default: 'client', type: String, enum: ['client', 'admin', 'flebotomista'], required: true })
   role: string;
   @Prop({ default: 'ninguno', enum: ['ninguno', 'granja', 'tepeyac'], type: String })
   store: string;
   @Prop()
   resetPassword: resetPassword;
-  @Prop({ type: Number, require: true })
+  @Prop({ type: Number, require: true, default: 1900 })
   yearBorn: number;
 }
 

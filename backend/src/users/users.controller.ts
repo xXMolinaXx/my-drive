@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, Put } from '@nestjs/common';
 import { Request } from 'express';
 import { UsersService } from './users.service';
-import { CreateUserDto } from './dto/create-user.dto';
+import { CreateUserDto, UpdateUserDto2 } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { IhttpResponse } from 'src/common/interface/httpResponse/httpResponse.interface';
@@ -22,6 +22,25 @@ export class UsersController {
   async create(@Body() createUserDto: CreateUserDto): Promise<IhttpResponse> {
     try {
       await this.usersService.create(createUserDto);
+      return {
+        message: 'Usuario Creado',
+        statusCode: 200,
+        success: true,
+      };
+    } catch (error) {
+      return {
+        message: 'Error al crear usuario',
+        statusCode: 500,
+        success: false,
+        error: error.toString(),
+      };
+    }
+  }
+  @Public()
+  @Post('/createUserStaff')
+  async createStaff(@Body() updateUserDto: UpdateUserDto2): Promise<IhttpResponse> {
+    try {
+      await this.usersService.createStaff(updateUserDto);
       return {
         message: 'Usuario Creado',
         statusCode: 200,
