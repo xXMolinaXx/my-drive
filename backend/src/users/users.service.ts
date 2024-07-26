@@ -47,10 +47,13 @@ export class UsersService {
     const user = await this.userModel.findOne({ email: createUserDto.email.trim().toLowerCase() });
     if (user) throw 'Ya existe un usuario con este correo';
     const password = await this.hashPassword(createUserDto.password);
+    console.log(createUserDto);
     await new this.userModel({
       email: createUserDto.email.trim().toLowerCase(),
       fullName: createUserDto.fullName.trim(),
       password,
+      store: createUserDto.store,
+      role: createUserDto.role,
     }).save();
   }
   async sendEmail(email: string, subject: string) {

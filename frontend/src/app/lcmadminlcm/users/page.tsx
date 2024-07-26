@@ -45,11 +45,10 @@ export default function UsersAdmin(props: any) {
         }
       )
     }).then(data => data.json()).then(data => {
-      console.log(data);
       if (data.statusCode === 200) {
         alert('agregado con exito')
       } else {
-        alert('error al agregar usuario')
+        alert(data.error)
       }
     })
   }

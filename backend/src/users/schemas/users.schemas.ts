@@ -26,7 +26,7 @@ export class User {
   password: string;
   @Prop({ default: 'client', type: String, enum: ['client', 'admin', 'flebotomista'], required: true })
   role: string;
-  @Prop({ default: 'ninguno', enum: ['ninguno', 'granja', 'tepeyac'], type: String })
+  @Prop({ default: 'ninguno', enum: ['ninguno', 'la granja', 'tepeyac', 'aeroplaza'], type: String })
   store: string;
   @Prop()
   resetPassword: resetPassword;
