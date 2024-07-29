@@ -12,7 +12,7 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import MainLayout, { StoreContext } from "@/components/layout/MainLayout";
 import { useRouter } from "next/navigation";
-import { Alert, Chip, CircularProgress, Divider, Grid, MenuItem, Paper, Snackbar, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField } from "@mui/material";
+import { Alert, Chip, CircularProgress, Divider, Grid, MenuItem, Paper, Snackbar, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Tooltip } from "@mui/material";
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -235,24 +235,29 @@ function ShoppingCart2() {
   const step = [{
     key: 'primer-hijo',
     children: <div className="p-0 sm:p-10"><Grid container spacing={2} justifyContent={"center"}>
-      <Grid item md={5} lg={6} sm={12} xl={3}>
-        {shoppingCart.products.length !== 0 ? shoppingCart.products.map((product, i) => (
-          <MyCard
-            key={`${product.name}-cart-${i}`}
-            price={product.price}
-            productName={product.name}
-            productAmount={product.amount || 1}
-            addMoreProduct={() => { addMoreProduct(i) }}
-            restMoreProduct={() => { restMoreProduct(i) }}
-            deleteProduct={() => { deleteProduct(i) }}
-          />
-        )) : <Paper elevation={3} className="p-5 mt-5 sm:mt-0 w-full flex justify-center">
-          <Typography align="center">No hay ningun producto agregado</Typography>
-          <RemoveShoppingCartIcon />
-        </Paper>}
+      <Grid item md={5} lg={6} sm={12} xl={6}>
+        <Paper className="w-full p-3" elevation={4}>
+        <Typography variant="h4" align="center" className="text-blue-500 bolder font-black" >Carrito</Typography>
+          <Divider className="mb-5 border-2 " />
+          {shoppingCart.products.length !== 0 ? shoppingCart.products.map((product, i) => (
+            <MyCard
+              key={`${product.name}-cart-${i}`}
+              price={product.price}
+              productName={product.name}
+              productAmount={product.amount || 1}
+              addMoreProduct={() => { addMoreProduct(i) }}
+              restMoreProduct={() => { restMoreProduct(i) }}
+              deleteProduct={() => { deleteProduct(i) }}
+            />
+          )) : <Paper elevation={3} className="p-5 mt-5 sm:mt-0 w-full flex justify-center">
+            <Typography align="center">No hay ningun producto agregado</Typography>
+            <RemoveShoppingCartIcon />
+          </Paper>}
+        </Paper>
+
       </Grid>
 
-      <Grid item md={5} lg={6} sm={12} xl={4}>
+      <Grid item md={5} lg={6} sm={12} xl={6}>
         <Paper elevation={4} className="w-full p-3">
           <Typography variant="h4" align="center" className="text-blue-500 bolder font-black" >Resumen de orden</Typography>
           <Divider />
@@ -405,28 +410,31 @@ interface propCard {
 }
 function MyCard({ productName, price, productAmount, addMoreProduct, restMoreProduct, deleteProduct }: propCard) {
   return (
-    <Paper elevation={2} className="rounded-lg p-2 mt-5">
-      <Grid container spacing={2}>
-        <Grid item xs={12} >
-          <Typography variant="body2" textAlign={"center"}>{productName}</Typography>
-          <Typography variant="body2" textAlign={"center"}> L. {price}</Typography>
-          <p className="text-gray-500" >Descuento no incluido </p>
-        </Grid>
-        <Grid item justifyContent={"center"} alignItems={"center"} xs={8}>
-          <div className="flex justify-center">
-            <AddIcon className="text-white mx-4 bg-blue-500 rounded-full hover:bg-blue-700" onClick={addMoreProduct} />
-            <Typography variant="subtitle1" className="bg-gray-400 rounded-full text-white w-10 text-center border-blue-500 border-2">{productAmount}</Typography>
-            <RemoveIcon className="text-white mx-4 bg-blue-500 rounded-full hover:bg-blue-700 " onClick={restMoreProduct} />
-          </div>
-
-        </Grid>
-        <Grid item xs={2}>
-          <DeleteIcon className="text-red-600 m-1 mx-4 hover:text-red-800 " onClick={deleteProduct} />
-        </Grid>
+    <Grid container spacing={2}>
+      <Grid item xs={3} >
+        <Tooltip title={productName}>
+          <Typography variant="body2" textAlign={"center"} noWrap>{productName}</Typography>
+        </Tooltip>
       </Grid>
+      <Grid item xs={3} >
+        <Typography variant="body2" textAlign={"center"} className="font-bold"> L. {price}</Typography>
+        <p className="text-gray-400 font-light text-[1em]" >Descuento no incluido </p>
+      </Grid>
+      <Grid item justifyContent={"center"} alignItems={"center"} xs={3}>
+        <div className="flex justify-center">
+          <AddIcon className="text-white mx-4 bg-blue-500 rounded-lg hover:bg-blue-700" onClick={addMoreProduct} />
+          <Typography variant="subtitle1" className=" w-10 text-center font-bold">{productAmount}</Typography>
+          <RemoveIcon className="text-white mx-4 bg-blue-500 rounded-lg  hover:bg-blue-700 " onClick={restMoreProduct} />
+        </div>
+
+      </Grid>
+      <Grid item xs={3}>
+        <DeleteIcon className="text-red-600 m-1 mx-4 hover:text-red-800 " onClick={deleteProduct} />
+      </Grid>
+    </Grid>
 
 
-    </Paper>
+
   )
 }
 
