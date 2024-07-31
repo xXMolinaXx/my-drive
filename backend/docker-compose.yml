@@ -1,5 +1,5 @@
 services:
-  lcm_toma_huella_dev:
+  lcm_reloj_marcador_backend_dev:
     build:
       context: .
       dockerfile: Dockerfile
