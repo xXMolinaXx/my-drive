@@ -234,88 +234,24 @@ export default function LoginRegister() {
   }, [])
   if (!validationUser) return;
   return (<main>
-    <section className="min-h-screen">
+    <section className="h-screen">
       {/* <div className="oval" />
       <div className="oval2" /> */}
-      <Grid className='p-5 ' height={"100%"} container justifyContent={'center'} alignItems={'flex-end'} >
-        <Grid item xs={12} md={8} lg={4} className='w-94'>
-          <Paper elevation={3} className="p-5" >
-            <Grid container justifyContent={'center'} alignItems={'center'}  >
-              <Image src={'/LCM-logo.png'} width={100} height={100} alt='logo lcm' />
-            </Grid>
-            <Grid height={"100%"} container spacing={2} justifyContent={'center'} alignItems={'center'} >
-              {
-                form === 'ingreso' && (
-                  <Grid container item xs={12} justifyContent={'center'} alignItems={'center'}>
-                    <Grid xs={12}>
-                      <Typography variant="h3" textAlign={'center'}>
-                        Ingresar
-                      </Typography>
-                    </Grid>
-
-                    <Grid xs={12}>
-                      <TextField
-                        className='my-2'
-                        label="Correo"
-                        variant="outlined"
-                        fullWidth
-                        type='email'
-                        id='email'
-                        value={registrerForm.email}
-                        onChange={onChangeInput}
-                        error={auxiliarTextRegistrerForm.email ? true : false}
-                        helperText={auxiliarTextRegistrerForm.email}
-                      />
-                    </Grid>
-                    <Grid xs={12}>
-                      <TextField
-                        className='my-2'
-                        label="contraseña"
-                        variant="outlined"
-                        type='password'
-                        fullWidth
-                        id='password'
-                        error={auxiliarTextRegistrerForm.password ? true : false}
-                        helperText={auxiliarTextRegistrerForm.password}
-                        value={registrerForm.password}
-                        onChange={onChangeInput}
-
-                      />
-
-                    </Grid>
-                    <Grid xs={12} justifyContent={'center'} container>
-                      <Button variant="text" className='my-2' onClick={() => setForm('newPassword')}>¿Olvidastes tu contraseña?</Button>
-                    </Grid>
-                    <Grid xs={12}>
-                      <Button variant="contained" className='my-2' fullWidth onClick={logIn}>Ingresar</Button>
-                    </Grid>
-                    <Grid xs={12} >
-                      <Button variant="text" fullWidth className='my-2' onClick={() => setForm('registro')}> <p className='text-black '>¿Aún no tienes usuario?&ensp;&ensp;</p>Registrate</Button>
-                    </Grid>
-
-                  </Grid>
-                )}
-              {form === 'registro' && (
+      <Grid   className="h-screen" container>
+        <Grid item xs={12} md={4} className='px-5 py-10'>
+          <Grid container justifyContent={'center'} alignItems={'center'}  >
+            <Image src={'/LCM-logo.png'} width={100} height={100} alt='logo lcm' />
+          </Grid>
+          <Grid container spacing={2} justifyContent={'center'} alignItems={'center'} >
+            {
+              form === 'ingreso' && (
                 <Grid container item xs={12} justifyContent={'center'} alignItems={'center'}>
                   <Grid xs={12}>
-                    <Typography variant="h4" textAlign={'center'}>
-                      Registrarse
+                    <Typography variant="h3" textAlign={'center'}>
+                      Ingresar
                     </Typography>
                   </Grid>
-                  <Grid xs={12}>
-                    <TextField
-                      id='fullName'
-                      className='my-2'
-                      label="Nombre completo"
-                      variant="outlined"
 
-                      fullWidth
-                      value={registrerForm.fullName}
-                      onChange={onChangeInput}
-                      error={auxiliarTextRegistrerForm.fullName ? true : false}
-                      helperText={auxiliarTextRegistrerForm.fullName}
-                    />
-                  </Grid>
                   <Grid xs={12}>
                     <TextField
                       className='my-2'
@@ -333,122 +269,187 @@ export default function LoginRegister() {
                   <Grid xs={12}>
                     <TextField
                       className='my-2'
-                      label="Telefono"
-                      variant="outlined"
-                      fullWidth
-                      type='tel'
-                      id='telphone'
-                      value={registrerForm.telphone}
-                      onChange={onChangeInput}
-                      error={auxiliarTextRegistrerForm.telphone ? true : false}
-                      helperText={auxiliarTextRegistrerForm.telphone}
-                    />
-                  </Grid>
-                  <Grid xs={12}>
-                    <TextField
-                      className='my-2'
-                      label="Identidad"
-                      variant="outlined"
-                      fullWidth
-                      id='DNI'
-                      placeholder='0801199011111'
-                      value={registrerForm.DNI}
-                      onChange={onChangeInput}
-                      error={auxiliarTextRegistrerForm.DNI ? true : false}
-                      helperText={auxiliarTextRegistrerForm.DNI}
-                    />
-                  </Grid>
-                  <Grid xs={12}>
-                    <TextField className='my-2 w-3/6 ' type='date' variant="outlined" helperText={'Fecha de nacimiento'} />
-                    <TextField
-                      className='m-2 w-3/12'
-                      select
-                      label="Genero"
-                      defaultValue="EUR"
-                      id='gender'
-                      value={registrerForm.gender}
-                      onChange={onChangeInput}
-                      error={auxiliarTextRegistrerForm.gender ? true : false}
-                      helperText={auxiliarTextRegistrerForm.gender}
-                    >
-                      {['Hombre', 'Mujer'].map((option, i) => (
-                        <MenuItem key={`key-select-${option}-${i}`} value={option}>
-                          {option}
-                        </MenuItem>
-                      ))}
-                    </TextField>
-                  </Grid>
-                  <Grid xs={12}>
-                    <TextField
-                      type="password"
-                      className='my-2'
                       label="contraseña"
                       variant="outlined"
+                      type='password'
                       fullWidth
                       id='password'
                       error={auxiliarTextRegistrerForm.password ? true : false}
                       helperText={auxiliarTextRegistrerForm.password}
                       value={registrerForm.password}
                       onChange={onChangeInput}
+
                     />
+
                   </Grid>
+                  <Grid xs={12} justifyContent={'center'} container>
+                    <Button variant="text" className='my-2' onClick={() => setForm('newPassword')}>¿Olvidastes tu contraseña?</Button>
+                  </Grid>
+                  <Grid xs={12}>
+                    <Button variant="contained" className='my-2' fullWidth onClick={logIn}>Ingresar</Button>
+                  </Grid>
+                  <Grid xs={12} >
+                    <Button variant="text" fullWidth className='my-2' onClick={() => setForm('registro')}> <p className='text-black '>¿Aún no tienes usuario?&ensp;&ensp;</p>Registrate</Button>
+                  </Grid>
+
+                </Grid>
+              )}
+            {form === 'registro' && (
+              <Grid container item xs={12} justifyContent={'center'} alignItems={'center'}>
+                <Grid xs={12}>
+                  <Typography variant="h4" textAlign={'center'}>
+                    Registrarse
+                  </Typography>
+                </Grid>
+                <Grid xs={12}>
+                  <TextField
+                    id='fullName'
+                    className='my-2'
+                    label="Nombre completo"
+                    variant="outlined"
+
+                    fullWidth
+                    value={registrerForm.fullName}
+                    onChange={onChangeInput}
+                    error={auxiliarTextRegistrerForm.fullName ? true : false}
+                    helperText={auxiliarTextRegistrerForm.fullName}
+                  />
+                </Grid>
+                <Grid xs={12}>
+                  <TextField
+                    className='my-2'
+                    label="Correo"
+                    variant="outlined"
+                    fullWidth
+                    type='email'
+                    id='email'
+                    value={registrerForm.email}
+                    onChange={onChangeInput}
+                    error={auxiliarTextRegistrerForm.email ? true : false}
+                    helperText={auxiliarTextRegistrerForm.email}
+                  />
+                </Grid>
+                <Grid xs={12}>
+                  <TextField
+                    className='my-2'
+                    label="Telefono"
+                    variant="outlined"
+                    fullWidth
+                    type='tel'
+                    id='telphone'
+                    value={registrerForm.telphone}
+                    onChange={onChangeInput}
+                    error={auxiliarTextRegistrerForm.telphone ? true : false}
+                    helperText={auxiliarTextRegistrerForm.telphone}
+                  />
+                </Grid>
+                <Grid xs={12}>
+                  <TextField
+                    className='my-2'
+                    label="Identidad"
+                    variant="outlined"
+                    fullWidth
+                    id='DNI'
+                    placeholder='0801199011111'
+                    value={registrerForm.DNI}
+                    onChange={onChangeInput}
+                    error={auxiliarTextRegistrerForm.DNI ? true : false}
+                    helperText={auxiliarTextRegistrerForm.DNI}
+                  />
+                </Grid>
+                <Grid xs={12}>
+                  <TextField className='my-2 w-3/6 ' type='date' variant="outlined" helperText={'Fecha de nacimiento'} />
+                  <TextField
+                    className='m-2 w-3/12'
+                    select
+                    label="Genero"
+                    defaultValue="EUR"
+                    id='gender'
+                    value={registrerForm.gender}
+                    onChange={onChangeInput}
+                    error={auxiliarTextRegistrerForm.gender ? true : false}
+                    helperText={auxiliarTextRegistrerForm.gender}
+                  >
+                    {['Hombre', 'Mujer'].map((option, i) => (
+                      <MenuItem key={`key-select-${option}-${i}`} value={option}>
+                        {option}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                </Grid>
+                <Grid xs={12}>
+                  <TextField
+                    type="password"
+                    className='my-2'
+                    label="contraseña"
+                    variant="outlined"
+                    fullWidth
+                    id='password'
+                    error={auxiliarTextRegistrerForm.password ? true : false}
+                    helperText={auxiliarTextRegistrerForm.password}
+                    value={registrerForm.password}
+                    onChange={onChangeInput}
+                  />
+                </Grid>
+                <Grid xs={12}>
+                  <TextField
+                    type="password"
+                    className='my-2'
+                    label="confirmar contraseña"
+                    variant="outlined"
+                    fullWidth
+                    id='confirmPassword'
+                    value={registrerForm.confirmPassword}
+                    error={auxiliarTextRegistrerForm.confirmPassword ? true : false}
+                    helperText={auxiliarTextRegistrerForm.confirmPassword}
+                    onChange={onChangeInput}
+                  />
+                </Grid>
+                <Grid xs={12}>
+                  <Button variant="contained" className='my-2' onClick={registerUser} fullWidth>Registarte</Button>
+                </Grid>
+                <Grid xs={12}>
+                  <Button variant="text" className='my-2' onClick={() => setForm('ingreso')}>¿Ya tienes usuario?</Button>
+                </Grid>
+              </Grid>
+            )
+            }
+            {
+              form === 'newPassword' && (
+                <Grid container item xs={12} justifyContent={'center'} alignItems={'center'}>
+                  <Grid xs={12}>
+                    <Typography variant="h4" textAlign={'center'}>
+                      Cambiar contraseña
+                    </Typography>
+                  </Grid>
+
                   <Grid xs={12}>
                     <TextField
-                      type="password"
                       className='my-2'
-                      label="confirmar contraseña"
+                      label="Correo"
                       variant="outlined"
                       fullWidth
-                      id='confirmPassword'
-                      value={registrerForm.confirmPassword}
-                      error={auxiliarTextRegistrerForm.confirmPassword ? true : false}
-                      helperText={auxiliarTextRegistrerForm.confirmPassword}
+                      type='email'
+                      id='email'
+                      value={registrerForm.email}
                       onChange={onChangeInput}
+                      error={auxiliarTextRegistrerForm.email ? true : false}
+                      helperText={auxiliarTextRegistrerForm.email}
                     />
                   </Grid>
                   <Grid xs={12}>
-                    <Button variant="contained" className='my-2' onClick={registerUser} fullWidth>Registarte</Button>
+                    <Button variant="contained" className='my-2' onClick={sendMail} fullWidth>Enviar</Button>
                   </Grid>
-                  <Grid xs={12}>
+                  <Grid xs={12} container justifyContent={'center'}>
                     <Button variant="text" className='my-2' onClick={() => setForm('ingreso')}>¿Ya tienes usuario?</Button>
                   </Grid>
                 </Grid>
               )
-              }
-              {
-                form === 'newPassword' && (
-                  <Grid container item xs={12} justifyContent={'center'} alignItems={'center'}>
-                    <Grid xs={12}>
-                      <Typography variant="h4" textAlign={'center'}>
-                        Cambiar contraseña
-                      </Typography>
-                    </Grid>
+            }
+          </Grid>
 
-                    <Grid xs={12}>
-                      <TextField
-                        className='my-2'
-                        label="Correo"
-                        variant="outlined"
-                        fullWidth
-                        type='email'
-                        id='email'
-                        value={registrerForm.email}
-                        onChange={onChangeInput}
-                        error={auxiliarTextRegistrerForm.email ? true : false}
-                        helperText={auxiliarTextRegistrerForm.email}
-                      />
-                    </Grid>
-                    <Grid xs={12}>
-                      <Button variant="contained" className='my-2' onClick={sendMail} fullWidth>Enviar</Button>
-                    </Grid>
-                    <Grid xs={12} container justifyContent={'center'}>
-                      <Button variant="text" className='my-2' onClick={() => setForm('ingreso')}>¿Ya tienes usuario?</Button>
-                    </Grid>
-                  </Grid>
-                )
-              }
-            </Grid>
-          </Paper>
+        </Grid>
+        <Grid xs={0} md={8} style={{ backgroundImage: "url('lcmlogin2.webp')",backgroundRepeat:'no-repeat',backgroundSize:'cover'}} className='hidden sm:block'>
         </Grid>
       </Grid>
       <MainAlert handleClose={() => { setOpenMainAlert(false); setMainAlertMessage(''); setMainAlertType('error') }} message={mainAlertMessage} open={openMainALert} type={mainAlertType} />
