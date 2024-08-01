@@ -141,7 +141,7 @@ function Catalog2() {
   return (
     <div className="sm:px-4   mb-14">
       <div className="slide-container flex justify-center">
-        <Image src="/2.jpg" alt="oferta lcm" width={1000} height={100} /> 
+        <Image src="/2.jpg" alt="oferta lcm" width={1500} height={100} /> 
         {/* <Slide>
           {slideImages.map((slideImage, index) => (
             <div key={index}>
