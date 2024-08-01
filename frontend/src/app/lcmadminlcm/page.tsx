@@ -74,6 +74,7 @@ export default function AdminLogin() {
   const [openProductDetail, setOpenProductDetail] = useState(false);
   const [selectedCart, setSelectedCart] = useState<any>([]);
   const [openDrawer, setOpenDrawer] = useState(false);
+  const [selectStore, setselectStore] = useState('ninguno')
   const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
     setSkip(value * limit - limit)
     setPage(value)
@@ -387,7 +388,25 @@ export default function AdminLogin() {
               {/* <FormGroup>
                 <FormControlLabel control={<Switch />} label="Búsqueda avanzada" onChange={() => { setAdvanceSearch(!advanceSearch) }} />
               </FormGroup> */}
+              <TextField select className="mx-1 w-1/6 m-1" label="Selecione sucursal" variant="outlined" value={selectStore} onChange={(e) => {
+                setselectStore(e.target.value)
+              }}
+              >
+                <MenuItem value="ninguno">
+                  Todas
+                </MenuItem>
 
+                <MenuItem value="tepeyac">
+                  tepeyac
+                </MenuItem>
+                <MenuItem value="la granja">
+                  la granja
+                </MenuItem>
+                <MenuItem value="aeroplaza">
+                  aeroplaza
+                </MenuItem>
+              </TextField>
+              <br />
               {
                 view === 'historicView' && (
                   <>

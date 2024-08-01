@@ -66,30 +66,30 @@ export class OrdersService {
   }
   async findAll({ startAt, endAt, branchName, serachWord, status, limit, skip, advanceSearch, typeOfSearch }: SearchOrderDto) {
     let query: any = {
-      branch: branchName,
+      // branch: branchName,
     };
     if (typeOfSearch === 1) {
       query = {
-        branch: branchName,
+        // branch: branchName,
         reservation: { $gte: new Date(startAt), $lte: new Date(endAt) },
         status: { $nin: ['terminada', 'cancelada', 'finalizada'] },
       };
     } else if (typeOfSearch === 2) {
       query = {
-        branch: branchName,
+        // branch: branchName,
         status: { $in: ['finalizada', 'cancelada'] },
       };
     } else if (typeOfSearch === 3) {
       query = {
-        branch: branchName,
+        // branch: branchName,
         status: { $nin: ['terminada', 'cancelada', 'finalizada'] },
         payed: false,
       };
     } else if (advanceSearch) {
-      query = { reservation: { $gte: new Date(startAt), $lte: new Date(endAt) }, branch: branchName };
+      query = { reservation: { $gte: new Date(startAt), $lte: new Date(endAt) }, /*branch: branchName*/ };
       if (serachWord) {
         const ids = await this.usersService.findUser(serachWord);
-        query = { reservation: { $gte: new Date(startAt), $lte: new Date(endAt) }, branch: branchName, userId: { $in: ids } };
+        query = { reservation: { $gte: new Date(startAt), $lte: new Date(endAt) }, /*branch: branchName,*/ userId: { $in: ids } };
       }
       if (status && status !== 'todo') query.status = status;
     }

@@ -56,6 +56,9 @@ export class UsersService {
       role: createUserDto.role,
     }).save();
   }
+  async readStaff() {
+    return await this.userModel.find({ role: { $in: ['flebotomista', 'admin'] } }, { password: 0 }).exec();
+  }
   async sendEmail(email: string, subject: string) {
     const user = await this.userModel.findOne({ email: email });
 
@@ -148,7 +151,19 @@ export class UsersService {
       },
     );
   }
-
+  async updateStaff(id: string, updateUserDto: UpdateUserDto) {
+    const user = await this.userModel.findById(id);
+    if (!user) throw 'Este usuario no existe';
+    const newPassword = await this.hashPassword(updateUserDto.password);
+    await this.userModel.updateOne(
+      { _id: id },
+      {
+        $set: {
+          password: newPassword,
+        },
+      },
+    );
+  }
   remove(id: number) {
     return `This action removes a #${id} user`;
   }

@@ -17,6 +17,26 @@ import { ERoles } from 'src/common/enums/roles.enum';
 @UseGuards(ApiKeyGuard, RolesGuard)
 export class UsersController {
   constructor(private readonly usersService: UsersService) { }
+  @Roles(ERoles.ADMIN)
+  @Get('/readStaff')
+  async readStaff(): Promise<IhttpResponse> {
+    try {
+
+      return {
+        message: 'Usuarios leidos',
+        statusCode: 200,
+        success: true,
+        data: await this.usersService.readStaff(),
+      };
+    } catch (error) {
+      return {
+        message: 'Error al leer usuarios usuario',
+        statusCode: 500,
+        success: false,
+        error: error.toString(),
+      };
+    }
+  }
   @Public()
   @Post()
   async create(@Body() createUserDto: CreateUserDto): Promise<IhttpResponse> {
@@ -103,7 +123,25 @@ export class UsersController {
       };
     }
   }
-
+  @Roles(ERoles.ADMIN)
+  @Put('updateStaff/:id')
+  async updateStaff(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto): Promise<IhttpResponse> {
+    try {
+      return {
+        message: 'Usuarios leidos',
+        statusCode: 200,
+        success: true,
+        data: await this.usersService.readStaff(),
+      };
+    } catch (error) {
+      return {
+        message: 'Error al leer usuarios usuario',
+        statusCode: 500,
+        success: false,
+        error: error.toString(),
+      };
+    }
+  }
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.usersService.remove(+id);
