@@ -143,7 +143,7 @@ function Catalog2() {
       <div className="slide-container">
         <Slide>
           {slideImages.map((slideImage, index) => (
-            <div key={index} className="sm:px-12">
+            <div key={index}>
               <div style={{ ...divStyle, 'backgroundImage': `url(${slideImage.url})` }}>
                 {/* {slideImage.caption()} */}
               </div>
