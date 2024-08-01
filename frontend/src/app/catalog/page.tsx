@@ -1,5 +1,5 @@
 'use client'
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext, Suspense } from "react";
 import MainLayout, { StoreContext } from "@/components/layout/MainLayout";
 import { useSearchParams } from 'next/navigation'
 import { Slide } from 'react-slideshow-image';
@@ -244,10 +244,18 @@ function Catalog2() {
     </div>
   );
 }
+const CatalogPage = () => {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <Catalog2 />
+    </Suspense>
+  );
+};
+
 export default function Catalog() {
   return (
     <MainLayout>
-      <Catalog2 />
+      <CatalogPage />
     </MainLayout>
   )
 }
