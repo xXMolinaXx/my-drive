@@ -14,7 +14,7 @@ import { getCookieToken } from "@/common/utils/getCookieToken";
 import Image from "next/image";
 const slideImages = [
   {
-    url: '/2.png',
+    url: '/2.jpg',
   },
   {
     url: '/Tecnologia.jpg',
@@ -182,7 +182,7 @@ function Catalog2() {
 
         }}>Reset</Button> */}
       </section>
-      <section className="mt-4 ">
+      <section className="">
         <Grid container spacing={2} justifyContent="center">
           {loadingProducts ? <CircularProgress /> : products?.map(data => (
             <Grid key={data._id} item xs={12} md={3} lg={3}>
