@@ -14,58 +14,10 @@ import { getCookieToken } from "@/common/utils/getCookieToken";
 import Image from "next/image";
 const slideImages = [
   {
-    url: 'https://laboratorioscentromedico.hn/wp-content/uploads/2022/11/Banners-Web-OHA_04.jpg',
-    caption: () => (<section className="text-white flex justify-start w-full h-full p-5">
-      <div>
-        <Typography variant="h5">
-          31 años
-        </Typography>
-        <Typography variant="h4" className="font-bold">
-          de servicio
-        </Typography>
-        <Typography className="w-1/2">
-          la salud de nuestros clientes es la razón por la que todos los días nos esforzamos por brindar la mejor calidad en cada uno de nuestros servicios
-        </Typography>
-      </div>
-
-
-    </section>)
+    url: '/2.png',
   },
   {
-    url: 'https://laboratorioscentromedico.hn/wp-content/uploads/2022/11/Banners-Web_05-1.jpg',
-    caption: () => (<section className="text-white flex justify-start w-full h-full p-5">
-      <div>
-        <Typography variant="h5">
-          Tecnología
-        </Typography>
-        <Typography variant="h4" className="font-bold">
-          e innovación
-        </Typography>
-        <Typography className="w-1/2">
-          contamos con tecnologia de ultima generacion que garantiza mayor eficiencia en nuestros procesos para cuida la salud de nuestro clientes
-        </Typography>
-      </div>
-
-
-    </section>)
-  },
-  {
-    url: 'https://laboratorioscentromedico.hn/wp-content/uploads/2022/11/Banners-Web-cliente-consentido-LCM.jpg',
-    caption: () => (<section className="text-white flex justify-start w-full h-full p-5">
-      <div>
-        <Typography variant="h5">
-          Cliente
-        </Typography>
-        <Typography variant="h4" className="font-bold">
-          Consentido
-        </Typography>
-        <Typography className="w-1/2">
-          Un programa de muchos beneficios para cuidar tu salud, Si eres cliente frecuente¡Solicítala ya!
-        </Typography>
-      </div>
-
-
-    </section>)
+    url: '/Tecnologia.jpg',
   },
 ];
 const spanStyle = {
@@ -81,8 +33,10 @@ const divStyle = {
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  backgroundSize: 'cover',
-  height: '400px'
+  backgroundSize: 'contain',
+  backgroundRepeat: 'no-repeat',
+  height: '400px',
+  backgroundPosition: 'center',
 }
 function Catalog2() {
   const { setShoppingCart, shoppingCart, user } = useContext(StoreContext);
@@ -191,7 +145,7 @@ function Catalog2() {
           {slideImages.map((slideImage, index) => (
             <div key={index} className="sm:px-12">
               <div style={{ ...divStyle, 'backgroundImage': `url(${slideImage.url})` }}>
-                {slideImage.caption()}
+                {/* {slideImage.caption()} */}
               </div>
             </div>
           ))}
