@@ -17,7 +17,7 @@ import { ERoles } from 'src/common/enums/roles.enum';
 @UseGuards(ApiKeyGuard, RolesGuard)
 export class UsersController {
   constructor(private readonly usersService: UsersService) { }
-  @Roles(ERoles.ADMIN)
+  @Roles(ERoles.ADMIN, ERoles.SUPERADMIN)
   @Get('/readStaff')
   async readStaff(): Promise<IhttpResponse> {
     try {
@@ -56,7 +56,7 @@ export class UsersController {
       };
     }
   }
-  @Public()
+  @Roles(ERoles.SUPERADMIN)
   @Post('/createUserStaff')
   async createStaff(@Body() updateUserDto: UpdateUserDto2): Promise<IhttpResponse> {
     try {
@@ -123,7 +123,7 @@ export class UsersController {
       };
     }
   }
-  @Roles(ERoles.ADMIN)
+  @Roles(ERoles.SUPERADMIN)
   @Put('updateStaff/:id')
   async updateStaff(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto): Promise<IhttpResponse> {
     try {

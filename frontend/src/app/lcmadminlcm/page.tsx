@@ -85,7 +85,7 @@ export default function AdminLogin() {
     let searchParams: any = {
       "startAt": startAt?.subtract(1, 'day').toString(),
       "endAt": endAt?.add(1, 'day').toString(),
-      "branchName": user.store,
+      "branchName": selectStore,
       "serachWord": searchWord,
       "status": selectValue,
       "advanceSearch": view === 'historicView' ? true : false,
@@ -97,7 +97,7 @@ export default function AdminLogin() {
       searchParams = {
         "startAt": dayjs().hour(0).minute(0).toString(),
         "endAt": dayjs().hour(23).minute(55).toString(),
-        "branchName": user.store,
+        "branchName": selectStore,
         "advanceSearch": false,
         limit,
         skip,
@@ -107,7 +107,7 @@ export default function AdminLogin() {
       searchParams = {
         "startAt": dayjs().hour(0).minute(0).toString(),
         "endAt": dayjs().hour(23).minute(55).toString(),
-        "branchName": user.store,
+        "branchName": selectStore,
         "advanceSearch": false,
         limit,
         skip,
@@ -117,7 +117,7 @@ export default function AdminLogin() {
       searchParams = {
         "startAt": dayjs().hour(0).minute(0).toString(),
         "endAt": dayjs().hour(23).minute(55).toString(),
-        "branchName": user.store,
+        "branchName": selectStore,
         "advanceSearch": false,
         limit,
         skip,
@@ -288,7 +288,7 @@ export default function AdminLogin() {
   }, [])
   useEffect(() => {
     if (user.store !== 'store') getOrder()
-  }, [startAt, endAt, selectValue, user, view])
+  }, [startAt, endAt, selectValue, user, view, selectStore])
   return (
     <div className="min-h-screen">
       <Drawer anchor="left" open={openDrawer} onClose={() => setOpenDrawer(false)}>
