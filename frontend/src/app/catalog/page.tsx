@@ -140,16 +140,16 @@ function Catalog2() {
 
   return (
     <div className="sm:px-4   mb-14">
-      <div className="slide-container">
-        <Slide>
+      <div className="slide-container flex justify-center">
+        <Image src="/2.jpg" alt="oferta lcm" width={1000} height={100} /> 
+        {/* <Slide>
           {slideImages.map((slideImage, index) => (
             <div key={index}>
               <div style={{ ...divStyle, 'backgroundImage': `url(${slideImage.url})` }}>
-                {/* {slideImage.caption()} */}
               </div>
             </div>
           ))}
-        </Slide>
+        </Slide> */}
       </div>
       <section className="mt-4 flex">
         {/* <Tooltip title="Coloca el input de búsqueda en vació y haz click en buscar para mostrarte todo el catalogó">

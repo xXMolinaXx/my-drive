@@ -224,8 +224,7 @@ function MainLayout({ children }: props) {
   return (
     < >
       <nav >
-        <AppBar position="static" className="px-5 py-2">
-          LCM te damos la bienvenida
+        <AppBar position="static" className="px-5 py-3">
         </AppBar>
         <Box sx={{ flexGrow: 1 }}>
           <AppBar position="static" className="bg-white text-black">
