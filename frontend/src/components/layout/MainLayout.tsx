@@ -231,7 +231,7 @@ function MainLayout({ children }: props) {
             <Toolbar>
 
               <Image src="/LCM.png" alt="logo" width={100} height={100} onClick={() => router.push('/catalog?searchWord=ninguno')} className="bg-white rounded-xl p-2" />
-              <p className="cursor-pointer px-4" onClick={() => router.push('/catalog?searchWord=ninguno')}>INICIO</p>
+              <p className="cursor-pointer px-4" onClick={() => router.push('/catalog?searchWord=ninguno')}>Inicio</p>
               <Box sx={{ flexGrow: 1 }} />
               <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
                 <TextField
