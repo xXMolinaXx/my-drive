@@ -82,7 +82,7 @@ export default function LoginRegister() {
           JSON.stringify({ ...data.data, access_token: null })
         );
         if (data.data.role === 'client') {
-          router.push('/catalog')
+          router.push('/catalog?searchWord=ninguno')
         } else if (data.data.role === 'admin' || data.data.role === 'flebotomista') {
           router.push('/lcmadminlcm')
         }
@@ -174,7 +174,7 @@ export default function LoginRegister() {
               JSON.stringify({ ...data.data, access_token: null })
             );
             if (data.data.role === 'client') {
-              router.push('/catalog')
+              router.push('/catalog?searchWord=ninguno')
             } else if (data.data.role === 'admin') {
 
               router.push('/lcmadminlcm')
@@ -226,7 +226,7 @@ export default function LoginRegister() {
     const user = localStorage.getItem('user')
     if (token) {
       if (user) {
-        router.push('/catalog');
+        router.push('/catalog?searchWord=ninguno');
       }
     }
 

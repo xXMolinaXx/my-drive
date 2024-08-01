@@ -1,5 +1,5 @@
 services:
-  lcm_toma_huella_frontend_dev:
+  lcm-toma-huella-frontend-dev:
     build:
       context: .
       dockerfile: Dockerfile

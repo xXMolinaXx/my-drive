@@ -1,6 +1,9 @@
 'use client'
 import React, { useEffect, useState, useContext } from "react";
 import MainLayout, { StoreContext } from "@/components/layout/MainLayout";
+import { useSearchParams } from 'next/navigation'
+import { Slide } from 'react-slideshow-image';
+import 'react-slideshow-image/dist/styles.css'
 import { Button, Card, CardActions, CardContent, CardMedia, CircularProgress, Grid, Pagination, TextField, Tooltip, Typography } from "@mui/material";
 import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
 import { config } from "@/common/configs/config";
@@ -8,9 +11,83 @@ import { IProduct } from "@/common/interface/product.interface";
 import { addToCart } from "@/common/utils/cart";
 import MainAlert from "@/components/alerts/MainAlert";
 import { getCookieToken } from "@/common/utils/getCookieToken";
+import Image from "next/image";
+const slideImages = [
+  {
+    url: 'https://laboratorioscentromedico.hn/wp-content/uploads/2022/11/Banners-Web-OHA_04.jpg',
+    caption: () => (<section className="text-white flex justify-start w-full h-full p-5">
+      <div>
+        <Typography variant="h5">
+          31 años
+        </Typography>
+        <Typography variant="h4" className="font-bold">
+          de servicio
+        </Typography>
+        <Typography className="w-1/2">
+          la salud de nuestros clientes es la razón por la que todos los días nos esforzamos por brindar la mejor calidad en cada uno de nuestros servicios
+        </Typography>
+      </div>
 
+
+    </section>)
+  },
+  {
+    url: 'https://laboratorioscentromedico.hn/wp-content/uploads/2022/11/Banners-Web_05-1.jpg',
+    caption: () => (<section className="text-white flex justify-start w-full h-full p-5">
+      <div>
+        <Typography variant="h5">
+          Tecnología
+        </Typography>
+        <Typography variant="h4" className="font-bold">
+          e innovación
+        </Typography>
+        <Typography className="w-1/2">
+          contamos con tecnologia de ultima generacion que garantiza mayor eficiencia en nuestros procesos para cuida la salud de nuestro clientes
+        </Typography>
+      </div>
+
+
+    </section>)
+  },
+  {
+    url: 'https://laboratorioscentromedico.hn/wp-content/uploads/2022/11/Banners-Web-cliente-consentido-LCM.jpg',
+    caption: () => (<section className="text-white flex justify-start w-full h-full p-5">
+      <div>
+        <Typography variant="h5">
+          Cliente
+        </Typography>
+        <Typography variant="h4" className="font-bold">
+          Consentido
+        </Typography>
+        <Typography className="w-1/2">
+          Un programa de muchos beneficios para cuidar tu salud, Si eres cliente frecuente¡Solicítala ya!
+        </Typography>
+      </div>
+
+
+    </section>)
+  },
+];
+const spanStyle = {
+  padding: '20px',
+  // background: '#efefef',
+  width: '400px',
+  color: '#ffff',
+  fontWeight: 'bold',
+
+}
+
+const divStyle = {
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  backgroundSize: 'cover',
+  height: '400px'
+}
 function Catalog2() {
   const { setShoppingCart, shoppingCart, user } = useContext(StoreContext);
+  const searchParams = useSearchParams()
+  const search = searchParams.get('searchWord')
   const [products, setProducts] = useState<IProduct[]>([
     {
       category: '',
@@ -65,7 +142,7 @@ function Catalog2() {
   const handleSearchProducts = () => {
     setLoadingProducts(true);
     setProducts([])
-    fetch(`${config.backend}/products/${skip}/${limit}/${searchWord ? searchWord : 'ninguno'}`, {
+    fetch(`${config.backend}/products/${skip}/${limit}/${search ? search : 'ninguno'}`, {
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
@@ -103,11 +180,25 @@ function Catalog2() {
   useEffect(() => {
     getTypeDiscount()
   }, [user])
+  useEffect(() => {
+    handleSearchProducts()
+  }, [search])
 
   return (
-    <div className="px-4   mb-14">
+    <div className="sm:px-4   mb-14">
+      <div className="slide-container">
+        <Slide>
+          {slideImages.map((slideImage, index) => (
+            <div key={index} className="sm:px-12">
+              <div style={{ ...divStyle, 'backgroundImage': `url(${slideImage.url})` }}>
+                {slideImage.caption()}
+              </div>
+            </div>
+          ))}
+        </Slide>
+      </div>
       <section className="mt-4 flex">
-        <Tooltip title="Coloca el input de búsqueda en vació y haz click en buscar para mostrarte todo el catalogó">
+        {/* <Tooltip title="Coloca el input de búsqueda en vació y haz click en buscar para mostrarte todo el catalogó">
           <TextField
             id="search-product"
             label="Buscar por nombre del producto"
@@ -127,7 +218,7 @@ function Catalog2() {
                 handleSearchProducts();
               }
             }} />
-        </Tooltip>
+        </Tooltip> */}
         {/* <Button variant="text" onClick={() => {
           setSearchWord('ninguno');
           setSkip(0);
@@ -145,6 +236,7 @@ function Catalog2() {
               <CardComponent name={data.name} price={data.price} addToCart={() => handleAddToCart(data)} discount={discount} categories={data?.categories[0]?.name ? data?.categories[0]?.name : ''} />
             </Grid>
           ))}
+          {products.length === 0 && <Typography variant="h5" textAlign={'center'} className="p-5"> Lo sentimos , no hemos encontrado lo que estas buscando</Typography>}
         </Grid>
         <Pagination className="mt-4" count={amount} page={page} color="primary" onChange={handleChange} />
       </section>

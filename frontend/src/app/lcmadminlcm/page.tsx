@@ -281,7 +281,7 @@ export default function AdminLogin() {
     const userLocalStorage = localStorage.getItem('user')
     if (userLocalStorage) {
       setUser(JSON.parse(userLocalStorage))
-      if (!['admin', 'flebotomista'].includes(JSON.parse(userLocalStorage).role)) router.push('/catalog')
+      if (!['admin', 'flebotomista'].includes(JSON.parse(userLocalStorage).role)) router.push('/catalog?searchWord=ninguno')
     }
     else router.push('/')
   }, [])

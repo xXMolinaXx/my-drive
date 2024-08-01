@@ -1,11 +1,10 @@
 'use client'
-import React, { FormEvent, useEffect, useState, createContext, useContext, Dispatch, SetStateAction } from "react";
+import React, { useEffect, useState, createContext, useContext, Dispatch, SetStateAction } from "react";
 import HomeIcon from '@mui/icons-material/Home';
+import WebIcon from '@mui/icons-material/Web';
 import FacebookIcon from '@mui/icons-material/Facebook';
 import InstagramIcon from '@mui/icons-material/Instagram';
 import MenuIcon from '@mui/icons-material/Menu';
-import PersonIcon from '@mui/icons-material/Person';
-import CloseIcon from '@mui/icons-material/Close';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { useRouter } from 'next/navigation'
 import AppBar from '@mui/material/AppBar';
@@ -14,14 +13,23 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-import { Badge, Collapse, Drawer, Grid, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Paper, TextField, Tooltip } from "@mui/material";
+import { Badge, Drawer, Grid, Paper, TextField, Tooltip } from "@mui/material";
 import Image from "next/image";
-import { config } from "@/common/configs/config";
 import { getCookieToken } from "@/common/utils/getCookieToken";
-import { IProduct, IProductState } from "@/common/interface/product.interface";
+import { IProductState } from "@/common/interface/product.interface";
 import { getCart } from "@/common/utils/cart";
 import Link from "next/link";
 import { UserLog } from "@/common/interface/users/user.interface";
+
+
+import IconButton from '@mui/material/IconButton';
+import MenuItem from '@mui/material/MenuItem';
+import Menu from '@mui/material/Menu';
+import SearchIcon from '@mui/icons-material/Search';
+import AccountCircle from '@mui/icons-material/AccountCircle';
+import MailIcon from '@mui/icons-material/Mail';
+import NotificationsIcon from '@mui/icons-material/Notifications';
+import MoreIcon from '@mui/icons-material/MoreVert';
 
 interface IContext {
   shoppingCart: IProductState,
@@ -84,7 +92,7 @@ function MainLayout({ children }: props) {
         <div>
           <Typography variant="h5" noWrap>{user && user.fullName}</Typography>
           <Button className="mb-2" variant="outlined" type="submit" fullWidth onClick={() => {
-            router.push('/catalog')
+            router.push('/catalog?searchWord=ninguno')
           }}>Inicio</Button>
           <Button className="mb-2" variant="outlined" type="submit" fullWidth onClick={() => {
             router.push(`/userOrders/${user._id}`)
@@ -101,73 +109,228 @@ function MainLayout({ children }: props) {
 
     </Box>
   );
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const [mobileMoreAnchorEl, setMobileMoreAnchorEl] =
+    React.useState<null | HTMLElement>(null);
+
+  const isMenuOpen = Boolean(anchorEl);
+  const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+
+  const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMobileMenuClose = () => {
+    setMobileMoreAnchorEl(null);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+    handleMobileMenuClose();
+  };
+
+  const handleMobileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+    setMobileMoreAnchorEl(event.currentTarget);
+  };
+
+  const menuId = 'primary-search-account-menu';
+  const renderMenu = (
+    <Menu
+      anchorEl={anchorEl}
+      anchorOrigin={{
+        vertical: 'top',
+        horizontal: 'right',
+      }}
+      id={menuId}
+      keepMounted
+      transformOrigin={{
+        vertical: 'top',
+        horizontal: 'right',
+      }}
+      open={isMenuOpen}
+      onClose={handleMenuClose}
+    >
+      <p className="px-3"> {user?.fullName}</p>
+      <MenuItem onClick={() => {
+        router.push(`/userOrders/${user._id}`)
+      }}>Mis ordenes</MenuItem>
+      {/* <MenuItem >Perfil</MenuItem> */}
+      <MenuItem onClick={() => {
+        localStorage.removeItem('user')
+        setUser(null)
+        document.cookie = "access_token=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
+        setOpen(false);
+        router.push('/')
+      }}>Cerrar session</MenuItem>
+    </Menu>
+  );
+
+  const mobileMenuId = 'primary-search-account-menu-mobile';
+  const renderMobileMenu = (
+    <Menu
+      anchorEl={mobileMoreAnchorEl}
+      anchorOrigin={{
+        vertical: 'top',
+        horizontal: 'right',
+      }}
+      id={mobileMenuId}
+      keepMounted
+      transformOrigin={{
+        vertical: 'top',
+        horizontal: 'right',
+      }}
+      open={isMobileMenuOpen}
+      onClose={handleMobileMenuClose}
+    >
+      <MenuItem onClick={() => router.push('/shoppingCart')}>
+        <Badge badgeContent={shoppingCart.amountProducts} color="warning">
+          <IconButton
+            size="large"
+            color="inherit"
+          >
+            <ShoppingCartIcon />
+          </IconButton>
+        </Badge>
+        <p>Carrito</p>
+      </MenuItem>
+      <MenuItem onClick={() => {
+        router.push(`/userOrders/${user._id}`)
+      }}>
+        <IconButton
+          size="large"
+          color="inherit"
+        >
+          <AccountCircle />
+        </IconButton>
+        <p>Mis ordenes</p>
+      </MenuItem>
+      <MenuItem onClick={() => {
+        localStorage.removeItem('user')
+        setUser(null)
+        document.cookie = "access_token=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
+        setOpen(false);
+        router.push('/')
+      }}>
+        <IconButton
+          size="large"
+          color="inherit"
+        >
+          <AccountCircle />
+        </IconButton>
+        <p>Cerrar session</p>
+      </MenuItem>
+    </Menu>
+  );
   return (
     < >
-      <nav>
+      <nav >
+        <AppBar position="static" className="px-5 py-2">
+          LCM te damos la bienvenida
+        </AppBar>
         <Box sx={{ flexGrow: 1 }}>
+          <AppBar position="static" className="bg-white text-black">
+            <Toolbar>
+
+              <Image src="/LCM.png" alt="logo" width={100} height={100} onClick={() => router.push('/catalog?searchWord=ninguno')} className="bg-white rounded-xl p-2" />
+              <p className="cursor-pointer px-4" onClick={() => router.push('/catalog?searchWord=ninguno')}>INICIO</p>
+              <Box sx={{ flexGrow: 1 }} />
+              <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
+                <TextField
+                  className="bg-white rounded-sm border-none my-3 w-3/5"
+                  id="search-product"
+                  placeholder="Buscar por nombre del producto"
+                  variant="outlined"
+                  InputProps={{
+                    endAdornment: <SearchIcon className="cursor-pointer" onClick={() => {
+                      // @ts-ignore
+                      router.push(`/catalog?searchWord=${document.querySelector('#search-product').value}`)
+                      // setSkip(0);
+                      // handleSearchProducts();
+                    }} />
+                  }}
+                  onKeyDown={e => {
+                    if (e.key === 'Enter') {
+                      // @ts-ignore
+                      router.push(`/catalog?searchWord=${document.querySelector('#search-product').value}`)
+                      // handleSearchProducts();
+                    }
+                  }} />
+                <IconButton size="large"  color="inherit" onClick={() => router.push('/shoppingCart')}>
+                  <Badge badgeContent={shoppingCart.amountProducts} className="mx-1" color="warning">
+                    <ShoppingCartIcon />
+                  </Badge>
+                </IconButton>
+                <IconButton
+                  size="large"
+                  edge="end"
+                  aria-label="account of current user"
+                  aria-controls={menuId}
+                  aria-haspopup="true"
+                  onClick={handleProfileMenuOpen}
+                  color="inherit"
+                >
+                  <AccountCircle />
+                </IconButton>
+              </Box>
+              <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
+                <IconButton
+                  size="large"
+                  aria-label="show more"
+                  aria-controls={mobileMenuId}
+                  aria-haspopup="true"
+                  onClick={handleMobileMenuOpen}
+                  color="inherit"
+                >
+                  <MoreIcon />
+                </IconButton>
+              </Box>
+            </Toolbar>
+          </AppBar>
+          {renderMobileMenu}
+          {renderMenu}
+        </Box>
+        <Box sx={{ flexGrow: 1 }} className=" sm:hidden">
+          <AppBar position="static" className="bg-transparent text-black shadow-none ">
+            <div className="flex justify-center">
+              <TextField
+                className="bg-white rounded-sm border-none my-3 mx-5"
+                fullWidth
+                id="search-product-2"
+                placeholder="Buscar por nombre del producto"
+                variant="outlined"
+                InputProps={{
+                  endAdornment: <SearchIcon className="cursor-pointer" onClick={() => {
+                    // @ts-ignore
+                    router.push(`/catalog?searchWord=${document.querySelector('#search-product-2').value}`)
+                    // setSkip(0);
+                    // handleSearchProducts();
+                  }} />
+                }}
+                onKeyDown={e => {
+                  if (e.key === 'Enter') {
+                    // @ts-ignore
+                    router.push(`/catalog?searchWord=${document.querySelector('#search-product-2').value}`)
+                    // handleSearchProducts();
+                  }
+                }}
+              />
+            </div>
+
+          </AppBar>
+        </Box>
+        {/* <Box sx={{ flexGrow: 1 }}>
           <Drawer anchor="left" open={openDrawer} onClose={toggleDrawer(false, 'login')}>
             {DrawerList}
           </Drawer>
           <AppBar position="fixed">
             <Toolbar>
-              {/* <IconButton
-              size="large"
-              edge="start"
-              color="inherit"
-              aria-label="menu"
-              sx={{ mr: 2 }}
-            >
-              <MenuIcon />
-            </IconButton> */}
+            
               <MenuIcon sx={{ display: { xs: "block", sm: "none" } }} className="mr-5" onClick={toggleDrawer(true, 'user')} />
 
               <Image src="/LCM.png" alt="logo" width={100} height={100} onClick={() => router.push('/catalog')} />
               <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
 
               </Typography>
-              {/* {user && (<>
-                <Box sx={{ display: { xs: "none", sm: "block" } }}>
-                  <Button variant="contained" color="secondary" className="mx-1" onClick={() => { setOpen(!open) }}>
-                    {user.fullName}
-                    <PersonIcon />
-                  </Button>
-                  <Collapse in={open} className="absolute  z-10 mt-4 ">
-                    <Paper elevation={3} className="bg-blue-500 rounded-md text-white">
-                      <List >
-                        <ListItem>
-                          <ListItemButton onClick={() => {
-                            router.push(`/userOrders/${user._id}`)
-                          }}>
-                            <ListItemIcon>
-                              <ShoppingCartIcon className="text-white" />
-                            </ListItemIcon>
-                            <ListItemText primary="Mis ordenes" />
-                          </ListItemButton>
-                        </ListItem>
-                        <ListItem>
-                          <ListItemButton onClick={() => {
-                            localStorage.removeItem('user')
-                            setUser(null)
-                            document.cookie = "access_token=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
-                            setOpen(false);
-                            router.push('/')
-                          }}>
-                            <ListItemIcon>
-                              <LogoutIcon className="text-white" />
-                            </ListItemIcon>
-                            <ListItemText primary="Cerrar sesión" />
-                          </ListItemButton>
-                        </ListItem>
-              
-                      </List>
-                    </Paper>
-
-                  </Collapse>
-                </Box>
-
-                
-              </>
-              )} */}
               <p className="hidden sm:block">
                 {user?.fullName}
               </p>
@@ -181,10 +344,10 @@ function MainLayout({ children }: props) {
 
             </Toolbar>
           </AppBar>
-        </Box>
+        </Box> */}
       </nav>
       <main className="min-h-screen">
-        <Paper elevation={1} className="h-full fixed rounded-none pt-24 w-16 flex justify-center hidden sm:block">
+        {/* <Paper elevation={1} className="h-full fixed rounded-none pt-24 w-16 flex justify-center hidden sm:block">
           <div>
             <Tooltip title="Catalogo">
               <Button className="mb-5" variant="text" onClick={() => router.push('/catalog')}>
@@ -212,8 +375,8 @@ function MainLayout({ children }: props) {
             </Tooltip>
           </div>
 
-        </Paper>
-        <div className="pt-16  px-4  sm:px-32" >
+        </Paper> */}
+        <div className="pt-5  px-4  sm:px-14" >
           {children}
         </div>
 
@@ -223,20 +386,24 @@ function MainLayout({ children }: props) {
           <Grid item xs={12} md={4}>
             <Typography variant="h6" color="white">Oficinas principales</Typography>
             <Typography variant="body1" color="white">Tegucigalpa</Typography>
-            <Typography variant="body1" color="white">Laboratorios centro medico la granja</Typography>
-            <Typography variant="body1" color="white">Telefono: falta agregar</Typography>
+            <Typography variant="body1" color="white">Laboratorios Centro Médico, Col. Tepeyac, calle Real de Minas, Comayagüela, Honduras, 12101</Typography>
+            <Typography variant="body1" color="white">Telefono: 2225-0567</Typography>
           </Grid>
           <Grid item md={4} justifyContent={"center"}>
             <Image className="bg-white rounded-xl" src="/LCM.png" alt="logo" width={200} height={200} onClick={() => router.push('/catalog')} />
           </Grid>
           <Grid item xs={12} md={2}>
             <Typography variant="h6" color="white">Síguenos en: </Typography>
-            <Link href='https://chakra-ui.com' className="text-white">
+            <Link href='https://www.facebook.com/Laboratorioscentromedico/' className="text-white">
               <FacebookIcon /> Facebook
             </Link>
             <br />
-            <Link href='https://chakra-ui.com' className="text-white">
+            <Link href='https://www.instagram.com/lcm_hn/' className="text-white">
               <InstagramIcon /> Instagram
+            </Link>
+            <br />
+            <Link href='https://laboratorioscentromedico.hn' className="text-white">
+              <WebIcon /> Web
             </Link>
           </Grid>
         </Grid>

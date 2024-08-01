@@ -184,7 +184,7 @@ function OrderUser({ userOrder }: props2) {
             <Card className="h-full" >
               <CardContent>
                 # orden: {order._id.substring(order._id.length - 6, order._id.length)}
-                <Typography variant="h4" className="text-blue-700" color="text.secondary" gutterBottom>
+                <Typography variant="h4" className="text-blue-700" color="text.secondary" noWrap  gutterBottom>
                   {order.status}
                 </Typography>
                 <Typography className="font-bold">

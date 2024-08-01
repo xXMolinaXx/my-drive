@@ -76,7 +76,7 @@ export default function UpdatePassword({ params }: params) {
         setMainAlertMessage(data.message);
         setOpenMainAlert(true);
         setTimeout(() => {
-          router.push('/catalog')
+          router.push('/catalog?searchWord=ninguno')
         }, 5000);
 
       } else {
