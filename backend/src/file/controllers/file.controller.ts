@@ -8,12 +8,15 @@ import { IhttpResponse } from 'src/common/interface/httpResponse/httpResponse.in
 import { FileService } from '../services/file.service';
 import { UploadFileDTO } from '../DTOS/files.dto';
 import { ApiKeyGuard } from 'src/auth/guards/api-key.guard';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { Roles } from 'src/auth/decorators/roles.decorator';
+import { ERoles } from 'src/common/enums/roles.enum';
 @ApiTags('files')
 @Controller('files')
-@UseGuards(ApiKeyGuard)
+@UseGuards(ApiKeyGuard, RolesGuard)
 export class FilesController {
   constructor(private readonly fileService: FileService) { }
-
+  @Roles(ERoles.USER, ERoles.ADMIN)
   @Post('upload/:imageName')
   @UseInterceptors(
     FileInterceptor('file', {
