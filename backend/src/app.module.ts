@@ -8,8 +8,6 @@ import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { JwtModule } from '@nestjs/jwt';
 import { LoggerMiddleware } from './logger.middleware';
-import { ProductsModule } from './products/products.module';
-import { OrdersModule } from './orders/orders.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { FileModule } from './file/file.module';
@@ -50,8 +48,6 @@ import { ScheduleModule } from '@nestjs/schedule';
       },
       global: true,
     }),
-    ProductsModule,
-    OrdersModule,
     FileModule,
     ScheduleModule.forRoot(),
   ],

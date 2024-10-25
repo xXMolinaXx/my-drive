@@ -238,7 +238,7 @@ export default function LoginRegister() {
       {/* <div className="oval" />
       <div className="oval2" /> */}
       <Grid   className="h-screen" container>
-        <Grid item xs={12} md={4} className='px-5 py-10'>
+        <Grid item xs={12} md={3} className='px-5 py-10'>
           <Grid container justifyContent={'center'} alignItems={'center'}  >
             <Image src={'/LCM-logo.png'} width={100} height={100} alt='logo lcm' />
           </Grid>
@@ -449,7 +449,12 @@ export default function LoginRegister() {
           </Grid>
 
         </Grid>
-        <Grid xs={0} md={8} style={{ backgroundImage: "url('lcmlogin2.webp')",backgroundRepeat:'no-repeat',backgroundSize:'cover'}} className='hidden sm:block'>
+        <Grid xs={0} md={9} style={{ backgroundImage: "url('lcmlogin2.webp')",backgroundRepeat:'no-repeat',backgroundSize:'cover'}} className='hidden sm:block'>
+        <div className=' ml-10 mt-10'>
+        <h2 className='text-white text-3xl font-bold font-mono'>LCM drive esta aqui</h2>
+        <p className='text-white text-xl font-light font-mono w-72 mt-10'>Guarda todo tus archivos en un solo lugar</p>
+        </div>
+        
         </Grid>
       </Grid>
       <MainAlert handleClose={() => { setOpenMainAlert(false); setMainAlertMessage(''); setMainAlertType('error') }} message={mainAlertMessage} open={openMainALert} type={mainAlertType} />
