@@ -53,6 +53,7 @@ function Catalog2() {
       if (file !== undefined) {
         const formData = new FormData();
         formData.append("file", file);
+        formData.append("userId", user._id);
         let data: any = await fetch(`${config.backend}/files/upload/${`${user._id}-${file.name}`}`, {
           method: "POST",
           body: formData,

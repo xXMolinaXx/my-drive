@@ -1,13 +1,17 @@
-import { Controller, Get, Param, Post, Res, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Res, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiTags } from '@nestjs/swagger';
 import { diskStorage } from 'multer';
 import { join } from 'path';
 import { Public } from 'src/auth/decorators/public.decorator';
 import { IhttpResponse } from 'src/common/interface/httpResponse/httpResponse.interface';
+import { FileService } from '../services/file.service';
+import { UploadFileDTO } from '../DTOS/files.dto';
 @ApiTags('files')
 @Controller('files')
 export class FilesController {
+  constructor(private readonly fileService: FileService) { }
+
   @Post('upload/:imageName')
   @UseInterceptors(
     FileInterceptor('file', {
@@ -20,8 +24,13 @@ export class FilesController {
       }),
     }),
   )
-  uploadFile(@UploadedFile() file: Express.Multer.File, @Param('imageName') image: string): IhttpResponse {
+  uploadFile(@UploadedFile() file: Express.Multer.File, @Param('imageName') image: string, @Body('userId') userId: string): IhttpResponse {
     try {
+      const data: UploadFileDTO = {
+        ...file,
+        userId,
+      };
+      this.fileService.uploadInfoFile(data);
       return {
         message: 'Imagen actualizada',
         success: true,
