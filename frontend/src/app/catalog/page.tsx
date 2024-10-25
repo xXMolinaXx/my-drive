@@ -48,7 +48,6 @@ function Catalog2() {
   const onChangeImage = async (target: React.ChangeEvent<any>) => {
     try {
       setLoading(true)
-      
       const file = target.currentTarget.files[0];
       if (file !== undefined) {
         const formData = new FormData();
@@ -57,13 +56,26 @@ function Catalog2() {
         let data: any = await fetch(`${config.backend}/files/upload/${`${user._id}-${file.name}`}`, {
           method: "POST",
           body: formData,
+          headers: {
+            // "Content-Type": "application/json",
+            // Accept: "application/json",
+            Authorization: `Bearer ${getCookieToken()}`,
+          },
         }).then(data => data.json());
-        toast.success("Imagen subida");
+        if (data.success) {
+          toast.success("Imagen subida");
+        } else if (data.statusCode === 500) {
+          toast.error(data.message);
+        }else {
+          toast.error(data.message);
+        }
+
       }
     } catch (error: any) {
+      console.log(error);
       toast.error("Ocurrio un error al subir la imagen");
     }
-   
+
     setLoading(false);
   };
   const handleSearchProducts = () => {
@@ -94,7 +106,7 @@ function Catalog2() {
   return (
     <div className="sm:px-4   mb-14">
       <section className="mt-4 flex">
-        <Button variant="contained" startIcon={loading ? <CircularProgress /> : <CloudUploadIcon />  } disabled={loading} onClick={() => {
+        <Button variant="contained" startIcon={loading ? <CircularProgress /> : <CloudUploadIcon />} disabled={loading} onClick={() => {
           //@ts-ignore
           document.getElementById(`fileInput`).click()
         }}>Nuevo</Button>
@@ -103,7 +115,7 @@ function Catalog2() {
           className="hidden"
           type="file"
           name="avatar"
-          
+
           onChange={onChangeImage}
         />
       </section>
