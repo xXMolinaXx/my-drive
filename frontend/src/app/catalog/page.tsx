@@ -1,6 +1,11 @@
 'use client'
 import React, { useEffect, useState, useContext, Suspense } from "react";
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import ImageIcon from '@mui/icons-material/Image';
+import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
+import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+import QuestionMarkIcon from '@mui/icons-material/QuestionMark';
+import FolderZipIcon from '@mui/icons-material/FolderZip';
 import MainLayout, { StoreContext } from "@/components/layout/MainLayout";
 import { useSearchParams } from 'next/navigation'
 import { Slide } from 'react-slideshow-image';
@@ -14,22 +19,26 @@ import MainAlert from "@/components/alerts/MainAlert";
 import { getCookieToken } from "@/common/utils/getCookieToken";
 import Image from "next/image";
 import { toast } from "react-toastify";
+import { IFiles } from "@/common/interface/files/files.interface";
+import { convertBits } from "@/common/utils/convertType";
 
 function Catalog2() {
   const { setShoppingCart, shoppingCart, user } = useContext(StoreContext);
   const [loading, setLoading] = useState(false);
   const searchParams = useSearchParams()
   const search = searchParams.get('searchWord')
-  const [products, setProducts] = useState<IProduct[]>([
+  const [files, setFiles] = useState<IFiles[]>([
     {
-      category: '',
-      name: '',
-      price: 0,
       __v: 0,
       _id: '',
-      categories: [
-        { _id: '', name: '' }
-      ]
+      createdAt: '',
+      filename: '',
+      isPublic: false,
+      path: '',
+      size: 0,
+      updatedAt: '',
+      userAccess: [],
+      userOwner: ''
     }
   ]);
   const [searchWord, setSearchWord] = useState('ninguno');
@@ -37,7 +46,7 @@ function Catalog2() {
   const [limit,] = useState(24);
   const [amount, setAmount] = useState(0);
   const [page, setPage] = useState(0);
-  const [loadingProducts, setLoadingProducts] = useState(false);
+  const [loadingFiles, setLoadingFiles] = useState(false);
   const [openAlert, setOpenAlert] = useState(false);
   const [messageAlert, setmessageAlert] = useState('');
   const [discount, setDiscount] = useState<'senior' | 'superSenior' | 'normal'>('normal')
@@ -66,7 +75,7 @@ function Catalog2() {
           toast.success("Imagen subida");
         } else if (data.statusCode === 500) {
           toast.error(data.message);
-        }else {
+        } else {
           toast.error(data.message);
         }
 
@@ -78,31 +87,54 @@ function Catalog2() {
 
     setLoading(false);
   };
-  const handleSearchProducts = () => {
-    setLoadingProducts(true);
-    setProducts([])
-    fetch(`${config.backend}/products/${skip}/${limit}/${search ? search : 'ninguno'}`, {
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        Authorization: `Bearer ${getCookieToken()}`,
-      },
-    }).then(data => data.json()).then(data => {
-      if (data.statusCode === 200) {
-        setProducts(data.data?.products || [])
-        setAmount(Math.round(data.data?.count / limit))
-        setLoadingProducts(false);
-      } else {
-        setOpenAlert(true);
-        setmessageAlert(data.message)
-      }
-    }).catch(e => {
-      setLoadingProducts(false)
-      setOpenAlert(true);
-      setmessageAlert(e.toString())
-    })
-  }
 
+  // const handleSearchProducts = () => {
+  //   setLoadingProducts(true);
+  //   setProducts([])
+  //   fetch(`${config.backend}/products/${skip}/${limit}/${search ? search : 'ninguno'}`, {
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //       Accept: "application/json",
+  //       Authorization: `Bearer ${getCookieToken()}`,
+  //     },
+  //   }).then(data => data.json()).then(data => {
+  //     if (data.statusCode === 200) {
+  //       setProducts(data.data?.products || [])
+  //       setAmount(Math.round(data.data?.count / limit))
+  //       setLoadingProducts(false);
+  //     } else {
+  //       setOpenAlert(true);
+  //       setmessageAlert(data.message)
+  //     }
+  //   }).catch(e => {
+  //     setLoadingProducts(false)
+  //     setOpenAlert(true);
+  //     setmessageAlert(e.toString())
+  //   })
+  // }
+  const fetchFiles = async () => {
+    setLoadingFiles(true)
+    if (user) {
+      const resp = await fetch(`${config.backend}/files/${user._id}`, {
+        method: 'GET',
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          Authorization: `Bearer ${getCookieToken()}`,
+        },
+      }).then(data => data.json())
+      if (resp.success) {
+        setFiles(resp.data)
+      } else {
+        toast.error('Error al cargar archivos')
+      }
+
+    }
+    setLoadingFiles(false)
+  }
+  useEffect(() => {
+    fetchFiles()
+  }, [user])
   return (
     <div className="sm:px-4   mb-14">
       <section className="mt-4 flex">
@@ -119,15 +151,43 @@ function Catalog2() {
           onChange={onChangeImage}
         />
       </section>
-      <section className="">
-        <Grid container spacing={2} justifyContent="center">
-          {loadingProducts ? <CircularProgress /> : products?.map(data => (
-            <Grid key={data._id} item xs={12} md={3} lg={3}>
-              {/* @ts-ignore */}
-              <CardComponent name={data.name} price={data.price} addToCart={() => handleAddToCart(data)} discount={discount} categories={data?.categories[0]?.name ? data?.categories[0]?.name : ''} />
+      <section className="pt-5">
+        <Grid container >
+          <Grid item xs={1}>
+
+          </Grid>
+          <Grid item xs={3}>
+            <Typography variant="body1" component="div" noWrap={true}>
+              Archivo
+            </Typography>
+          </Grid>
+          <Grid item xs={2}>
+            <Typography variant="body1" component="div" noWrap={true}>
+              creado
+            </Typography>
+          </Grid>
+          <Grid item xs={2}>
+            <Typography variant="body1" component="div" noWrap={true}>
+              Actualizado
+            </Typography>
+          </Grid>
+          <Grid item xs={1}>
+            <Typography variant="body1" component="div" color="text.secondary" noWrap={true}>
+              Tamaño
+            </Typography>
+          </Grid>
+          <Grid item xs={1}>
+
+          </Grid>
+        </Grid>
+        <Grid container spacing={2} justifyContent="center" className="mt-3">
+          {loadingFiles ? <CircularProgress /> : files?.map(data => (
+            <Grid key={data._id} item xs={12}>
+
+              <CardComponent {...data} />
             </Grid>
           ))}
-          {products.length === 0 && <Typography variant="h5" textAlign={'center'} className="p-5"> Lo sentimos , no hemos encontrado lo que estas buscando</Typography>}
+          {files.length === 0 && <Typography variant="h5" textAlign={'center'} className="p-5"> Lo sentimos , no hemos encontrado lo que estas buscando</Typography>}
         </Grid>
         <Pagination className="mt-4" count={amount} page={page} color="primary" onChange={handleChange} />
       </section>
@@ -151,48 +211,111 @@ export default function Catalog() {
   )
 }
 interface PropCard {
-  price: number,
-  name: string,
-  categories?: string,
-  addToCart: () => void,
-  discount: 'senior' | 'superSenior' | 'normal'
+  _id: string
+  userOwner: string
+  path: string
+  filename: string
+  size: number
+  isPublic: boolean
+  userAccess: any[]
+  createdAt: string
+  updatedAt: string
+  __v: number
 }
-function CardComponent({ price = 100, name = 'Productos', addToCart, discount = 'normal', categories = '' }: PropCard) {
+function CardComponent({ __v, _id, createdAt, filename, isPublic, path, size, updatedAt, userAccess, userOwner }: PropCard) {
+  const getImage = (nameFile: string) => {
+    const type = nameFile.split('.')[1]
+    if ([
+      "jpg",
+      "jpeg",
+      "png",
+      "gif",
+      "bmp",
+      "webp",
+      "svg",
+      "tiff",
+      "ico",
+      "heic",
+      "heif",
+      "psd",
+      "raw"
+    ].includes(type)) {
+      return (< ImageIcon />)
+    } else if (type === 'pdf') {
+      return (<PictureAsPdfIcon />)
+    } else if (['zip', 'tar'].includes(type)) {
+      return (<FolderZipIcon />)
+    }
+    return (<QuestionMarkIcon />)
+  }
+  const dowloadFile = (imageId:string,filename) => {
+    fetch(`${process.env.NEXT_PUBLIC_BACKEND}/files/download/${imageId}`, {
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        Authorization: `Bearer ${getCookieToken()}`,
+      },
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Error al crear el archivo Excel');
+        }
+        return response.blob();
+      }).then(blob => {
+
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+      }).catch(error => {
+        toast.error("No tienes acceso");
+      })
+
+  }
   return (
     <Card >
-      {/* <div className="px-3 pt-3">
-        <CardMedia
-          sx={{ height: 100 }}
-          image="/card.webp"
-          title="green iguana"
-        />
-      </div> */}
-
       <CardContent>
-        <Tooltip title={name}>
-          <Typography variant="body1" component="div" noWrap={true}>
-            {name}
-          </Typography>
-        </Tooltip>
-        <Typography variant="body1" component="div" color="text.secondary" noWrap={true}>
-          {categories}
-        </Typography>
-        <Typography className="font-semibold">
-          L.
-          {discount === 'normal' && (price)}
-          {discount === 'senior' && (price - (price * 0.30))}
-          {discount === 'superSenior' && (price - (price * 0.40))}
-        </Typography>
-        <Typography color={"text.secondary"} variant="body2">
-          Descuento / ISV incluido
-        </Typography>
-      </CardContent>
-      <CardActions className="flex justify-center">
-        <Tooltip title="Agregar a carrito">
-          <Button size="small" variant="contained" onClick={addToCart} ><AddShoppingCartIcon /></Button>
-        </Tooltip>
+        <Grid container >
+          <Grid item xs={1}>
+            {getImage(filename)}
 
-      </CardActions>
+          </Grid>
+          <Grid item xs={3}>
+            <Tooltip title={filename}>
+              <Typography variant="body1" component="div" noWrap={true}>
+                {filename}
+              </Typography>
+            </Tooltip>
+          </Grid>
+          <Grid item xs={2}>
+            <Typography variant="body1" component="div" noWrap={true} className="text-center">
+              {new Date(createdAt).toLocaleDateString()}
+            </Typography>
+          </Grid>
+          <Grid item xs={2}>
+            <Typography variant="body1" component="div" noWrap={true} className="text-center">
+              {new Date(updatedAt).toLocaleDateString()}
+            </Typography>
+          </Grid>
+          <Grid item xs={1}>
+            <Typography variant="body1" component="div" noWrap={true} className="text-left">
+              {convertBits(size)}
+            </Typography>
+
+            <Typography variant="body1" component="div" color="text.secondary" noWrap={true}>
+
+            </Typography>
+          </Grid>
+          <Grid item xs={1} >
+            <Tooltip title="Descargar">
+              <Button size="small" variant="contained"  onClick={()=>dowloadFile(_id,filename)}><ArrowDownwardIcon /></Button>
+            </Tooltip>
+          </Grid>
+        </Grid>
+      </CardContent>
     </Card>
   );
 } 

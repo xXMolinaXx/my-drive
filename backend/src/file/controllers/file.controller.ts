@@ -1,5 +1,8 @@
-import { Body, Controller, Get, Param, Post, Res, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, HttpStatus, Param, Post, Request, Res, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
+import * as fs from 'fs';
+import { ObjectId } from 'mongodb';
+import { Response } from 'express';
 import { ApiTags } from '@nestjs/swagger';
 import { diskStorage } from 'multer';
 import { join } from 'path';
@@ -11,11 +14,30 @@ import { ApiKeyGuard } from 'src/auth/guards/api-key.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { Roles } from 'src/auth/decorators/roles.decorator';
 import { ERoles } from 'src/common/enums/roles.enum';
+import { jwtDecode } from 'jwt-decode';
 @ApiTags('files')
 @Controller('files')
 @UseGuards(ApiKeyGuard, RolesGuard)
 export class FilesController {
   constructor(private readonly fileService: FileService) { }
+  @Roles(ERoles.USER, ERoles.ADMIN)
+  @Get('/:userId')
+  async getUserFiles(@Param('userId') userId: string): Promise<IhttpResponse> {
+    try {
+      return {
+        message: '',
+        success: true,
+        statusCode: 200,
+        data: await this.fileService.getUserFile(userId),
+      };
+    } catch (error) {
+      return {
+        message: 'Error al cargar archivos',
+        success: false,
+        statusCode: 500,
+      };
+    }
+  }
   @Roles(ERoles.USER, ERoles.ADMIN)
   @Post('upload/:imageName')
   @UseInterceptors(
@@ -54,5 +76,45 @@ export class FilesController {
   @Get('getFile/:fileName')
   getFile(@Param('fileName') fileName: string, @Res() res) {
     return res.sendFile(join(process.cwd(), `uploads/${fileName}`));
+  }
+  @Public()
+  // @Roles(ERoles.ADMIN, ERoles.USER)
+  @Get('/download/:filename')
+  async DownloadExcel(@Request() req, @Res() res: Response, @Param('filename') filename: string): Promise<void> {
+    try {
+      const imageData = await this.fileService.getImage(filename);
+      const userAccess = imageData.userAccess.map((el) => String(el));
+      let decoded: any = {
+        sub: '',
+      };
+      if (req.headers.authorization) {
+        decoded = jwtDecode(req.headers.authorization);
+      }
+
+      if (imageData.isPublic || decoded.sub === String(imageData.userOwner) || userAccess.includes(decoded.sub)) {
+        const filePath = join(process.cwd(), imageData.path);
+        res.setHeader('Content-Disposition', `attachment; filename=${imageData.filename}`);
+        res.setHeader('Content-Type', 'application/octet-stream');
+
+        const fileStream = fs.createReadStream(filePath);
+        fileStream.on('open', () => {
+          fileStream.pipe(res);
+        });
+        fileStream.on('error', (err) => {
+          res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+            message: 'Error al descargar el Excel',
+            success: false,
+          });
+        });
+      } else {
+        throw 'No tienes acceso';
+      }
+    } catch (error) {
+      console.log(error);
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        message: typeof error === 'string' ? error : 'Error en el sistema',
+        success: false,
+      });
+    }
   }
 }
