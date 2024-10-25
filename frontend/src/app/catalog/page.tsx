@@ -1,5 +1,6 @@
 'use client'
 import React, { useEffect, useState, useContext, Suspense } from "react";
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import MainLayout, { StoreContext } from "@/components/layout/MainLayout";
 import { useSearchParams } from 'next/navigation'
 import { Slide } from 'react-slideshow-image';
@@ -12,34 +13,11 @@ import { addToCart } from "@/common/utils/cart";
 import MainAlert from "@/components/alerts/MainAlert";
 import { getCookieToken } from "@/common/utils/getCookieToken";
 import Image from "next/image";
-const slideImages = [
-  {
-    url: '/2.jpg',
-  },
-  {
-    url: '/Tecnologia.jpg',
-  },
-];
-const spanStyle = {
-  padding: '20px',
-  // background: '#efefef',
-  width: '400px',
-  color: '#ffff',
-  fontWeight: 'bold',
+import { toast } from "react-toastify";
 
-}
-
-const divStyle = {
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  backgroundSize: 'contain',
-  backgroundRepeat: 'no-repeat',
-  height: '400px',
-  backgroundPosition: 'center',
-}
 function Catalog2() {
   const { setShoppingCart, shoppingCart, user } = useContext(StoreContext);
+  const [loading, setLoading] = useState(false);
   const searchParams = useSearchParams()
   const search = searchParams.get('searchWord')
   const [products, setProducts] = useState<IProduct[]>([
@@ -67,32 +45,26 @@ function Catalog2() {
     setSkip(value * limit - limit)
     setPage(value)
   };
-  const handleAddToCart = ({ name = '', price = 0, _id = '' }) => {
-    const newShoppingCart = [...shoppingCart.products];
-    const exists = newShoppingCart.findIndex(products => products._id === _id)
-    if (exists !== -1) {
-      return
-    }
-    newShoppingCart.push(
-      {
-        name: name,
-        price: price,
-        category: "",
-        amount: 1,
-        _id
+  const onChangeImage = async (target: React.ChangeEvent<any>) => {
+    try {
+      setLoading(true)
+      
+      const file = target.currentTarget.files[0];
+      if (file !== undefined) {
+        const formData = new FormData();
+        formData.append("file", file);
+        let data: any = await fetch(`${config.backend}/files/upload/${`${user._id}-${file.name}`}`, {
+          method: "POST",
+          body: formData,
+        }).then(data => data.json());
+        toast.success("Imagen subida");
       }
-    )
-    setShoppingCart({
-      ...shoppingCart,
-      amountProducts: shoppingCart.amountProducts + 1, products: newShoppingCart
-    })
-    addToCart({
-      name: name,
-      price: price,
-      category: '',
-      _id: _id
-    })
-  }
+    } catch (error: any) {
+      toast.error("Ocurrio un error al subir la imagen");
+    }
+   
+    setLoading(false);
+  };
   const handleSearchProducts = () => {
     setLoadingProducts(true);
     setProducts([])
@@ -117,70 +89,22 @@ function Catalog2() {
       setmessageAlert(e.toString())
     })
   }
-  const getTypeDiscount = () => {
-    const actualYear = new Date().getFullYear()
-    if (actualYear - user?.yearBorn < 60)
-      setDiscount('normal');
-    else if (actualYear - user?.yearBorn > 80)
-      setDiscount('superSenior');
-    else setDiscount('senior');
-
-  }
-  useEffect(() => {
-
-    handleSearchProducts()
-  }, [skip])
-
-  useEffect(() => {
-    getTypeDiscount()
-  }, [user])
-  useEffect(() => {
-    handleSearchProducts()
-  }, [search])
 
   return (
     <div className="sm:px-4   mb-14">
-      <div className="slide-container flex justify-center">
-        <Image src="/2.jpg" alt="oferta lcm" width={1500} height={100} /> 
-        {/* <Slide>
-          {slideImages.map((slideImage, index) => (
-            <div key={index}>
-              <div style={{ ...divStyle, 'backgroundImage': `url(${slideImage.url})` }}>
-              </div>
-            </div>
-          ))}
-        </Slide> */}
-      </div>
       <section className="mt-4 flex">
-        {/* <Tooltip title="Coloca el input de búsqueda en vació y haz click en buscar para mostrarte todo el catalogó">
-          <TextField
-            id="search-product"
-            label="Buscar por nombre del producto"
-            variant="outlined"
-            fullWidth
-            InputProps={{
-              endAdornment: <Button className="sm:w-full md:w-1/3 lg:w-1/3 ml-2 rounded-r-lg" variant="contained" onClick={() => {
-                setSkip(0);
-                handleSearchProducts();
-              }}>Buscar</Button>
-            }}
-            onChange={(e) => {
-              setSearchWord(e.target.value)
-            }} onKeyDown={e => {
-              if (e.key === 'Enter') {
-                setSkip(0);
-                handleSearchProducts();
-              }
-            }} />
-        </Tooltip> */}
-        {/* <Button variant="text" onClick={() => {
-          setSearchWord('ninguno');
-          setSkip(0);
-          setTimeout(() => {
-            handleSearchProducts();
-          }, 10000);
-
-        }}>Reset</Button> */}
+        <Button variant="contained" startIcon={loading ? <CircularProgress /> : <CloudUploadIcon />  } disabled={loading} onClick={() => {
+          //@ts-ignore
+          document.getElementById(`fileInput`).click()
+        }}>Nuevo</Button>
+        <input
+          id={`fileInput`}
+          className="hidden"
+          type="file"
+          name="avatar"
+          
+          onChange={onChangeImage}
+        />
       </section>
       <section className="">
         <Grid container spacing={2} justifyContent="center">

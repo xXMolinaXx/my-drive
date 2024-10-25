@@ -1,24 +1,17 @@
 'use client'
 import React, { useEffect, useState, createContext, useContext, Dispatch, SetStateAction } from "react";
-import HomeIcon from '@mui/icons-material/Home';
-import WebIcon from '@mui/icons-material/Web';
-import FacebookIcon from '@mui/icons-material/Facebook';
-import InstagramIcon from '@mui/icons-material/Instagram';
-import MenuIcon from '@mui/icons-material/Menu';
-import LogoutIcon from '@mui/icons-material/Logout';
+import { ToastContainer, toast } from 'react-toastify';
 import { useRouter } from 'next/navigation'
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
-import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-import { Badge, Drawer, Grid, Paper, TextField, Tooltip } from "@mui/material";
+import { TextField } from "@mui/material";
 import Image from "next/image";
 import { getCookieToken } from "@/common/utils/getCookieToken";
 import { IProductState } from "@/common/interface/product.interface";
 import { getCart } from "@/common/utils/cart";
-import Link from "next/link";
 import { UserLog } from "@/common/interface/users/user.interface";
 
 
@@ -27,10 +20,8 @@ import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
 import SearchIcon from '@mui/icons-material/Search';
 import AccountCircle from '@mui/icons-material/AccountCircle';
-import MailIcon from '@mui/icons-material/Mail';
-import NotificationsIcon from '@mui/icons-material/Notifications';
 import MoreIcon from '@mui/icons-material/MoreVert';
-
+import 'react-toastify/dist/ReactToastify.css';
 interface IContext {
   shoppingCart: IProductState,
   setShoppingCart: Dispatch<SetStateAction<IProductState>>,
@@ -151,9 +142,6 @@ function MainLayout({ children }: props) {
       onClose={handleMenuClose}
     >
       <p className="px-3"> {user?.fullName}</p>
-      <MenuItem onClick={() => {
-        router.push(`/userOrders/${user._id}`)
-      }}>Mis ordenes</MenuItem>
       {/* <MenuItem >Perfil</MenuItem> */}
       <MenuItem onClick={() => {
         localStorage.removeItem('user')
@@ -182,28 +170,6 @@ function MainLayout({ children }: props) {
       open={isMobileMenuOpen}
       onClose={handleMobileMenuClose}
     >
-      <MenuItem onClick={() => router.push('/shoppingCart')}>
-        <Badge badgeContent={shoppingCart.amountProducts} color="warning">
-          <IconButton
-            size="large"
-            color="inherit"
-          >
-            <ShoppingCartIcon />
-          </IconButton>
-        </Badge>
-        <p>Carrito</p>
-      </MenuItem>
-      <MenuItem onClick={() => {
-        router.push(`/userOrders/${user._id}`)
-      }}>
-        <IconButton
-          size="large"
-          color="inherit"
-        >
-          <AccountCircle />
-        </IconButton>
-        <p>Mis ordenes</p>
-      </MenuItem>
       <MenuItem onClick={() => {
         localStorage.removeItem('user')
         setUser(null)
@@ -254,11 +220,6 @@ function MainLayout({ children }: props) {
                       // handleSearchProducts();
                     }
                   }} />
-                <IconButton size="large"  color="inherit" onClick={() => router.push('/shoppingCart')}>
-                  <Badge badgeContent={shoppingCart.amountProducts} className="mx-1" color="warning">
-                    <ShoppingCartIcon />
-                  </Badge>
-                </IconButton>
                 <IconButton
                   size="large"
                   edge="end"
@@ -380,34 +341,6 @@ function MainLayout({ children }: props) {
         </div>
 
       </main>
-      <footer className=" bg-blue-500 pt-5 px-5 pb-5 ">
-        <Grid container justifyContent={"center"} spacing={2}>
-          <Grid item xs={12} md={4}>
-            <Typography variant="h6" color="white">Oficinas principales</Typography>
-            <Typography variant="body1" color="white">Tegucigalpa</Typography>
-            <Typography variant="body1" color="white">Laboratorios Centro Médico, Col. Tepeyac, calle Real de Minas, Comayagüela, Honduras, 12101</Typography>
-            <Typography variant="body1" color="white">Telefono: 2225-0567</Typography>
-          </Grid>
-          <Grid item md={4} justifyContent={"center"}>
-            <Image className="bg-white rounded-xl" src="/LCM.png" alt="logo" width={200} height={200} onClick={() => router.push('/catalog')} />
-          </Grid>
-          <Grid item xs={12} md={2}>
-            <Typography variant="h6" color="white">Síguenos en: </Typography>
-            <Link href='https://www.facebook.com/Laboratorioscentromedico/' className="text-white">
-              <FacebookIcon /> Facebook
-            </Link>
-            <br />
-            <Link href='https://www.instagram.com/lcm_hn/' className="text-white">
-              <InstagramIcon /> Instagram
-            </Link>
-            <br />
-            <Link href='https://laboratorioscentromedico.hn' className="text-white">
-              <WebIcon /> Web
-            </Link>
-          </Grid>
-        </Grid>
-
-      </footer>
     </>
   );
 }
@@ -446,6 +379,7 @@ export default function MyApp({ children }: any) {
       shoppingCart, setShoppingCart, user, setUser
     }}>
       <MainLayout >{children}</MainLayout>
+      <ToastContainer />
     </StoreContext.Provider>
   )
 }
