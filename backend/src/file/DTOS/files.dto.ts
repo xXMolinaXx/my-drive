@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, PartialType } from '@nestjs/swagger';
 
 export class UploadFileDTO {
   @ApiProperty()
@@ -19,4 +19,12 @@ export class UploadFileDTO {
   size: number;
   @ApiProperty()
   userId: string;
+}
+export class UpdateFileDTO {
+  @ApiProperty()
+  isPublic: string;
+  @ApiProperty()
+  mailInvitacion: string[];
+  @ApiProperty()
+  fileId: string;
 }

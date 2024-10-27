@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { ObjectId } from 'mongodb';
 import { FileDocument, Files } from '../schemas/files.schemas';
-import { UploadFileDTO } from '../DTOS/files.dto';
+import { UpdateFileDTO, UploadFileDTO } from '../DTOS/files.dto';
 
 @Injectable()
 export class FileService {
@@ -24,5 +24,9 @@ export class FileService {
   async getImage(id: string) {
     const data = await this.filesModel.findById(id);
     return data;
+  }
+  async updateFileConfig(data: UpdateFileDTO) {
+    console.log(data);
+    await this.filesModel.updateOne({ _id: data.fileId }, { $set: { isPublic: Boolean(data.isPublic), userAccess: data.mailInvitacion } });
   }
 }

@@ -4,6 +4,7 @@ import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import ImageIcon from '@mui/icons-material/Image';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+import SettingsIcon from '@mui/icons-material/Settings';
 import QuestionMarkIcon from '@mui/icons-material/QuestionMark';
 import FolderZipIcon from '@mui/icons-material/FolderZip';
 import MainLayout, { StoreContext } from "@/components/layout/MainLayout";
@@ -21,12 +22,14 @@ import Image from "next/image";
 import { toast } from "react-toastify";
 import { IFiles } from "@/common/interface/files/files.interface";
 import { convertBits } from "@/common/utils/convertType";
+import ConfigureFile from "@/components/modals/configureFile.modal";
 
 function Catalog2() {
   const { setShoppingCart, shoppingCart, user } = useContext(StoreContext);
   const [loading, setLoading] = useState(false);
   const searchParams = useSearchParams()
   const search = searchParams.get('searchWord')
+  const [open, setOpen] = useState(false);
   const [files, setFiles] = useState<IFiles[]>([
     {
       __v: 0,
@@ -47,12 +50,17 @@ function Catalog2() {
   const [amount, setAmount] = useState(0);
   const [page, setPage] = useState(0);
   const [loadingFiles, setLoadingFiles] = useState(false);
-  const [openAlert, setOpenAlert] = useState(false);
-  const [messageAlert, setmessageAlert] = useState('');
-  const [discount, setDiscount] = useState<'senior' | 'superSenior' | 'normal'>('normal')
+  const [selectFile, setSelectFile] = useState<any>({})
   const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
     setSkip(value * limit - limit)
     setPage(value)
+  };
+  const handleOpen = (file: IFiles) => {
+    setSelectFile(file)
+    setOpen(true);
+  }
+  const handleClose = () => {
+    setOpen(false);
   };
   const onChangeImage = async (target: React.ChangeEvent<any>) => {
     try {
@@ -137,6 +145,7 @@ function Catalog2() {
   }, [user])
   return (
     <div className="sm:px-4   mb-14">
+      <ConfigureFile open={open} onClose={handleClose} file={selectFile} />
       <section className="mt-4 flex">
         <Button variant="contained" startIcon={loading ? <CircularProgress /> : <CloudUploadIcon />} disabled={loading} onClick={() => {
           //@ts-ignore
@@ -184,14 +193,14 @@ function Catalog2() {
           {loadingFiles ? <CircularProgress /> : files?.map(data => (
             <Grid key={data._id} item xs={12}>
 
-              <CardComponent {...data} />
+              <CardComponent {...data} handleOpen={handleOpen} />
             </Grid>
           ))}
           {files.length === 0 && <Typography variant="h5" textAlign={'center'} className="p-5"> Lo sentimos , no hemos encontrado lo que estas buscando</Typography>}
         </Grid>
         <Pagination className="mt-4" count={amount} page={page} color="primary" onChange={handleChange} />
       </section>
-      <MainAlert handleClose={() => setOpenAlert(false)} message={messageAlert} open={openAlert} type="error" />
+
     </div>
   );
 }
@@ -220,9 +229,11 @@ interface PropCard {
   userAccess: any[]
   createdAt: string
   updatedAt: string
-  __v: number
+  __v: number,
+  handleOpen: (file: IFiles) => void
 }
-function CardComponent({ __v, _id, createdAt, filename, isPublic, path, size, updatedAt, userAccess, userOwner }: PropCard) {
+function CardComponent(prop: PropCard) {
+  const { __v, _id, createdAt, filename, isPublic, path, size, updatedAt, userAccess, userOwner, handleOpen } = prop
   const getImage = (nameFile: string) => {
     const type = nameFile.split('.')[1]
     if ([
@@ -248,7 +259,7 @@ function CardComponent({ __v, _id, createdAt, filename, isPublic, path, size, up
     }
     return (<QuestionMarkIcon />)
   }
-  const dowloadFile = (imageId:string,filename) => {
+  const dowloadFile = (imageId: string, filename) => {
     fetch(`${process.env.NEXT_PUBLIC_BACKEND}/files/download/${imageId}`, {
       headers: {
         "Content-Type": "application/json",
@@ -311,7 +322,12 @@ function CardComponent({ __v, _id, createdAt, filename, isPublic, path, size, up
           </Grid>
           <Grid item xs={1} >
             <Tooltip title="Descargar">
-              <Button size="small" variant="contained"  onClick={()=>dowloadFile(_id,filename)}><ArrowDownwardIcon /></Button>
+              <Button size="small" variant="contained" onClick={() => dowloadFile(_id, filename)}><ArrowDownwardIcon /></Button>
+            </Tooltip>
+          </Grid>
+          <Grid item xs={1} >
+            <Tooltip title="Descargar">
+              <Button size="small" variant="text" onClick={() => handleOpen(prop)}><SettingsIcon /></Button>
             </Tooltip>
           </Grid>
         </Grid>

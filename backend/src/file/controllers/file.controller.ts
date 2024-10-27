@@ -9,7 +9,7 @@ import { join } from 'path';
 import { Public } from 'src/auth/decorators/public.decorator';
 import { IhttpResponse } from 'src/common/interface/httpResponse/httpResponse.interface';
 import { FileService } from '../services/file.service';
-import { UploadFileDTO } from '../DTOS/files.dto';
+import { UpdateFileDTO, UploadFileDTO } from '../DTOS/files.dto';
 import { ApiKeyGuard } from 'src/auth/guards/api-key.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { Roles } from 'src/auth/decorators/roles.decorator';
@@ -110,11 +110,30 @@ export class FilesController {
         throw 'No tienes acceso';
       }
     } catch (error) {
-      console.log(error);
       res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
         message: typeof error === 'string' ? error : 'Error en el sistema',
         success: false,
       });
+    }
+  }
+  @Post('/configurations')
+  // @Roles(ERoles.ADMIN, ERoles.USER)
+  async configureFile(@Body() body: UpdateFileDTO): Promise<IhttpResponse> {
+    try {
+      await this.fileService.updateFileConfig(body);
+      return {
+        message: '',
+        success: true,
+        statusCode: 200,
+        data: [],
+      };
+    } catch (error) {
+      console.log(error);
+      return {
+        message: '',
+        success: false,
+        statusCode: 500,
+      };
     }
   }
 }
