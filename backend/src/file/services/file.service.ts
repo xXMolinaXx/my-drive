@@ -30,11 +30,12 @@ export class FileService {
     if (data.mailInvitacion) {
       const user = await this.usersService.findByEmail(data.mailInvitacion);
       const { userAccess } = await this.filesModel.findOne({ _id: data.fileId });
+      const alreadyAdded = userAccess.findIndex((el) => el.email === data.mailInvitacion);
       const usersIdcombination = [...userAccess, { email: user.email, userId: user._id }];
-      if (user) {
+      if (user && alreadyAdded === -1) {
         await this.filesModel.updateOne({ _id: data.fileId }, { $set: { userAccess: usersIdcombination } });
       } else {
-        throw 'No exste ningun usuario';
+        throw 'No existe usuario o ya fue agregado';
       }
     } else if (data.isPublic) {
       await this.filesModel.updateOne({ _id: data.fileId }, { $set: { isPublic: data.isPublic } });
