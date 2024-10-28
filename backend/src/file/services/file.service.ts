@@ -27,6 +27,7 @@ export class FileService {
     return data;
   }
   async updateFileConfig(data: UpdateFileDTO) {
+
     if (data.mailInvitacion) {
       const user = await this.usersService.findByEmail(data.mailInvitacion);
       const { userAccess } = await this.filesModel.findOne({ _id: data.fileId });
@@ -39,6 +40,15 @@ export class FileService {
       }
     } else if (data.isPublic) {
       await this.filesModel.updateOne({ _id: data.fileId }, { $set: { isPublic: data.isPublic } });
+    } else if (data.userAccess) {
+      const userAccess = [];
+      data.userAccess.forEach((el) => {
+        if (el) {
+          userAccess.push(el);
+        }
+      });
+      console.log(userAccess);
+      await this.filesModel.updateOne({ _id: data.fileId }, { $set: { userAccess: userAccess } });
     }
   }
 }

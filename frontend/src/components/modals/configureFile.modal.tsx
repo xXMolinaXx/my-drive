@@ -15,7 +15,7 @@ interface prop {
   open: boolean,
   onClose: () => void
   file: IFiles
-  reload : ()=>void
+  reload: () => void
 }
 export default function ConfigureFile({ onClose, open, file, reload }: prop) {
   const [isPublic, setisPublic] = useState<'si' | 'no'>()
@@ -46,11 +46,29 @@ export default function ConfigureFile({ onClose, open, file, reload }: prop) {
 
     setLoading(false)
   }
-  const handleDeleteUser = (email: string) => {
+  const handleDeleteUser = async (email: string) => {
     const users = [...usersAccess]
     const index = users.findIndex(el => el.email === email)
     delete users[index];
     setUsersAccess(users);
+    const resp = await fetch(`${config.backend}/files/configurations`, {
+      method: 'POST',
+      headers: {
+        "Content-Type": "application/json",
+        // Accept: "application/json",
+        Authorization: `Bearer ${getCookieToken()}`,
+      },
+      body: JSON.stringify({
+        userAccess: users
+      }),
+    }).then(data => data.json())
+    if (!resp.success) {
+      toast.error('Error al subir cambios')
+    } else {
+      toast.success('actualizado con exito')
+      onClose();
+      reload();
+    }
   }
   const handleChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     setisPublic((event.target as HTMLInputElement).value as 'si' | 'no');

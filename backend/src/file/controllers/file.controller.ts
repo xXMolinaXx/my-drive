@@ -128,7 +128,6 @@ export class FilesController {
         data: [],
       };
     } catch (error) {
-      console.log(error);
       return {
         message: '',
         success: false,

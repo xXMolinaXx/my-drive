@@ -26,6 +26,8 @@ export class UpdateFileDTO {
   @ApiProperty()
   mailInvitacion: string;
   @ApiProperty()
+  userAccess: mailInvitacion[];
+  @ApiProperty()
   fileId: string;
 }
 export class mailInvitacion {
