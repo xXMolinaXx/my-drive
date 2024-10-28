@@ -5,8 +5,13 @@ export interface IFiles {
   filename: string
   size: number
   isPublic: boolean
-  userAccess: any[]
+  userAccess: IuserAccess[]
   createdAt: string
   updatedAt: string
   __v: number
+}
+
+export interface IuserAccess {
+  userId: string,
+  email: string
 }

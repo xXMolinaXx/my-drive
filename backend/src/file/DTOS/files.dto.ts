@@ -24,7 +24,13 @@ export class UpdateFileDTO {
   @ApiProperty()
   isPublic: string;
   @ApiProperty()
-  mailInvitacion: string[];
+  mailInvitacion: string;
   @ApiProperty()
   fileId: string;
+}
+export class mailInvitacion {
+  @ApiProperty()
+  email: string;
+  @ApiProperty()
+  userId: string;
 }

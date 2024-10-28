@@ -145,7 +145,7 @@ function Catalog2() {
   }, [user])
   return (
     <div className="sm:px-4   mb-14">
-      <ConfigureFile open={open} onClose={handleClose} file={selectFile} />
+      <ConfigureFile open={open} onClose={handleClose} file={selectFile}  reload={fetchFiles}/>
       <section className="mt-4 flex">
         <Button variant="contained" startIcon={loading ? <CircularProgress /> : <CloudUploadIcon />} disabled={loading} onClick={() => {
           //@ts-ignore

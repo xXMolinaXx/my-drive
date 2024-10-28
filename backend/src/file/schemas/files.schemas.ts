@@ -15,7 +15,13 @@ export class Files {
   size: number;
   @Prop({ type: Boolean, required: true, default: false })
   isPublic: false;
-  @Prop({ type: [SchemaMongoose.Types.ObjectId], default: [] })
-  userAccess: SchemaMongoose.Types.ObjectId[];
+  @Prop({ default: [] })
+  userAccess: UserAccess[];
+}
+export class UserAccess {
+  @Prop({ required: true })
+  userId: SchemaMongoose.Types.ObjectId;
+  @Prop({ required: true })
+  email: string;
 }
 export const ShiftSchema = SchemaFactory.createForClass(Files);
