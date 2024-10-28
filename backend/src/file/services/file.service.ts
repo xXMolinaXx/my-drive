@@ -47,8 +47,9 @@ export class FileService {
           userAccess.push(el);
         }
       });
-      console.log(userAccess);
-      await this.filesModel.updateOne({ _id: data.fileId }, { $set: { userAccess: userAccess } });
+      console.log(userAccess, data);
+      await this.filesModel.updateOne({ _id: data.fileId }, { $set: { userAccess: [] } });
+      console.log('usuario actualizado');
     }
   }
 }
