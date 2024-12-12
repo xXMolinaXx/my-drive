@@ -1,7 +1,7 @@
-
 services:
   my-drive-backend:
     container_name: my-drive
+    image: my-drive:latest
     build:
       context: .
       dockerfile: Dockerfile
@@ -21,6 +21,6 @@ services:
       - type: bind
         source: ./package-lock.json
         target: /app/package-lock.json
-      - type: bind
-        source: ./node_modules
-        target: /app/node_modules
+      # - type: bind
+      #   source: ./node_modules
+      #   target: /app/node_modules
