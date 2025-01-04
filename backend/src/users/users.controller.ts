@@ -1,17 +1,15 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, Put } from '@nestjs/common';
-import { Request } from 'express';
+import { Controller, Get, Post, Body, Param, Delete, UseGuards, Put } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto, UpdateUserDto2 } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ApiTags } from '@nestjs/swagger';
-import { IhttpResponse } from 'src/common/interface/httpResponse/httpResponse.interface';
-import { ApiKeyGuard } from 'src/auth/guards/api-key.guard';
+import { IhttpResponse } from '../common/interface/httpResponse/httpResponse.interface';
+import { ApiKeyGuard } from '../auth/guards/api-key.guard';
 import { SendMailDto } from './dto/send-mail.dto';
-import { type } from 'os';
-import { RolesGuard } from 'src/auth/guards/roles.guard';
-import { Public } from 'src/auth/decorators/public.decorator';
-import { Roles } from 'src/auth/decorators/roles.decorator';
-import { ERoles } from 'src/common/enums/roles.enum';
+import { RolesGuard } from './../auth/guards/roles.guard';
+import { Public } from './../auth/decorators/public.decorator';
+import { Roles } from './../auth/decorators/roles.decorator';
+import { ERoles } from '../common/enums/roles.enum';
 @ApiTags('users')
 @Controller('users')
 @UseGuards(ApiKeyGuard, RolesGuard)
