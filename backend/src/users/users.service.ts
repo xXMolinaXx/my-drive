@@ -25,7 +25,7 @@ export class UsersService {
     const userFoundWithId = await this.userModel.find({ DNI: createUserDto.DNI }).countDocuments();
     if (user) throw 'Ya existe un usuario con este correo';
     if (userFoundWithId > 1) throw 'Ya existe un cliente cone este numero de identidad';
-    if (!DNI_REGEX.test(createUserDto.DNI)) throw 'El DNI ingresado no tiene un formato de DNI valido';
+    // if (!DNI_REGEX.test(createUserDto.DNI)) throw 'El DNI ingresado no tiene un formato de DNI valido';
     const yearBorn = Number(createUserDto.DNI.substring(4, 8));
     const password = await this.hashPassword(createUserDto.password);
     const isSenior = new Date().getFullYear() - yearBorn >= 60;

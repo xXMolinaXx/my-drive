@@ -16,7 +16,7 @@ export class User {
   email: string;
   @Prop({ required: true, default: '1' })
   telphone: string;
-  @Prop({ required: true, default: '1' })
+  @Prop({ required: false, default: '1' })
   DNI: string;
   @Prop({ required: true, default: new Date() })
   bornAt: Date;
