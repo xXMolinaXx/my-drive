@@ -1,26 +1,10 @@
 services:
-  my-drive-backend:
-    container_name: my-drive
-    image: my-drive:latest
-    build:
-      context: .
-      dockerfile: Dockerfile
-    environment:
-      NODE_ENV: development
+  mongo:
+    container_name: mongo
+    image: mongo:latest
     ports:
-      - '3001:3001'
-    env_file:
-      - .env
+      - '27017:27017'
     volumes:
       - type: bind
-        source: ./src
-        target: /app/src
-      - type: bind
-        source: ./package.json
-        target: /app/package.json
-      - type: bind
-        source: ./package-lock.json
-        target: /app/package-lock.json
-      # - type: bind
-      #   source: ./node_modules
-      #   target: /app/node_modules
+        source: ./data
+        target: /data/db
