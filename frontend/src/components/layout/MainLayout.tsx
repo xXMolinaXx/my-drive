@@ -195,12 +195,10 @@ function MainLayout({ children }: props) {
         <Box sx={{ flexGrow: 1 }}>
           <AppBar position="static" className="bg-white text-black">
             <Toolbar>
-
-              <Image src="/LCM.png" alt="logo" width={100} height={100} onClick={() => router.push('/catalog?searchWord=ninguno')} className="bg-white rounded-xl p-2" />
               <p className="cursor-pointer px-4" onClick={() => router.push('/catalog?searchWord=ninguno')}>Inicio</p>
               <Box sx={{ flexGrow: 1 }} />
               <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-                <TextField
+                {/* <TextField
                   className="bg-white rounded-sm border-none my-3 w-3/5"
                   id="search-product"
                   placeholder="Buscar por nombre del producto"
@@ -219,7 +217,7 @@ function MainLayout({ children }: props) {
                       router.push(`/catalog?searchWord=${document.querySelector('#search-product').value}`)
                       // handleSearchProducts();
                     }
-                  }} />
+                  }} /> */}
                 <IconButton
                   size="large"
                   edge="end"
@@ -249,7 +247,7 @@ function MainLayout({ children }: props) {
           {renderMobileMenu}
           {renderMenu}
         </Box>
-        <Box sx={{ flexGrow: 1 }} className=" sm:hidden">
+        {/* <Box sx={{ flexGrow: 1 }} className=" sm:hidden">
           <AppBar position="static" className="bg-transparent text-black shadow-none ">
             <div className="flex justify-center">
               <TextField
@@ -277,65 +275,10 @@ function MainLayout({ children }: props) {
             </div>
 
           </AppBar>
-        </Box>
-        {/* <Box sx={{ flexGrow: 1 }}>
-          <Drawer anchor="left" open={openDrawer} onClose={toggleDrawer(false, 'login')}>
-            {DrawerList}
-          </Drawer>
-          <AppBar position="fixed">
-            <Toolbar>
-            
-              <MenuIcon sx={{ display: { xs: "block", sm: "none" } }} className="mr-5" onClick={toggleDrawer(true, 'user')} />
-
-              <Image src="/LCM.png" alt="logo" width={100} height={100} onClick={() => router.push('/catalog')} />
-              <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-
-              </Typography>
-              <p className="hidden sm:block">
-                {user?.fullName}
-              </p>
-
-              <Button variant="text" className="text-white" onClick={() => router.push('/shoppingCart')}>
-                <Badge badgeContent={shoppingCart.amountProducts} className="mx-1" color="warning">
-                  <ShoppingCartIcon />
-                </Badge>
-              </Button>
-
-
-            </Toolbar>
-          </AppBar>
         </Box> */}
       </nav>
       <main className="min-h-screen">
-        {/* <Paper elevation={1} className="h-full fixed rounded-none pt-24 w-16 flex justify-center hidden sm:block">
-          <div>
-            <Tooltip title="Catalogo">
-              <Button className="mb-5" variant="text" onClick={() => router.push('/catalog')}>
-
-                <HomeIcon />
-              </Button>
-            </Tooltip>
-            <Tooltip title="Cerrar sesión">
-              <Button className="mb-5" variant="text" onClick={() => {
-                localStorage.removeItem('user')
-                setUser(null)
-                document.cookie = "access_token=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
-                setOpen(false);
-                router.push('/')
-              }}>
-                <LogoutIcon />
-              </Button>
-            </Tooltip>
-            <Tooltip title="Mis ordenes">
-              <Button className="mb-5" variant="text" onClick={() => {
-                router.push(`/userOrders/${user._id}`)
-              }}>
-                <ShoppingCartIcon />
-              </Button>
-            </Tooltip>
-          </div>
-
-        </Paper> */}
+        
         <div className="pt-5  px-4  sm:px-14" >
           {children}
         </div>

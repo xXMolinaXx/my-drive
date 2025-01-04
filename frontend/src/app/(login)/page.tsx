@@ -133,10 +133,10 @@ export default function LoginRegister() {
       status.telphone = 'Ingrese su telefono';
       DontsendForm = true
     }
-    if (!registrerForm.DNI) {
-      status.DNI = 'Ingrese su DNI';
-      DontsendForm = true
-    }
+    // if (!registrerForm.DNI) {
+    //   status.DNI = 'Ingrese su DNI';
+    //   DontsendForm = true
+    // }
     if (!registrerForm.password) {
       status.password = 'Ingrese una contraseña';
       DontsendForm = true
@@ -147,7 +147,9 @@ export default function LoginRegister() {
       DontsendForm = true
     }
     if (DontsendForm) {
+      setWaiting(false)
       setAuxiliarTextRegistrerForm(status)
+      alert('Error al registrase')
       return;
     }
     fetch(`${config.backend}/users`, {

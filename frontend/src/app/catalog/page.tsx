@@ -325,11 +325,11 @@ function CardComponent(prop: PropCard) {
               <Button size="small" variant="contained" onClick={() => dowloadFile(_id, filename)}><ArrowDownwardIcon /></Button>
             </Tooltip>
           </Grid>
-          <Grid item xs={1} >
+          {/* <Grid item xs={1} >
             <Tooltip title="Descargar">
               <Button size="small" variant="text" onClick={() => handleOpen(prop)}><SettingsIcon /></Button>
             </Tooltip>
-          </Grid>
+          </Grid> */}
         </Grid>
       </CardContent>
     </Card>
