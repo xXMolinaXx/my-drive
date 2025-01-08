@@ -108,7 +108,7 @@ export class UsersController {
     try {
       await this.usersService.update(id, updateUserDto);
       return {
-        message: 'Contrasena actualizada',
+        message: 'Contraseña actualizada',
         success: true,
         statusCode: 200,
       };
