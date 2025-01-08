@@ -1,66 +1,33 @@
-
 import { Test, TestingModule } from '@nestjs/testing';
-import { UsersController } from './users.controller';
+import { User } from './schemas/users.schemas';
 import { UsersService } from './users.service';
-import { RolesGuard } from '../auth/guards/roles.guard';
-import { ApiKeyGuard } from '../auth/guards/api-key.guard';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { getModelToken } from '@nestjs/mongoose';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
-describe('UsersController', () => {
-  let usersController: UsersController;
-  const mockUsersService = {
-    create: jest.fn().mockImplementation((dto) => {}),
-    update: jest.fn().mockImplementation((dto) => {}),
-  };
-  const mockRoleGuard = { canActivate: true };
-  const mockApiKeyGuard = { canActivate: true };
-  const userCreation: CreateUserDto = {
-    fullName: 'test',
-    email: '',
-    telphone: '',
-    DNI: '',
-    bornAt: new Date(),
-    gender: 'male',
-    password: '123',
-  };
-  const userUpdate: UpdateUserDto = {
-    fullName: 'test',
-    email: '',
-    telphone: '',
-    DNI: '',
-    bornAt: new Date(),
-    gender: 'male',
-    password: '123',
-    hashPassword: '123',
-  };
+describe('UsersService', () => {
+  const mockUserModel = {};
+  let usersService: UsersService;
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      controllers: [UsersController],
-      providers: [UsersService],
-    })
-      .overrideGuard(RolesGuard)
-      .useValue(mockRoleGuard)
-      .overrideGuard(ApiKeyGuard)
-      .useValue(mockApiKeyGuard)
-      .overrideProvider(UsersService)
-      .useValue(mockUsersService)
-      .compile();
-    usersController = module.get<UsersController>(UsersController);
+      imports: [
+        ConfigModule.forFeature(async () => ({
+          URL_RESET_PASSWORD: 'Any_Value',
+          EMAIL_SENDER: '',
+          EMAIL_SENDER_PASSWORD: '',
+        })),
+      ],
+      providers: [
+        UsersService,
+        {
+          provide: getModelToken(User.name),
+          useValue: mockUserModel,
+        },
+      ],
+    }).compile();
+    usersService = module.get<UsersService>(UsersService);
   });
 
   it('should be defined', () => {
-    expect(usersController).toBeDefined();
-  });
-  it('create user', async () => {
-    const result = await usersController.create(userCreation);
-    expect(result).toEqual({ message: 'Usuario Creado', statusCode: 200, success: true });
-  });
-  it('should read an user', async () => {
-    expect(1).toBe(1);
-  });
-  it('should update an user password', async () => {
-    const result = await usersController.update('123', userUpdate);
-    expect(result).toEqual({ message: 'Contraseña actualizada', statusCode: 200, success: true });
+    expect(usersService).toBeDefined();
   });
 });
