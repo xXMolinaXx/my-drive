@@ -31,9 +31,10 @@ import { ScheduleModule } from '@nestjs/schedule';
         EMAIL_SENDER_PASSWORD: Joi.string(),
       }),
     }),
-    ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'client'),
-    }),
+    //  serve static files
+    // ServeStaticModule.forRoot({
+    //   rootPath: join(__dirname, '..', 'client'),
+    // }),
     UsersModule,
     AuthModule,
     JwtModule.registerAsync({
