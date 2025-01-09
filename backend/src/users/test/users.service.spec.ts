@@ -1,10 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { User } from './schemas/users.schemas';
-import { UsersService } from './users.service';
+import { ConfigModule } from '@nestjs/config';
+import { User } from '../schemas/users.schemas';
+import { UsersService } from '../users.service';
 import { getModelToken } from '@nestjs/mongoose';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { CreateUserDto } from './dto/create-user.dto';
-import { find } from 'rxjs';
+
+import { CreateUserDto } from '../dto/create-user.dto';
+
 
 describe('UsersService', () => {
   const userCreation: CreateUserDto = {

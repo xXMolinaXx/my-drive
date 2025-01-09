@@ -1,11 +1,11 @@
 
 import { Test, TestingModule } from '@nestjs/testing';
-import { UsersController } from './users.controller';
-import { UsersService } from './users.service';
-import { RolesGuard } from '../auth/guards/roles.guard';
-import { ApiKeyGuard } from '../auth/guards/api-key.guard';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { UsersController } from '../users.controller';
+import { UsersService } from '../users.service';
+import { RolesGuard } from '../../auth/guards/roles.guard';
+import { ApiKeyGuard } from '../../auth/guards/api-key.guard';
+import { CreateUserDto } from '../dto/create-user.dto';
+import { UpdateUserDto } from '../dto/update-user.dto';
 
 describe('UsersController', () => {
   let usersController: UsersController;
