@@ -19,7 +19,6 @@ import { jwtDecode } from 'jwt-decode';
 @UseGuards(ApiKeyGuard, RolesGuard)
 export class FilesController {
   constructor(private readonly fileService: FileService) {}
-  @Roles(ERoles.USER, ERoles.ADMIN)
   @Get('/:userId')
   async getUserFiles(@Param('userId') userId: string): Promise<IhttpResponse> {
     try {
@@ -37,7 +36,6 @@ export class FilesController {
       };
     }
   }
-  @Roles(ERoles.USER, ERoles.ADMIN)
   @Post('upload/:imageName')
   @UseInterceptors(
     FileInterceptor('file', {
