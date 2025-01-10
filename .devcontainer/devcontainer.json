@@ -16,7 +16,8 @@
 				"streetsidesoftware.code-spell-checker-spanish",
 				"dsznajder.es7-react-js-snippets",
 				"xabikos.JavaScriptSnippets",
-				"afractal.node-essentials"
+				"afractal.node-essentials",
+				"bradlc.vscode-tailwindcss"
 			]
 		}
 	},
