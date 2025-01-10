@@ -15,50 +15,11 @@ import { ERoles } from '../common/enums/roles.enum';
 @UseGuards(ApiKeyGuard, RolesGuard)
 export class UsersController {
   constructor(private readonly usersService: UsersService) { }
-  @Roles(ERoles.ADMIN, ERoles.SUPERADMIN)
-  @Get('/readStaff')
-  async readStaff(): Promise<IhttpResponse> {
-    try {
-
-      return {
-        message: 'Usuarios leidos',
-        statusCode: 200,
-        success: true,
-        data: await this.usersService.readStaff(),
-      };
-    } catch (error) {
-      return {
-        message: 'Error al leer usuarios usuario',
-        statusCode: 500,
-        success: false,
-        error: error.toString(),
-      };
-    }
-  }
   @Public()
   @Post()
   async create(@Body() createUserDto: CreateUserDto): Promise<IhttpResponse> {
     try {
       await this.usersService.create(createUserDto);
-      return {
-        message: 'Usuario Creado',
-        statusCode: 200,
-        success: true,
-      };
-    } catch (error) {
-      return {
-        message: 'Error al crear usuario',
-        statusCode: 500,
-        success: false,
-        error: error.toString(),
-      };
-    }
-  }
-  @Roles(ERoles.SUPERADMIN)
-  @Post('/createUserStaff')
-  async createStaff(@Body() updateUserDto: UpdateUserDto2): Promise<IhttpResponse> {
-    try {
-      await this.usersService.createStaff(updateUserDto);
       return {
         message: 'Usuario Creado',
         statusCode: 200,
@@ -92,16 +53,6 @@ export class UsersController {
       };
     }
   }
-  @Roles(ERoles.ADMIN)
-  @Get()
-  findAll() {
-    return this.usersService.findAll();
-  }
-
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.usersService.findOne(id);
-  // }
   @Public()
   @Put(':id')
   async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto): Promise<IhttpResponse> {
@@ -120,28 +71,5 @@ export class UsersController {
         error: typeof error === 'string' ? error : 'Ocurrio un error al cambiar la contraseña',
       };
     }
-  }
-  @Roles(ERoles.SUPERADMIN)
-  @Put('updateStaff/:id')
-  async updateStaff(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto): Promise<IhttpResponse> {
-    try {
-      return {
-        message: 'Usuarios leidos',
-        statusCode: 200,
-        success: true,
-        data: await this.usersService.readStaff(),
-      };
-    } catch (error) {
-      return {
-        message: 'Error al leer usuarios usuario',
-        statusCode: 500,
-        success: false,
-        error: error.toString(),
-      };
-    }
-  }
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(+id);
   }
 }

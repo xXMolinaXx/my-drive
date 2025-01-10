@@ -15,7 +15,7 @@ export class UsersService {
     @InjectModel(User.name) private userModel: Model<User>,
     private configService: ConfigService,
   ) { }
-  async hashPassword(password) {
+  async hashPassword(password: string) {
     const saltOrRounds = 10;
     const hash = await bcrypt.hash(password, saltOrRounds);
     return hash;
@@ -42,22 +42,6 @@ export class UsersService {
       senior: isSenior,
       superSenior: isSuperSenior,
     }).save();
-  }
-  async createStaff(createUserDto: UpdateUserDto2) {
-    const user = await this.userModel.findOne({ email: createUserDto.email.trim().toLowerCase() });
-    if (user) throw 'Ya existe un usuario con este correo';
-    const password = await this.hashPassword(createUserDto.password);
-    console.log(createUserDto);
-    await new this.userModel({
-      email: createUserDto.email.trim().toLowerCase(),
-      fullName: createUserDto.fullName.trim(),
-      password,
-      store: createUserDto.store,
-      role: createUserDto.role,
-    }).save();
-  }
-  async readStaff() {
-    return await this.userModel.find({ role: { $in: ['flebotomista', 'admin'] } }, { password: 0 }).exec();
   }
   async sendEmail(email: string, subject: string) {
     const user = await this.userModel.findOne({ email: email });
@@ -110,9 +94,6 @@ export class UsersService {
     };
     await transporter.sendMail(mailOptions);
   }
-  findAll() {
-    return `This action returns all users`;
-  }
 
   async findOneByEmail(email: string) {
     const user = await this.userModel.findOne({ email });
@@ -150,22 +131,6 @@ export class UsersService {
         },
       },
     );
-  }
-  async updateStaff(id: string, updateUserDto: UpdateUserDto) {
-    const user = await this.userModel.findById(id);
-    if (!user) throw 'Este usuario no existe';
-    const newPassword = await this.hashPassword(updateUserDto.password);
-    await this.userModel.updateOne(
-      { _id: id },
-      {
-        $set: {
-          password: newPassword,
-        },
-      },
-    );
-  }
-  remove(id: number) {
-    return `This action removes a #${id} user`;
   }
   async findByEmail(email: string) {
     return await this.userModel.findOne({ email: email });
