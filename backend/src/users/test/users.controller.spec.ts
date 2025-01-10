@@ -6,13 +6,11 @@ import { RolesGuard } from '../../auth/guards/roles.guard';
 import { ApiKeyGuard } from '../../auth/guards/api-key.guard';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
-
+jest.mock('../users.service');
+// auto mocking the service, this the file in __mocks__
 describe('UsersController', () => {
   let usersController: UsersController;
-  const mockUsersService = {
-    create: jest.fn().mockImplementation((dto) => {}),
-    update: jest.fn().mockImplementation((dto) => {}),
-  };
+
   const mockRoleGuard = { canActivate: true };
   const mockApiKeyGuard = { canActivate: true };
   const userCreation: CreateUserDto = {
@@ -43,8 +41,6 @@ describe('UsersController', () => {
       .useValue(mockRoleGuard)
       .overrideGuard(ApiKeyGuard)
       .useValue(mockApiKeyGuard)
-      .overrideProvider(UsersService)
-      .useValue(mockUsersService)
       .compile();
     usersController = module.get<UsersController>(UsersController);
   });
