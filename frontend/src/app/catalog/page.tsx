@@ -196,7 +196,7 @@ function Catalog2() {
               <CardComponent {...data} handleOpen={handleOpen} />
             </Grid>
           ))}
-          {files.length === 0 && <Typography variant="h5" textAlign={'center'} className="p-5"> Lo sentimos , no hemos encontrado lo que estas buscando</Typography>}
+          {files.length === 0 && <Typography variant="h5" textAlign={'center'} className="p-5">No tienes ningún elemento guardado</Typography>}
         </Grid>
         <Pagination className="mt-4" count={amount} page={page} color="primary" onChange={handleChange} />
       </section>

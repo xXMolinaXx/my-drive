@@ -195,6 +195,7 @@ function MainLayout({ children }: props) {
         <Box sx={{ flexGrow: 1 }}>
           <AppBar position="static" className="bg-white text-black">
             <Toolbar>
+              <Image src={'./sync.png'} width={20} height={20} alt="imageIcon" />
               <p className="cursor-pointer px-4" onClick={() => router.push('/catalog?searchWord=ninguno')}>Inicio</p>
               <Box sx={{ flexGrow: 1 }} />
               <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
@@ -278,7 +279,7 @@ function MainLayout({ children }: props) {
         </Box> */}
       </nav>
       <main className="min-h-screen">
-        
+
         <div className="pt-5  px-4  sm:px-14" >
           {children}
         </div>
