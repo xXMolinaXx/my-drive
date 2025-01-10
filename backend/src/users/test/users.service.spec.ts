@@ -3,7 +3,6 @@ import { ConfigModule } from '@nestjs/config';
 import { User } from '../schemas/users.schemas';
 import { UsersService } from '../users.service';
 import { getModelToken } from '@nestjs/mongoose';
-
 import { CreateUserDto } from '../dto/create-user.dto';
 
 
@@ -18,10 +17,11 @@ describe('UsersService', () => {
     password: '123',
   };
 
-  const mockUserModel = {
-    findOne: jest.fn().mockImplementation(() => {}),
-    find: jest.fn().mockImplementation(() => ({ countDocuments: jest.fn().mockImplementation(() => []) })),
-    save: jest.fn().mockImplementation(() => {}),
+  class mockUserModel {
+    constructor(private data) {}
+    static findOne = jest.fn().mockImplementation(() => {});
+    static find = jest.fn().mockImplementation(() => ({ countDocuments: jest.fn().mockImplementation(() => []) }));
+    save = jest.fn().mockImplementation(() => {});
   };
   let usersService: UsersService;
   beforeEach(async () => {
