@@ -5,6 +5,7 @@ services:
     ports:
       - '27017:27017'
     volumes:
-      - type: bind
-        source: ./data
-        target: /data/db
+      - mongo_data:/data/db
+volumes:
+  mongo_data:
+    driver: local
