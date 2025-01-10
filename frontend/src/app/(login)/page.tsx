@@ -84,12 +84,7 @@ export default function LoginRegister() {
           "user",
           JSON.stringify({ ...data.data, access_token: null })
         );
-        if (data.data.role === 'client') {
-          router.push('/catalog?searchWord=ninguno')
-        } else if (data.data.role === 'admin' || data.data.role === 'flebotomista') {
-          router.push('/lcmadminlcm')
-        }
-        // setUser({ ...data.data, access_token: null })
+        router.push('/catalog?searchWord=ninguno')
       }
       else {
         setMainAlertMessage(data.message);
@@ -129,14 +124,6 @@ export default function LoginRegister() {
     if (!isValidEmail) {
       status.email = 'No es un correo valido'
     }
-    if (!registrerForm.telphone) {
-      status.telphone = 'Ingrese su telefono';
-      DontsendForm = true
-    }
-    // if (!registrerForm.DNI) {
-    //   status.DNI = 'Ingrese su DNI';
-    //   DontsendForm = true
-    // }
     if (!registrerForm.password) {
       status.password = 'Ingrese una contraseña';
       DontsendForm = true
@@ -181,14 +168,7 @@ export default function LoginRegister() {
               "user",
               JSON.stringify({ ...data.data, access_token: null })
             );
-            if (data.data.role === 'client') {
-              router.push('/catalog?searchWord=ninguno')
-            } else if (data.data.role === 'admin') {
-
-              router.push('/lcmadminlcm')
-            }
-
-            // setUser({ ...data.data, access_token: null })
+            router.push('/catalog?searchWord=ninguno')
           }
           else alert(data.message)
         }).catch(e => alert('error en el sistema'))
@@ -246,7 +226,7 @@ export default function LoginRegister() {
     <section className="h-screen">
       {/* <div className="oval" />
       <div className="oval2" /> */}
-      <Grid   className="h-screen" container>
+      <Grid className="h-screen" container>
         <Grid item xs={12} md={3} className='px-5 py-10'>
           {/*<Grid container justifyContent={'center'} alignItems={'center'}  >
             <Image src={'/LCM-logo.png'} width={100} height={100} alt='logo lcm' />
@@ -340,41 +320,6 @@ export default function LoginRegister() {
                 </Grid>
                 <Grid xs={12}>
                   <TextField
-                    className='my-2'
-                    label="Telefono"
-                    variant="outlined"
-                    fullWidth
-                    type='tel'
-                    id='telphone'
-                    value={registrerForm.telphone}
-                    onChange={onChangeInput}
-                    error={auxiliarTextRegistrerForm.telphone ? true : false}
-                    helperText={auxiliarTextRegistrerForm.telphone}
-                  />
-                </Grid>
-                
-                {/* <Grid xs={12}>
-                  <TextField className='my-2 w-3/6 ' type='date' variant="outlined" helperText={'Fecha de nacimiento'} />
-                  <TextField
-                    className='m-2 w-3/12'
-                    select
-                    label="Genero"
-                    defaultValue="EUR"
-                    id='gender'
-                    value={registrerForm.gender}
-                    onChange={onChangeInput}
-                    error={auxiliarTextRegistrerForm.gender ? true : false}
-                    helperText={auxiliarTextRegistrerForm.gender}
-                  >
-                    {['Hombre', 'Mujer'].map((option, i) => (
-                      <MenuItem key={`key-select-${option}-${i}`} value={option}>
-                        {option}
-                      </MenuItem>
-                    ))}
-                  </TextField>
-                </Grid> */}
-                <Grid xs={12}>
-                  <TextField
                     type="password"
                     className='my-2'
                     label="contraseña"
@@ -445,12 +390,12 @@ export default function LoginRegister() {
           </Grid>
 
         </Grid>
-        <Grid xs={0} md={9}  className='hidden sm:block'>
-        <div className=' ml-10 mt-10'>
-        <h2 className='text-3xl font-bold font-mono'>my-drive esta aquí</h2>
-        <p className='text-xl font-light font-mono w-72 mt-10'>Guarda todo tus archivos en un solo lugar</p>
-        </div>
-        
+        <Grid xs={0} md={9} className='hidden sm:block'>
+          <div className=' ml-10 mt-10'>
+            <h2 className='text-3xl font-bold font-mono'>my-drive esta aquí</h2>
+            <p className='text-xl font-light font-mono w-72 mt-10'>Guarda todo tus archivos en un solo lugar</p>
+          </div>
+
         </Grid>
       </Grid>
       <MainAlert handleClose={() => { setOpenMainAlert(false); setMainAlertMessage(''); setMainAlertType('error') }} message={mainAlertMessage} open={openMainALert} type={mainAlertType} />
