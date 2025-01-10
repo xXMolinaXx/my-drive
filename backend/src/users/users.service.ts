@@ -108,9 +108,6 @@ export class UsersService {
       .exec()
       .then((users) => users.map((user) => user._id));
   }
-  async findById(id: string) {
-    return await this.userModel.findById(id);
-  }
   async update(id: string, updateUserDto: UpdateUserDto) {
     const user = await this.userModel.findById(id);
     if (!user) throw 'Este usuario no existe';
