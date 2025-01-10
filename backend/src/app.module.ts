@@ -3,13 +3,11 @@ import { MongooseModule } from '@nestjs/mongoose';
 import * as Joi from 'joi';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { ConfigModule, ConfigService, ConfigType } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { JwtModule } from '@nestjs/jwt';
 import { LoggerMiddleware } from './logger.middleware';
-import { ServeStaticModule } from '@nestjs/serve-static';
-import { join } from 'path';
 import { FileModule } from './file/file.module';
 import { ScheduleModule } from '@nestjs/schedule';
 

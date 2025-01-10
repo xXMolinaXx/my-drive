@@ -1,6 +1,6 @@
-import { Controller, Get, Post, Body, Param, Delete, UseGuards, Put } from '@nestjs/common';
+import { Controller, Post, Body, Param, UseGuards, Put } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { CreateUserDto, UpdateUserDto2 } from './dto/create-user.dto';
+import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { IhttpResponse } from '../common/interface/httpResponse/httpResponse.interface';
@@ -8,8 +8,7 @@ import { ApiKeyGuard } from '../auth/guards/api-key.guard';
 import { SendMailDto } from './dto/send-mail.dto';
 import { RolesGuard } from './../auth/guards/roles.guard';
 import { Public } from './../auth/decorators/public.decorator';
-import { Roles } from './../auth/decorators/roles.decorator';
-import { ERoles } from '../common/enums/roles.enum';
+
 @ApiTags('users')
 @Controller('users')
 @UseGuards(ApiKeyGuard, RolesGuard)

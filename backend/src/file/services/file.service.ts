@@ -1,9 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { ObjectId } from 'mongodb';
 import { FileDocument, Files } from '../schemas/files.schemas';
-import { mailInvitacion, UpdateFileDTO, UploadFileDTO } from '../DTOS/files.dto';
+import { UpdateFileDTO, UploadFileDTO } from '../DTOS/files.dto';
 import { UsersService } from 'src/users/users.service';
 
 @Injectable()

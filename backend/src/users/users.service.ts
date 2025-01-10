@@ -3,11 +3,10 @@ import * as bcrypt from 'bcrypt';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import * as nodemailer from 'nodemailer';
-import { CreateUserDto, UpdateUserDto2 } from './dto/create-user.dto';
+import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './schemas/users.schemas';
 import { ConfigService } from '@nestjs/config';
-import { DNI_REGEX } from 'src/common/regex/dni.regex';
 
 @Injectable()
 export class UsersService {

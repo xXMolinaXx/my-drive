@@ -1,7 +1,6 @@
 import { Body, Controller, Get, HttpStatus, Param, Post, Request, Res, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import * as fs from 'fs';
-import { ObjectId } from 'mongodb';
 import { Response } from 'express';
 import { ApiTags } from '@nestjs/swagger';
 import { diskStorage } from 'multer';
@@ -100,7 +99,7 @@ export class FilesController {
         fileStream.on('open', () => {
           fileStream.pipe(res);
         });
-        fileStream.on('error', (err) => {
+        fileStream.on('error', () => {
           res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
             message: 'Error al descargar el Excel',
             success: false,
