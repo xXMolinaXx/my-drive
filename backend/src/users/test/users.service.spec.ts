@@ -16,13 +16,20 @@ describe('UsersService', () => {
     gender: 'male',
     password: '123',
   };
-
+  const email = 'test@email.com';
   class mockUserModel {
-    constructor(private data) {}
-    static findOne = jest.fn().mockImplementation(() => {});
+    constructor(private data) { }
+    static findOne = jest.fn().mockImplementation((emailparam) => {
+      if (emailparam.email === email) {
+        return { ...userCreation, email: email };
+      } else {
+        return null;
+      }
+    });
     static find = jest.fn().mockImplementation(() => ({ countDocuments: jest.fn().mockImplementation(() => []) }));
-    save = jest.fn().mockImplementation(() => {});
-  };
+    static findOneByEmail = jest.fn().mockImplementation((email: string) => ({ ...userCreation, email: email }));
+    save = jest.fn().mockImplementation(() => { });
+  }
   let usersService: UsersService;
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -42,13 +49,30 @@ describe('UsersService', () => {
       ],
     }).compile();
     usersService = module.get<UsersService>(UsersService);
+    jest.clearAllMocks();
   });
 
   it('should be defined', () => {
     expect(usersService).toBeDefined();
   });
+  it('should create a hash password', async () => {
+    const hash = await usersService.hashPassword('123');
+    expect(hash).toBeDefined();
+  });
   it('should create user', async () => {
     const response = await usersService.create(userCreation);
     expect(response).toBeUndefined();
+  });
+  it('should find an user by email', async () => {
+    const response = await usersService.findOneByEmail(email);
+    expect(response).toEqual({ ...userCreation, email: email });
+  });
+  it('should not find an user by email', async () => {
+    usersService
+      .findOneByEmail('email@email.com')
+      .then(() => {})
+      .catch((error) => {
+        expect(error).toBe('No existe este usuario');
+      });
   });
 });
