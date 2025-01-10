@@ -5,7 +5,6 @@ import { UsersService } from '../users.service';
 import { getModelToken } from '@nestjs/mongoose';
 import { CreateUserDto } from '../dto/create-user.dto';
 
-
 describe('UsersService', () => {
   const userCreation: CreateUserDto = {
     fullName: 'test',
@@ -18,7 +17,7 @@ describe('UsersService', () => {
   };
   const email = 'test@email.com';
   class mockUserModel {
-    constructor(private data) { }
+    constructor(private data) {}
     static findOne = jest.fn().mockImplementation((emailparam) => {
       if (emailparam.email === email) {
         return { ...userCreation, email: email };
@@ -28,7 +27,7 @@ describe('UsersService', () => {
     });
     static find = jest.fn().mockImplementation(() => ({ countDocuments: jest.fn().mockImplementation(() => []) }));
     static findOneByEmail = jest.fn().mockImplementation((email: string) => ({ ...userCreation, email: email }));
-    save = jest.fn().mockImplementation(() => { });
+    save = jest.fn().mockImplementation(() => {});
   }
   let usersService: UsersService;
   beforeEach(async () => {

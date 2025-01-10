@@ -9,7 +9,10 @@ import { UsersService } from 'src/users/users.service';
 @Injectable()
 export class FileService {
   private readonly logger = new Logger(FileService.name);
-  constructor(@InjectModel(Files.name) private filesModel: Model<FileDocument>, private readonly usersService: UsersService) { }
+  constructor(
+    @InjectModel(Files.name) private filesModel: Model<FileDocument>,
+    private readonly usersService: UsersService,
+  ) {}
   async getUserFile(userId: string) {
     const resp = await this.filesModel.find({ userOwner: userId });
     return resp;
@@ -27,7 +30,6 @@ export class FileService {
     return data;
   }
   async updateFileConfig(data: UpdateFileDTO) {
-
     if (data.mailInvitacion) {
       const user = await this.usersService.findByEmail(data.mailInvitacion);
       const { userAccess } = await this.filesModel.findOne({ _id: data.fileId });

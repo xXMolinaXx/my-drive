@@ -14,7 +14,7 @@ export class UsersService {
   constructor(
     @InjectModel(User.name) private userModel: Model<User>,
     private configService: ConfigService,
-  ) { }
+  ) {}
   async hashPassword(password: string) {
     const saltOrRounds = 10;
     const hash = await bcrypt.hash(password, saltOrRounds);

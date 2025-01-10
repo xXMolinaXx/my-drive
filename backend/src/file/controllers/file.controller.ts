@@ -19,7 +19,7 @@ import { jwtDecode } from 'jwt-decode';
 @Controller('files')
 @UseGuards(ApiKeyGuard, RolesGuard)
 export class FilesController {
-  constructor(private readonly fileService: FileService) { }
+  constructor(private readonly fileService: FileService) {}
   @Roles(ERoles.USER, ERoles.ADMIN)
   @Get('/:userId')
   async getUserFiles(@Param('userId') userId: string): Promise<IhttpResponse> {

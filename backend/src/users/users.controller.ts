@@ -14,7 +14,7 @@ import { ERoles } from '../common/enums/roles.enum';
 @Controller('users')
 @UseGuards(ApiKeyGuard, RolesGuard)
 export class UsersController {
-  constructor(private readonly usersService: UsersService) { }
+  constructor(private readonly usersService: UsersService) {}
   @Public()
   @Post()
   async create(@Body() createUserDto: CreateUserDto): Promise<IhttpResponse> {

@@ -1,5 +1,5 @@
 import { Body, Controller, HttpCode, HttpStatus, Post, UseGuards } from '@nestjs/common';
-import { ERoles } from "./../common/enums/roles.enum";
+import { ERoles } from './../common/enums/roles.enum';
 import { AuthService } from './auth.service';
 import { LoginDto } from 'src/users/dto/login.dto';
 import { IhttpResponse } from 'src/common/interface/httpResponse/httpResponse.interface';
@@ -12,7 +12,7 @@ import { Roles } from './decorators/roles.decorator';
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) { }
+  constructor(private authService: AuthService) {}
 
   @HttpCode(HttpStatus.OK)
   @Post('login')
