@@ -1,16 +1,2 @@
 export const typeImage = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'svg', 'tiff', 'ico', 'heic', 'heif', 'psd', 'raw'];
-export const typeVideo = [
-  "jpg",
-  "jpeg",
-  "png",
-  "gif",
-  "bmp",
-  "webp",
-  "svg",
-  "tiff",
-  "ico",
-  "heic",
-  "heif",
-  "psd",
-  "raw"
-]
+export const typeVideo = ['mp4', 'avi', 'mov', 'mkv', 'wmv', 'flv', 'webm', 'mpeg', 'mpg', 'ogv', '3gp', '3g2', 'm4v', 'vob', 'mts', 'm2ts', 'divx', 'xvid', 'rm', 'rmvb', 'asf', 'swf']

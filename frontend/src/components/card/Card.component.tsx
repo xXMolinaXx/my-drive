@@ -6,6 +6,7 @@ import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
 import QuestionMarkIcon from '@mui/icons-material/QuestionMark';
 import FolderZipIcon from '@mui/icons-material/FolderZip';
+import OndemandVideoIcon from '@mui/icons-material/OndemandVideo';
 import 'react-slideshow-image/dist/styles.css'
 import { Button, Card, CardContent, Grid, Tooltip, Typography } from "@mui/material";
 import { getCookieToken } from "@/common/utils/getCookieToken";
@@ -34,6 +35,9 @@ export default function CardComponent(prop: PropCard) {
     const type = nameFile.split('.')[1]
     if (typeImage.includes(type)) {
       return (< ImageIcon />)
+
+    } else if (typeVideo.includes(type)) {
+      return (< OndemandVideoIcon />)
     } else if (type === 'pdf') {
       return (<PictureAsPdfIcon />)
     } else if (['zip', 'tar'].includes(type)) {
@@ -77,23 +81,25 @@ export default function CardComponent(prop: PropCard) {
               // @ts-expect-error probably is not null 
               imageTag.src = url;
             }
+          } else if (typeVideo.includes(type)) {
+
+            openVisualizer()
+            setTypeOfFile(2)
+            const videoElement = document.getElementById('video-visualizer');
+            // @ts-ignore
+            document.getElementById('title-file').innerHTML = filename
+            if (videoElement) {
+              // @ts-ignore
+              videoElement.src = url;
+              const videoTag = document.querySelector('#video-visualizer-father');
+              // @ts-ignore
+              videoTag.load(); // Reload the video to apply the new source
+            }
+
           }
 
         }
-        if (typeVideo.includes(type)) {
-          openVisualizer()
-          setTypeOfFile(2)
-          const videoElement = document.getElementById('video-visualizer');
 
-          if (videoElement) {
-            // @ts-ignore
-            videoElement.src = url;
-            const videoTag = document.querySelector('#video-visualizer-father');
-            // @ts-ignore
-            videoTag.load(); // Reload the video to apply the new source
-          }
-
-        }
 
       }).catch(error => {
         toast.error("No tienes acceso");

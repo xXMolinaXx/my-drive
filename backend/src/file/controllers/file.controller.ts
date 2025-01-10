@@ -4,7 +4,7 @@ import * as fs from 'fs';
 import { Response } from 'express';
 import { ApiTags } from '@nestjs/swagger';
 import { diskStorage } from 'multer';
-import { join } from 'path';
+import path, { join } from 'path';
 import { Public } from 'src/auth/decorators/public.decorator';
 import { IhttpResponse } from 'src/common/interface/httpResponse/httpResponse.interface';
 import { FileService } from '../services/file.service';
@@ -14,11 +14,12 @@ import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { Roles } from 'src/auth/decorators/roles.decorator';
 import { ERoles } from 'src/common/enums/roles.enum';
 import { jwtDecode } from 'jwt-decode';
+
 @ApiTags('files')
 @Controller('files')
 @UseGuards(ApiKeyGuard, RolesGuard)
 export class FilesController {
-  constructor(private readonly fileService: FileService) {}
+  constructor(private readonly fileService: FileService) { }
   @Get('/:userId')
   async getUserFiles(@Param('userId') userId: string): Promise<IhttpResponse> {
     try {
@@ -41,7 +42,17 @@ export class FilesController {
     FileInterceptor('file', {
       dest: './uploads',
       storage: diskStorage({
-        destination: './uploads',
+        destination: (req, file, cb) => {
+          // @ts-expect-error error
+          const folderName = req.user.sub;
+          const uploadPath = join(__dirname, '..', '..', '..', 'uploads', folderName);
+
+          // Create folder if it doesn't exist
+          if (!fs.existsSync(uploadPath)) {
+            fs.mkdirSync(uploadPath, { recursive: true });
+          }
+          cb(null, uploadPath);
+        },
         filename: (req, file, cb) => {
           cb(null, `${req.params.imageName}`);
         },
