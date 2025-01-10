@@ -20,15 +20,11 @@ export class AuthService {
     }
     // TODO: Generate a JWT and return it here
     // instead of the user object
-    const payload = { sub: user._id, username: user.fullName, role: user.role };
+    const payload = { sub: user._id, username: user.fullName };
     return {
       access_token: await this.jwtService.signAsync(payload),
-      role: user.role,
       _id: user._id,
-      userIdentification: user.DNI,
-      yearBorn: user.yearBorn,
       fullName: user.fullName,
-      store: user.store,
     };
   }
   async generateNewJWT(user: UserRefreshTokenDTO) {
