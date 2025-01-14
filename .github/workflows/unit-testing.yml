@@ -13,23 +13,24 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: '18'  # Specify your required Node.js version
+          node-version: '18'
 
       - name: Install dependencies
         run: cd backend && npm install
 
       - name: Run tests
-        run: cd backend && npm run  test
+        run: cd backend && npm run test
+
+    # Notify on GitHub if tests fail
     if: failure()
-      steps:
-        - name: Post failure comment
-          uses: actions/github-script@v6
-          with:
-            script: |
-              github.issues.createComment({
-                issue_number: context.issue.number,
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                body: "⚠️ Tests have failed for commit ${{ github.sha }}. Please check the details."
-              })
-    
+    steps:
+      - name: Post failure comment
+        uses: actions/github-script@v6
+        with:
+          script: |
+            github.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: "⚠️ Tests have failed for commit ${{ github.sha }}. Please check the details."
+            })
