@@ -38,4 +38,4 @@ jobs:
           to: kenny.molina.murillo@gmail.com 
           from: atencionalclientelabcm@gmail.com 
           body: | 
-            Tests have failed in the GitHub Actions workflow for commit ${{ github.sha }}. Please check the details in the Actions tab on GitHub.
+            Tests have failed in the GitHub Actions workflow for commit ${{ github.sha }}. Please check the details in the Actions tab on GitHub. 2
