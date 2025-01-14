@@ -20,3 +20,16 @@ jobs:
 
       - name: Run tests
         run: cd backend && npm run  test
+  if: failure()
+    steps:
+      - name: Post failure comment
+        uses: actions/github-script@v6
+        with:
+          script: |
+            github.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: "⚠️ Tests have failed for commit ${{ github.sha }}. Please check the details."
+            })
+    
