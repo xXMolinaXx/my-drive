@@ -1,0 +1,25 @@
+name: Commit Message Length Check
+
+on: [push]
+
+jobs:
+  check-commit-message:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Validate commit message length
+        run: |
+          # Get the latest commit message
+          commit_message=$(git log -1 --pretty=%B)
+          min_length=15
+
+          # Check if the commit message is shorter than the minimum length
+          if [ ${#commit_message} -lt $min_length ]; then
+            echo "Commit message is too short. Must be at least $min_length characters."
+            exit 1
+          fi
+
+          echo "Commit message is valid."
