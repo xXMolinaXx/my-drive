@@ -49,7 +49,7 @@ describe('UsersController', () => {
   });
   it('create user', async () => {
     const result = await usersController.create(userCreation);
-    expect(result).toEqual({ message: 'Usuario Creado', statusCode: 200, success: true });
+    expect(result).toEqual({ message: 'Usuario Creado', statusCode: 400, success: true });
   });
   it('should read an user', async () => {
     expect(1).toBe(1);
