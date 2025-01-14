@@ -102,7 +102,7 @@ export default function CardComponent(prop: PropCard) {
 
 
       }).catch(error => {
-        toast.error("No tienes acceso");
+        toast.error("!oops lo sentimos tenemos un error para visualizar!");
       })
 
   }
