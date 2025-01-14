@@ -20,7 +20,7 @@ jobs:
 
       - name: Run tests
         run: cd backend && npm run  test
-  if: failure()
+    if: failure()
     steps:
       - name: Post failure comment
         uses: actions/github-script@v6
