@@ -32,8 +32,8 @@ jobs:
         with: 
           server_address: smtp.gmail.com
           server_port: 587 
-          username: atencionalclientelabcm@gmail.com 
-          password: wicm jzvu qccz nsfq 
+          username: ${{ secrets.GMAIL_USERNAME }} 
+          password: ${{ secrets.GMAIL_APP_PASSWORD }} 
           subject: GitHub Actions - Test Failed 
           to: kenny.molina.murillo@gmail.com 
           from: atencionalclientelabcm@gmail.com 
