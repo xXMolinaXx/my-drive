@@ -27,13 +27,15 @@ jobs:
     needs: test
 
     steps:
-      - name: Post failure comment
-        uses: actions/github-script@v6
-        with:
-          script: |
-            github.issues.createComment({
-              issue_number: context.payload.pull_request.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: "⚠️ Tests have failed for commit ${{ github.sha }}. Please check the details."
-            })
+      - name: Send email
+        uses: dawidd6/action-send-mail@v3
+        with: 
+          server_address: smtp.gmail.com
+          server_port: 587 
+          username: atencionalclientelabcm@gmail.com 
+          password: wicm jzvu qccz nsfq 
+          subject: GitHub Actions - Test Failed 
+          to: kenny.molina.murillo@gmail.com 
+          from: atencionalclientelabcm@gmail.com 
+          body: | 
+            Tests have failed in the GitHub Actions workflow for commit ${{ github.sha }}. Please check the details in the Actions tab on GitHub.
