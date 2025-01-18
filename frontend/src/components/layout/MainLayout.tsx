@@ -82,7 +82,7 @@ function MainLayout({ children }: props) {
       <div className="flex justify-center pl-5 pt-5 pr-5">
         <div>
           <Typography variant="h5" noWrap>{user && user.fullName}</Typography>
-          <Button className="mb-2" variant="outlined" type="submit" fullWidth onClick={() => {
+          <Button className="mb-2 font-bold" variant="outlined" type="submit" fullWidth onClick={() => {
             router.push('/catalog?searchWord=ninguno')
           }}>Inicio</Button>
           <Button className="mb-2" variant="outlined" type="submit" fullWidth onClick={() => {

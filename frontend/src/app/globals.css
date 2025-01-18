@@ -24,7 +24,8 @@ body {
     --background-end-rgb: 0, 0, 0;
   }
 }
-
+.left-center { top: 50%; left: 0; transform: translateY(-50%); }
+center-top { left: 50%; transform: translateX(-50%); }
 /* 
 .oval {
   position: absolute;
@@ -47,3 +48,27 @@ body {
     text-wrap: balance;
   }
 }
+/* Custom Scrollbar Style */
+/* Custom Scrollbar Style */
+.custom-scrollbar {
+  scrollbar-width: thin; /* For Firefox */
+  scrollbar-color: #1975d128 transparent; /* For Firefox */
+
+  /* For WebKit Browsers (Chrome, Safari, etc.) */
+  &::-webkit-scrollbar {
+      width: 0; /* Make scrollbar thinner */
+      height: 0; /* For horizontal scrollbar */
+  }
+
+  &::-webkit-scrollbar-track {
+      background: transparent; /* Transparent track color */
+  }
+
+  /* Hide the scrollbar track and thumb */ 
+  &::-webkit-scrollbar-track, 
+  &::-webkit-scrollbar-thumb { 
+    display: none; /* Hides the scrollbar track and thumb */ 
+  }
+  
+}
+
