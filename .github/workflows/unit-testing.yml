@@ -1,4 +1,5 @@
 name: Run Tests
+run-name: CI Pull request creado
 
 on: [pull_request] #[push, pull_request]
 
